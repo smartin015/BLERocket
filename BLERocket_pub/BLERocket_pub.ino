@@ -50,7 +50,8 @@ void setup() {
 
 void loop() {
   doScan();
-  
-  setTestMessage();
-  advertise();
+  //setTestMessage();
+  //advertise();
+  handleInput();
+  maybeRender();
 }

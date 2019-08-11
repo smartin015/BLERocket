@@ -17,7 +17,6 @@ void setTestMessage() {
   testRocket.spd = 2;
   testRocket.c = 3;
   testRocket.d = 1;
-  testRocket.e = 0;
   
   BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
   BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
@@ -38,9 +37,9 @@ void setTestMessage() {
 
 void advertise() {
   pAdvertising->start();
-  Serial.println("Advertising started...");
   delay(100);
   pAdvertising->stop();
+  Serial.println("Advertised");
 }
 
 void setRocketActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_config_t rocket) {

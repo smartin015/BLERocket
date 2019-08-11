@@ -5,13 +5,12 @@ rocket_action_msg_t handleRocketActionMessage(uint8_t* ptr) {
   char d[5]; 
   rocket_action_msg_t result;
   memcpy(&result, ptr, sizeof(rocket_action_msg_t));
-  Serial.printf("Got rocket action, msg %02x cargo %d speed %d c %d d %d e %d \n", 
+  Serial.printf("Got rocket action, msg %02x cargo %d speed %d c %d d %d\n", 
     result.msg, 
     result.rocket.cargo, 
     result.rocket.spd,
     result.rocket.c, 
-    result.rocket.d, 
-    result.rocket.e);
+    result.rocket.d);
   return result;
 }
 
@@ -20,7 +19,7 @@ void parseAdvertisement(uint8_t* payload, size_t total_len) {
   uint8_t len;
   uint8_t ad_type;
   uint8_t sizeConsumed = 0;
-  Serial.print("Payload ");
+  Serial.print("Recv ");
   for (int i = 0; i < total_len; i++) {
     Serial.printf("%x|", payload[i]);
   }
@@ -36,7 +35,7 @@ void parseAdvertisement(uint8_t* payload, size_t total_len) {
     }
     
     ad_type = *payload;
-    Serial.printf("section type %02x len %d\n", ad_type, len);
+    // Serial.printf("section type %02x len %d\n", ad_type, len);
     switch(ad_type) {
       case TYPE_RACE:
         handleRocketActionMessage(payload);
@@ -59,12 +58,13 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
       if (!d.getAddress().equals(match1) && !d.getAddress().equals(match2)) {
         return;
       }
-      Serial.printf("Advertised Device: %s \n", d.toString().c_str());
       parseAdvertisement(d.getPayload(), d.getPayloadLength());
     }
 };
 
+bool scanning = false;
 void initReceiver() {
+  scanning = false;
   pBLEScan = BLEDevice::getScan(); //create new scan
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
   pBLEScan->setActiveScan(false); //active scan uses more power, but get results faster
@@ -72,10 +72,16 @@ void initReceiver() {
   pBLEScan->setWindow(99);  // less or equal setInterval value
 }
 
-void doScan() {
-  BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
-  Serial.print("Devices found: ");
-  Serial.println(foundDevices.getCount());
-  Serial.println("Scan done!");
+void scanComplete(BLEScanResults foundDevices) {
+  // Serial.printf("Found %d devices\n", foundDevices.getCount());
   pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory  
+  scanning = false;
+}
+
+void doScan() {
+  if (scanning) {
+    return;
+  }
+  scanning = true;
+  pBLEScan->start(scanTime, &scanComplete, false);
 }

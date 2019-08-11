@@ -1,4 +1,5 @@
-
+#ifndef BLE_SCHEMA_H
+#define BLE_SCHEMA_H
 
 /* msg format for rocketry: 
     *  TYPE_RACE|RocketConfig
@@ -29,9 +30,15 @@ typedef enum {
   PART_THRUSTER = 1,
   PART_C = 2,
   PART_D = 3,
-  PART_E = 4
+  NUM_PARTS = 4
 } rocket_part_t;
-
+#define USER_PART PART_HULL
+const char* PART_NAMES[NUM_PARTS] = {
+  "Hull",
+  "Thruster",
+  "C",
+  "D",
+};
 
 #define ATTRIBUTE_BITLEN 3
 typedef enum {
@@ -39,18 +46,35 @@ typedef enum {
   ATTRIB_SPEED = 1,
   ATTRIB_C = 2, 
   ATTRIB_D = 3,
-  ATTRIB_E = 4
 } rocket_attr_t;
 
+#define MAX_ROCKETS 16
 typedef struct {
   uint8_t cargo : 4;
-  uint8_t spd : 3;
-  uint8_t c : 3;
-  uint8_t d : 3;
-  uint8_t e : 3;
+  uint8_t spd : 4;
+  uint8_t c : 4;
+  uint8_t d : 4;
 } rocket_config_t; // 2 bytes to fully describe a rocket
 
 typedef struct {
   message_t msg : 8;
   rocket_config_t rocket;
 } rocket_action_msg_t;
+
+typedef enum {
+   SCREEN_OFF = 0,
+   SCREEN_STATUS = 1,
+   SCREEN_MAKE = 2,
+   SCREEN_GIVE = 3,
+   SCREEN_LAUNCH = 4,
+} screen_t;
+
+typedef enum {
+  CMD_DOWN = 0,
+  CMD_UP = 1,
+  CMD_LEFT = 2,
+  CMD_RIGHT = 3,
+  CMD_ENTER = 4,
+} cmd_t;
+
+#endif // BLE_SCHEMA_H
