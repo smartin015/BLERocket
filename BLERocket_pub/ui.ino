@@ -6,13 +6,10 @@
 
 screen_t currentScreen = SCREEN_OFF;
 
-uint8_t parts[NUM_PARTS];
-rocket_config_t rockets[MAX_ROCKETS];
-uint8_t num_rockets = 0;
-
 // Target vs Item selector
 bool giveTarget;
-uint8_t selNum;
+uint8_t partSel;
+uint8_t destSel;
 
 void handleStatusScreen(cmd_t cmd) {
   switch (cmd) {
@@ -24,7 +21,14 @@ void handleStatusScreen(cmd_t cmd) {
       break;
     case CMD_RIGHT:
       giveTarget = false;
-      selNum = 0;
+      partSel = 0;
+      for (int i = 0; i < NUM_PARTS; i++) {
+        if (parts[i] != 0)  {
+          partSel = i;
+          break;
+        }
+      }
+      destSel = 0;
       currentScreen = SCREEN_GIVE;
       break;
     case CMD_UP:
@@ -51,6 +55,8 @@ void handleMakeScreen(cmd_t cmd) {
 }
 
 void handleGiveScreen(cmd_t cmd) {
+  int dir;
+  uint8_t next;
   switch (cmd) {
     case CMD_LEFT:
       if (giveTarget == false) {
@@ -60,15 +66,33 @@ void handleGiveScreen(cmd_t cmd) {
       }
       break;
     case CMD_RIGHT:
-      giveTarget != giveTarget;
-      break;
-    case CMD_DOWN:
-      Serial.println("TODO give select");
+      giveTarget = !giveTarget;
       break;
     case CMD_UP:
-      Serial.println("TODO give select");
+    case CMD_DOWN:
+      dir = 2*(int(cmd == CMD_DOWN))-1;
+      if (!giveTarget) {
+        next = partSel;
+        for (int i = 1; i < NUM_PARTS; i++) {
+          next = (partSel+(i*dir)) % NUM_PARTS;
+          if (parts[next] > 0) {
+            partSel = next;
+            break; 
+          }
+        }
+      } else {
+        next = destSel;
+        for (int i = 1; i < num_dests; i++) {
+          next = (destSel+(i*dir)) % num_dests;
+          if (dests[next] > 0) {
+            destSel = next;
+            break; 
+          }
+        }
+      }
       break;
     case CMD_ENTER:
+      // setPartActionMessage()
       Serial.println("TODO give completion");
       break;
     default:
@@ -192,7 +216,7 @@ void consoleRender() {
           if (parts[i] == 0) {
             continue;
           }
-          if (selNum == i) {
+          if (partSel == i) {
             Serial.print("> ");
           } else {
             Serial.print("  ");
@@ -201,7 +225,14 @@ void consoleRender() {
         }
       } else {
         Serial.println("Select target:");
-        Serial.println("TODO");
+        for (int i = 0; i < num_dests; i++) {
+          if (destSel == i) {
+            Serial.print("> ");
+          } else {
+            Serial.print("  ");
+          }
+          Serial.printf("%d\n", dests[i]);
+        }
       }
       Serial.println("Commands: << BACK | >< DEST/PRT | ^v SEL | X GIVE");
       break;

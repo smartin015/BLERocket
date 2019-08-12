@@ -1,17 +1,28 @@
 int scanTime = 5; //In seconds
 BLEScan* pBLEScan;
 
-rocket_action_msg_t handleRocketActionMessage(uint8_t* ptr) {
+void handleRocketActionMessage(uint8_t* ptr) {
   char d[5]; 
   rocket_action_msg_t result;
   memcpy(&result, ptr, sizeof(rocket_action_msg_t));
-  Serial.printf("Got rocket action, msg %02x cargo %d speed %d c %d d %d\n", 
+  Serial.printf("Got rocket action, msg %02x cargo %d speed %d c %d d %d dest %02x\n", 
     result.msg, 
     result.rocket.cargo, 
     result.rocket.spd,
     result.rocket.c, 
-    result.rocket.d);
-  return result;
+    result.rocket.d,
+    result.dest);
+}
+
+void handlePartActionMessage(uint8_t* ptr) {
+  char d[5]; 
+  part_action_msg_t result;
+  memcpy(&result, ptr, sizeof(part_action_msg_t));
+  Serial.printf("Got [art action, msg %02x part %s quality %d dest %02x\n", 
+    result.msg, 
+    PART_NAMES[result.part], 
+    result.quality,
+    result.dest);
 }
 
 void parseAdvertisement(uint8_t* payload, size_t total_len) {
@@ -37,10 +48,16 @@ void parseAdvertisement(uint8_t* payload, size_t total_len) {
     ad_type = *payload;
     // Serial.printf("section type %02x len %d\n", ad_type, len);
     switch(ad_type) {
+      case TYPE_TRADE:
+      case TYPE_EXPLORE:
       case TYPE_RACE:
         handleRocketActionMessage(payload);
         break;
+      case TYPE_GIVE:
+        handlePartActionMessage(payload);
+        break;
       default:
+        Serial.printf("Unknown advertisement, type %02x\n", ad_type);
         break;
     }
     payload += len;

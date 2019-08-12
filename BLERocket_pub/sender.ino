@@ -21,7 +21,7 @@ void setTestMessage() {
   BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
   BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
   oAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED 0x04
-  setRocketActionMessage(oAdvertisementData, TYPE_RACE, testRocket);
+  setRocketActionMessage(oAdvertisementData, TYPE_RACE, testRocket, 0);
 
   // Max 31 bytes
   std::string payload = oAdvertisementData.getPayload();
@@ -42,30 +42,41 @@ void advertise() {
   Serial.println("Advertised");
 }
 
-void setRocketActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_config_t rocket) {
-  char d[5]; d[4] = 0;
-  rocket_action_msg_t m;
+void setRocketActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_config_t rocket, dest_addr_t dest) {
+  char d[sizeof(rocket_action_msg_t) + 2]; 
   d[0] = sizeof(rocket_action_msg_t);
+  d[sizeof(rocket_action_msg_t)+1] = 0;
+  
+  rocket_action_msg_t m;
   m.msg = msg;
   m.rocket = rocket;
+  m.dest = dest;
   memcpy(d+1, &m, sizeof(m));
   
   Serial.print("Msg ");
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < sizeof(rocket_action_msg_t) + 2; i++) {
     Serial.printf("%02x|", d[i]);
   }
   Serial.println("");
   adv.addData(d);
 }
 
-void setResourceMessage(BLEAdvertisementData& adv, message_t msg, rocket_part_t part, uint8_t qty) {
-  char d[5]; 
-  // The length does not include itself but does include everything after it until the next record.  A record
-  // with a length value of 0 indicates a terminator.
-  d[0] = 3; // packet length
-  d[1] = msg;
-  d[2] = part;
-  d[3] = qty;
-  d[4] = 0;
+void setPartActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_part_t part, uint8_t quality, dest_addr_t dest) {
+  char d[sizeof(part_action_msg_t) + 2]; 
+  d[0] = sizeof(part_action_msg_t);
+  d[sizeof(part_action_msg_t)+1] = 0;
+
+  part_action_msg_t m;
+  m.msg = msg;
+  m.part = part;
+  m.quality = quality;
+  m.dest = dest;
+  memcpy(d+1, &m, sizeof(m));
+  
+  Serial.print("Msg ");
+  for (int i = 0; i < sizeof(part_action_msg_t) + 2; i++) {
+    Serial.printf("%02x|", d[i]);
+  }
+  Serial.println("");
   adv.addData(d);
 }

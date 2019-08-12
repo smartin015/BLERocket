@@ -25,6 +25,10 @@ typedef enum {
  TYPE_SCORE = 0xA4
 } message_t;
 
+// Max number of destinations to show, ordered by RSSI
+#define MAX_DEST 5
+typedef uint8_t dest_addr_t;
+
 typedef enum {
   PART_HULL = 0,
   PART_THRUSTER = 1,
@@ -49,17 +53,26 @@ typedef enum {
 } rocket_attr_t;
 
 #define MAX_ROCKETS 16
+#define PART_QUALITY_NBITS 4
 typedef struct {
-  uint8_t cargo : 4;
-  uint8_t spd : 4;
-  uint8_t c : 4;
-  uint8_t d : 4;
+  uint8_t cargo : PART_QUALITY_NBITS;
+  uint8_t spd : PART_QUALITY_NBITS;
+  uint8_t c : PART_QUALITY_NBITS;
+  uint8_t d : PART_QUALITY_NBITS;
 } rocket_config_t; // 2 bytes to fully describe a rocket
 
 typedef struct {
   message_t msg : 8;
-  rocket_config_t rocket;
+  rocket_config_t rocket; // 2 bytes
+  dest_addr_t dest;
 } rocket_action_msg_t;
+
+typedef struct {
+  message_t msg: 8;
+  rocket_part_t part: 4;
+  uint8_t quality: PART_QUALITY_NBITS;
+  dest_addr_t dest;
+} part_action_msg_t;
 
 typedef enum {
    SCREEN_OFF = 0,
