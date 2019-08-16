@@ -1,32 +1,34 @@
+#include "msg.h"
+
 int scanTime = 5; //In seconds
 BLEScan* pBLEScan;
 
-void handleRocketActionMessage(uint8_t* ptr) {
-  char d[5]; 
-  rocket_action_msg_t result;
-  memcpy(&result, ptr, sizeof(rocket_action_msg_t));
-  Serial.printf("Got rocket action, msg %02x cargo %d speed %d c %d d %d dest %02x\n", 
-    result.msg, 
-    result.rocket.cargo, 
-    result.rocket.spd,
-    result.rocket.c, 
-    result.rocket.d,
-    result.dest);
+void handleShipActionMessage(uint8_t* ptr) {
+  char d[5];
+  ship_action_msg_t result;
+  memcpy(&result, ptr, sizeof(ship_action_msg_t));
+//  Serial.printf("Got ship action, msg %02x cargo %d speed %d c %d d %d dest %02x\n",
+//    result.msg,
+//    result.ship.cargo,
+//    result.ship.spd,
+//    result.ship.c,
+//    result.ship.d,
+//    result.dest);
 }
 
 void handlePartActionMessage(uint8_t* ptr) {
-  char d[5]; 
+  char d[5];
   part_action_msg_t result;
   memcpy(&result, ptr, sizeof(part_action_msg_t));
-  Serial.printf("Got [art action, msg %02x part %s quality %d dest %02x\n", 
-    result.msg, 
-    PART_NAMES[result.part], 
-    result.quality,
-    result.dest);
+//  Serial.printf("Got [art action, msg %02x part %s quality %d dest %02x\n",
+//    result.msg,
+//    PART_NAMES[result.part],
+//    result.quality,
+//    result.dest);
 }
 
 void parseAdvertisement(uint8_t* payload, size_t total_len) {
-  // BLE packets are made up of a 
+  // BLE packets are made up of a
   uint8_t len;
   uint8_t ad_type;
   uint8_t sizeConsumed = 0;
@@ -40,18 +42,18 @@ void parseAdvertisement(uint8_t* payload, size_t total_len) {
     len = *payload;
     payload++; // Skip to type
     sizeConsumed += 1 + len;
-    
+
     if (len == 0) {
       break; // A length of 0 indicates that we have reached the end.
     }
-    
+
     ad_type = *payload;
     // Serial.printf("section type %02x len %d\n", ad_type, len);
     switch(ad_type) {
       case TYPE_TRADE:
       case TYPE_EXPLORE:
       case TYPE_RACE:
-        handleRocketActionMessage(payload);
+        handleShipActionMessage(payload);
         break;
       case TYPE_GIVE:
         handlePartActionMessage(payload);
@@ -91,7 +93,7 @@ void initReceiver() {
 
 void scanComplete(BLEScanResults foundDevices) {
   // Serial.printf("Found %d devices\n", foundDevices.getCount());
-  pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory  
+  pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
   scanning = false;
 }
 

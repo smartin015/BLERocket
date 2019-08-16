@@ -1,3 +1,5 @@
+#include "game.h"
+#include "msg.h"
 
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
@@ -12,16 +14,17 @@ void initSender() {
 
 void setTestMessage() {
 
-  rocket_config_t testRocket;
-  testRocket.cargo = 2;
-  testRocket.spd = 2;
-  testRocket.c = 3;
-  testRocket.d = 1;
-  
+  ship_t testShip;
+//  testShip.cargo = 2;
+//  testShip.spd = 2;
+//  testShip.c = 3;
+//  testShip.d = 1;
+
   BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
   BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
   oAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED 0x04
-  setRocketActionMessage(oAdvertisementData, TYPE_RACE, testRocket, 0);
+  user_t dest;
+  setShipActionMessage(oAdvertisementData, TYPE_RACE, testShip, dest);
 
   // Max 31 bytes
   std::string payload = oAdvertisementData.getPayload();
@@ -30,7 +33,7 @@ void setTestMessage() {
     Serial.printf("%02x|", payload[i]);
   }
   Serial.println("");
-  
+
   pAdvertising->setAdvertisementData(oAdvertisementData);
   pAdvertising->setScanResponseData(oScanResponseData);
 }
@@ -42,27 +45,28 @@ void advertise() {
   Serial.println("Advertised");
 }
 
-void setRocketActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_config_t rocket, dest_addr_t dest) {
-  char d[sizeof(rocket_action_msg_t) + 2]; 
-  d[0] = sizeof(rocket_action_msg_t);
-  d[sizeof(rocket_action_msg_t)+1] = 0;
-  
-  rocket_action_msg_t m;
+void setShipActionMessage(BLEAdvertisementData& adv, message_t msg, ship_t ship, user_t dest) {
+  char d[sizeof(ship_action_msg_t) + 2];
+
+  d[0] = sizeof(ship_action_msg_t);
+  d[sizeof(ship_action_msg_t)+1] = 0;
+
+  ship_action_msg_t m;
   m.msg = msg;
-  m.rocket = rocket;
+  m.ship = ship;
   m.dest = dest;
   memcpy(d+1, &m, sizeof(m));
-  
+
   Serial.print("Msg ");
-  for (int i = 0; i < sizeof(rocket_action_msg_t) + 2; i++) {
+  for (int i = 0; i < sizeof(ship_action_msg_t) + 2; i++) {
     Serial.printf("%02x|", d[i]);
   }
   Serial.println("");
   adv.addData(d);
 }
 
-void setPartActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_part_t part, uint8_t quality, dest_addr_t dest) {
-  char d[sizeof(part_action_msg_t) + 2]; 
+void setPartActionMessage(BLEAdvertisementData& adv, message_t msg, ship_part_t part, uint8_t quality, user_t dest) {
+  char d[sizeof(part_action_msg_t) + 2];
   d[0] = sizeof(part_action_msg_t);
   d[sizeof(part_action_msg_t)+1] = 0;
 
@@ -72,7 +76,7 @@ void setPartActionMessage(BLEAdvertisementData& adv, message_t msg, rocket_part_
   m.quality = quality;
   m.dest = dest;
   memcpy(d+1, &m, sizeof(m));
-  
+
   Serial.print("Msg ");
   for (int i = 0; i < sizeof(part_action_msg_t) + 2; i++) {
     Serial.printf("%02x|", d[i]);
