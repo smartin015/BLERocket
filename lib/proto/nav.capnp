@@ -1,5 +1,8 @@
 @0xa6eac0a6d72898a3;
 
+using Cxx = import "/capnp/c++.capnp";
+$Cxx.namespace("nav");
+
 const cmdNum :UInt8 = 5;
 enum Command {
   unknown @0;
@@ -50,73 +53,3 @@ enum Page {
   noOp @19;
 }
 
-enum Action {
- # Resource messages
- give @0;
- # MAKE
- # LAUNCH
-
- # Ship action messages
- race @1;
- trade @2;
- explore @3;
-
- # Status messages
- score @4;
-}
-
-enum ShipPartType {
-  hull @0;
-  thruster @1;
-  cargo @2;
-  sensors @3;
-}
-
-struct ShipPart {
-  type @0 :ShipPartType;
-  quality @1 :UInt8;
-}
-
-struct ActionMessage {
-  action @0 :Action;
-  ship @1 :Ship;
-  dest @2 :User;
-};
-
-struct PartActionMessage {
-  action @0 :Action;
-  part @1 :Part;
-  quality @2 :UInt8;
-  dest @3 :User;
-}
-
-
-#define USER_ID_BITLEN 6
-struct User {
-  id @0 :UInt8;
-}
-
-#define MAX_SHIPS 16
-struct Ship {
-  name @0 :Text;
-  parts @1 :List(ShipPart);
-  creators @2 :List(User);
-  owner @3 :User;
-}
-
-struct GamePhase {
-  id @0 :UInt8;
-  txn @1 :UInt8;
-}
-
-struct Status {
-  // Metadata
-  firmware_version @0 :UInt8;
-  user @1 :User;
-  site @2 :UInt8;
-
-  // Game state details
-  phase @3 :Phase;
-  score @4 :UInt16;
-  reputation @5 :UInt16;
-}

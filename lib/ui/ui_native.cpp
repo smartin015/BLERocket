@@ -1,8 +1,18 @@
+#ifdef UI_NATIVE
 #include "ui_native.h"
+
+#include <iostream>
 
 UINative::UINative() {
   window = std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow(sf::VideoMode(EPAPER_W_PX, EPAPER_H_PX), "Rockets N'at"));
+  window->setSize(sf::Vector2u(WINDOW_SCALE*EPAPER_W_PX, WINDOW_SCALE*EPAPER_H_PX));
   window->setKeyRepeatEnabled(false);
+  if (!font.loadFromFile("assets/arial.ttf")) {
+    std::cerr << "Could not load font" << std::endl;
+  } else {
+    std::cout << "Font loaded" << std::endl;
+  }
+  color = sf::Color::White;
 }
 
 Command UINative::nextCommand() {
@@ -38,18 +48,36 @@ Command UINative::nextCommand() {
   return Command::UNKNOWN;
 }
 
-bool UINative::render(Game * game) {
+void UINative::clear() {
+  window->clear();
+}
+
+bool UINative::flush() {
   if (!window->isOpen()) {
     return false;
   }
-
-  window->clear();
-
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
-  window->draw(shape);
-
   window->display();
-
   return true;
 }
+
+void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y) {
+  sf::Text t;
+  t.setFont(font);
+  t.setString(text);
+  t.setPosition(x, y);
+  t.setCharacterSize(size);
+  t.setColor(color);
+  window->draw(t);
+}
+
+void UINative::drawShape(const std::vector<std::pair<int, int>>& points) {
+  sf::ConvexShape convex;
+  convex.setPointCount(points.size());
+  convex.setFillColor(color);
+  for (int i = 0; i < points.size(); i++) {
+    convex.setPoint(i, sf::Vector2f(points[i].first, points[i].second));
+  }
+  window->draw(convex);
+}
+
+#endif // UI_NATIVE

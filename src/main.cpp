@@ -1,12 +1,10 @@
 #ifdef ARDUINO_LOLIN_D32_PRO
-
-// #define UI_CONSOLE
-#define UI_EPAPER
+typedef char pthread_rwlock_t;
 
 #include <Arduino.h>
 
-#include "game.h"
-#include "msg.h"
+#include "engine.h"
+#include "nav.h"
 #include "ui.h"
 
 #include "sys/time.h"
@@ -29,12 +27,12 @@ RTC_DATA_ATTR static time_t last;        // remember last boot in RTC Memory
 RTC_DATA_ATTR static uint32_t bootcount; // remember number of boots in RTC Memory
 
 // Ephemeral state information
-ui_t currentUI = UI_MAIN;
-#define MAX_DEST 5
-user_t dests[MAX_DEST];
-uint8_t num_dests = 0;
+// ui_t currentUI = UI_MAIN;
+// #define MAX_DEST 5
+// user_t dests[MAX_DEST];
+//uint8_t num_dests = 0;
 
-game_state_t state;
+//game_state_t state;
 
 void saveState() {
   Serial.println("TODO saveState");
@@ -107,10 +105,10 @@ void loop() {
   //doScan();
   //setTestMessage();
   //advertise();
-  while (Serial.available()) {
-    char c = Serial.read();
-    //handleInput(c);
-  }
+  // while (Serial.available()) {
+  //   char c = Serial.read();
+  //   //handleInput(c);
+  // }
   //maybeRender(currentUI);
 }
 

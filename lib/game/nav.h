@@ -2,8 +2,11 @@
 #define NAV_H
 
 #include <map>
-#include "actions.capnp.h"
+#include "nav.capnp.h"
 #include <stdint.h>
+
+using nav::Page;
+using nav::Command;
 
 const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
   {

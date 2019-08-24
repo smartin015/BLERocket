@@ -5,21 +5,26 @@
 #ifndef ARDUINO_LOLIN_D32_PRO
 
 #include "ui_native.h"
-#include "game.h"
-#include "actions.capnp.h"
+#include "engine.h"
+#include "nav.capnp.h"
 
 #include <string>
 #include <iostream>
 
 int main(int argc, char** argv) {
   UINative ui;
-  Game game;
-  while (ui.render(&game)) {
-    Command cmd = ui.nextCommand();
-    while (cmd != Command::UNKNOWN) {
-     game.update(cmd);
+  ui.clear();
+  Engine engine;
+  bool ok = true;
+  while (ok) {
+    nav::Command cmd = ui.nextCommand();
+    while (cmd != nav::Command::UNKNOWN) {
+     engine.update(cmd);
      cmd = ui.nextCommand();
     }
+    ui.clear();
+    ui.render(engine);
+    ok = ui.flush();
   }
 }
 

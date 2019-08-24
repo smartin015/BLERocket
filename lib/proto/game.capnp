@@ -1,5 +1,8 @@
 @0xa98c2975f96d9835;
 
+using Cxx = import "/capnp/c++.capnp";
+$Cxx.namespace("game");
+
 enum ShipPartType {
   hull @0;
   thruster @1;
@@ -16,6 +19,7 @@ struct User {
   id @0 :UInt8;
 }
 
+const maxShips :UInt8 = 5;
 struct Ship {
   name @0 :Text;
   parts @1 :List(ShipPart);
