@@ -12,7 +12,6 @@ template <class T> std::string enumStr(T e) {
   return x.asEnum().getEnumerants()[(int)e].getProto().getName().cStr();
 }
 
-
 void UI::drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center) {
   drawText("^ " + top, SZ_S, cx, cy);
   drawText("V " + bottom, SZ_S, cx, cy + SZ_M);
@@ -21,81 +20,66 @@ void UI::drawControls(const int& cx, const int& cy, const std::string& top, cons
   drawText("X " + center, SZ_S, cx, cy + 4*SZ_M);
 }
 
+std::string UI::getTitle(const Page& page) {
+  switch (page) {
+    case nav::Page::MAIN:
+      return "ROCKETS N'AT";
+    case nav::Page::SETTINGS_ENTRY:
+      return "Settings";
+    case nav::Page::TRADE_ENTRY:
+      return "Trade";
+    case nav::Page::FLEET_ENTRY:
+      return "Fleet";
+    case nav::Page::LAUNCH_ENTRY:
+      return "3...2...1...";
+    case nav::Page::SETTINGS_CHANGE_NAME:
+      return "Change Name";
+    case nav::Page::SETTINGS_SELECT_USER:
+      return "Sel User";
+    case nav::Page::SETTINGS_RESET:
+      return "Reset?";
+    case nav::Page::SHIP_DETAILS:
+      return "Details";
+    case nav::Page::SHIP_MISSION_SELECT:
+      return "Mission";
+    case nav::Page::SHIP_DEST_SELECT:
+      return "Target";
+    case nav::Page::SHIP_CONFIRM:
+      return "Y/N?";
+    case nav::Page::SHIP_SPLASH:
+      return "Launched!";
+    case nav::Page::SHIP_RENAME:
+      return "Rename";
+    case nav::Page::EVENT_SHIP_VISIT:
+      return "Visitor!";
+    case nav::Page::EVENT_PLAYER_LAUNCH:
+      return "Player launched!";
+    case nav::Page::SHIP_VISIT_DECISION:
+      return "Decide...";
+    case nav::Page::SHIP_VISIT_OUTCOME:
+      return "Result";
+    case nav::Page::LAUNCH_SPLASH:
+      return "BLAST OFF!";
+    case nav::Page::NO_OP:
+      return "NO_OP";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 void UI::render(const Engine& engine) {
-  auto nTop = nextPage(engine.getPage(), Command::UP);
-  auto nBot = nextPage(engine.getPage(), Command::DOWN);
-  auto nLft = nextPage(engine.getPage(), Command::LEFT);
-  auto nRht = nextPage(engine.getPage(), Command::RIGHT);
-  auto nCtr = nextPage(engine.getPage(), Command::ENTER);
+  auto p = engine.getPage();
+  auto nTop = nextPage(p, Command::UP);
+  auto nBot = nextPage(p, Command::DOWN);
+  auto nLft = nextPage(p, Command::LEFT);
+  auto nRht = nextPage(p, Command::RIGHT);
+  auto nCtr = nextPage(p, Command::ENTER);
   drawControls(150, 5,
     enumStr(nTop),
     enumStr(nLft),
     enumStr(nBot),
     enumStr(nRht),
     enumStr(nCtr));
-
-  switch (engine.getPage()) {
-    case nav::Page::MAIN:
-      drawText("MAIN", 18, 15, 15);
-      break;
-    case nav::Page::SETTINGS_ENTRY:
-      drawText("SETTINGS_ENTRY", 18, 15, 15);
-      break;
-    case nav::Page::TRADE_ENTRY:
-      drawText("TRADE_ENTRY", 18, 15, 15);
-      break;
-    case nav::Page::FLEET_ENTRY:
-      drawText("FLEET_ENTRY", 18, 15, 15);
-      break;
-    case nav::Page::LAUNCH_ENTRY:
-      drawText("LAUNCH_ENTRY", 18, 15, 15);
-      break;
-    case nav::Page::SETTINGS_CHANGE_NAME:
-      drawText("SETTINGS_CHANGE_NAME", 18, 15, 15);
-      break;
-    case nav::Page::SETTINGS_SELECT_USER:
-      drawText("SETTINGS_SELECT_USER", 18, 15, 15);
-      break;
-    case nav::Page::SETTINGS_RESET:
-      drawText("SETTINGS_RESET", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_DETAILS:
-      drawText("SHIP_DETAILS", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_MISSION_SELECT:
-      drawText("SHIP_MISSION_SELECT", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_DEST_SELECT:
-      drawText("SHIP_DEST_SELECT", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_CONFIRM:
-      drawText("SHIP_CONFIRM", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_SPLASH:
-      drawText("SHIP_SPLASH", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_RENAME:
-      drawText("SHIP_RENAME", 18, 15, 15);
-      break;
-    case nav::Page::EVENT_SHIP_VISIT:
-      drawText("EVENT_SHIP_VISIT", 18, 15, 15);
-      break;
-    case nav::Page::EVENT_PLAYER_LAUNCH:
-      drawText("EVENT_PLAYER_LAUNCH", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_VISIT_DECISION:
-      drawText("SHIP_VISIT_DECISION", 18, 15, 15);
-      break;
-    case nav::Page::SHIP_VISIT_OUTCOME:
-      drawText("SHIP_VISIT_OUTCOME", 18, 15, 15);
-      break;
-    case nav::Page::LAUNCH_SPLASH:
-      drawText("LAUNCH_SPLASH", 18, 15, 15);
-      break;
-    case nav::Page::NO_OP:
-      drawText("NO_OP", 18, 15, 15);
-      break;
-    default:
-      break;
-  }
+  auto title = getTitle(p);
+  drawText(title, 18, 15, 15);
 }

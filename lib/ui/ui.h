@@ -27,6 +27,7 @@ protected:
 
 private:
   void drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center);
+  std::string getTitle(const Page& page);
 };
 
 #endif // BLE_UI_H

@@ -52,10 +52,10 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
   {
     Page::LAUNCH_ENTRY,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
+      {Command::UP,     Page::MAIN},
+      {Command::DOWN,   Page::MAIN},
+      {Command::LEFT,   Page::MAIN},
+      {Command::RIGHT,  Page::MAIN},
       {Command::ENTER,  Page::LAUNCH_SPLASH}
     }
   },
@@ -66,7 +66,7 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
       {Command::DOWN,   Page::NO_OP},
       {Command::LEFT,   Page::NO_OP},
       {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::ENTER,  Page::SETTINGS_ENTRY}
     }
   },
   {
@@ -74,28 +74,28 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
     {
       {Command::UP,     Page::NO_OP},
       {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
+      {Command::LEFT,   Page::SETTINGS_ENTRY},
       {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::ENTER,  Page::MAIN}
     }
   },
   {
     Page::SETTINGS_RESET,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::UP,     Page::MAIN},
+      {Command::DOWN,   Page::MAIN},
+      {Command::LEFT,   Page::MAIN},
+      {Command::RIGHT,  Page::MAIN},
+      {Command::ENTER,  Page::MAIN}
     }
   },
   {
     Page::SHIP_DETAILS,
     {
       {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
+      {Command::DOWN,   Page::SHIP_RENAME},
+      {Command::LEFT,   Page::FLEET_ENTRY},
+      {Command::RIGHT,  Page::SHIP_MISSION_SELECT},
       {Command::ENTER,  Page::NO_OP}
     }
   },
@@ -104,9 +104,9 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
     {
       {Command::UP,     Page::NO_OP},
       {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::LEFT,   Page::SHIP_DETAILS},
+      {Command::RIGHT,  Page::SHIP_DEST_SELECT},
+      {Command::ENTER,  Page::SHIP_DEST_SELECT}
     }
   },
   {
@@ -114,9 +114,9 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
     {
       {Command::UP,     Page::NO_OP},
       {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::LEFT,   Page::SHIP_MISSION_SELECT},
+      {Command::RIGHT,  Page::SHIP_CONFIRM},
+      {Command::ENTER,  Page::SHIP_CONFIRM}
     }
   },
   {
@@ -124,19 +124,19 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
     {
       {Command::UP,     Page::NO_OP},
       {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::LEFT,   Page::SHIP_DEST_SELECT},
+      {Command::RIGHT,  Page::SHIP_SPLASH},
+      {Command::ENTER,  Page::SHIP_SPLASH}
     }
   },
   {
     Page::SHIP_SPLASH,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::UP,     Page::FLEET_ENTRY},
+      {Command::DOWN,   Page::FLEET_ENTRY},
+      {Command::LEFT,   Page::FLEET_ENTRY},
+      {Command::RIGHT,  Page::FLEET_ENTRY},
+      {Command::ENTER,  Page::FLEET_ENTRY}
     }
   },
   {
@@ -146,7 +146,7 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
       {Command::DOWN,   Page::NO_OP},
       {Command::LEFT,   Page::NO_OP},
       {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::ENTER,  Page::SHIP_DETAILS}
     }
   },
   {
@@ -192,11 +192,11 @@ const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
   {
     Page::LAUNCH_SPLASH,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command::UP,     Page::SHIP_RENAME},
+      {Command::DOWN,   Page::SHIP_RENAME},
+      {Command::LEFT,   Page::SHIP_RENAME},
+      {Command::RIGHT,  Page::SHIP_RENAME},
+      {Command::ENTER,  Page::SHIP_RENAME}
     }
   }
 };
