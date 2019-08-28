@@ -6,7 +6,7 @@ $Cxx.namespace("message");
 using Nav = import "nav.capnp";
 using Game = import "game.capnp";
 
-enum Action {
+enum Type {
  # Resource messages
  give @0;
  # MAKE
@@ -21,7 +21,15 @@ enum Action {
  score @4;
 }
 
-struct StatusMessage {
+struct Message {
+  msg :union {
+    status @0 :Status;
+    ship @1 :Ship;
+    part @2 :Part;
+  }
+}
+
+struct Status {
   # Metadata
   firmwareVersion @0 :UInt8;
   user @1 :Game.User;
@@ -33,14 +41,14 @@ struct StatusMessage {
   reputation @5 :UInt16;
 }
 
-struct ActionMessage {
-  action @0 :Action;
+struct Ship {
+  action @0 :Type;
   ship @1 :Game.Ship;
   dest @2 :Game.User;
 }
 
-struct PartActionMessage {
-  action @0 :Action;
+struct Part {
+  action @0 :Type;
   part @1 :Game.ShipPart;
   quality @2 :UInt8;
   dest @3 :Game.User;

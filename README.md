@@ -26,3 +26,5 @@ Comment out Arduino #define for word()
  ```
 
  Rm the `= default` from /usr/local/include/capnp/common.h
+
+Photos: https://photos.app.goo.gl/SCY7WTNyaFZkhxnp9

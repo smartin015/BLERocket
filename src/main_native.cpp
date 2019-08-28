@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
   while (ok) {
     nav::Command cmd = ui.nextCommand();
     while (cmd != nav::Command::UNKNOWN) {
-     engine.update(cmd);
+     engine.handleInput(cmd);
      cmd = ui.nextCommand();
     }
     ui.clear();
