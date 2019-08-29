@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include "nav.h"
+#include "comms_base.h"
 #include <stdint.h>
 #include <vector>
 #include "nav.capnp.h"
@@ -21,7 +22,7 @@ class Engine {
 public:
   Engine();
 
-  void handleInput(const nav::Command& cmd);
+  void handleInput(const nav::Command& cmd, CommsBase comms);
   void handleMessage(const message::Message& msg);
 
   nav::Page getPage() const;

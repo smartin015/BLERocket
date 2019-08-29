@@ -6,20 +6,32 @@
 
 #include "ui_native.h"
 #include "engine.h"
+#include "comms_tcp.h"
 #include "nav.capnp.h"
 
 #include <string>
 #include <iostream>
 
+UINative ui;
+Engine engine;
+CommsTCP comms;
+
 int main(int argc, char** argv) {
-  UINative ui;
   ui.clear();
-  Engine engine;
   bool ok = true;
   while (ok) {
+    comms.loop();
+
+    // Handle any inbound messages before handling user input
+    auto* msg = comms.receiveMessage();
+    if (msg != NULL) {
+      engine.handleMessage(*msg);
+      continue;
+    }
+
     nav::Command cmd = ui.nextCommand();
     while (cmd != nav::Command::UNKNOWN) {
-     engine.handleInput(cmd);
+     engine.handleInput(cmd, comms);
      cmd = ui.nextCommand();
     }
     ui.clear();

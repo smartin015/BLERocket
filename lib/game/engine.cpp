@@ -39,7 +39,7 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   return false;
 }
 
-void Engine::handleInput(const nav::Command& cmd) {
+void Engine::handleInput(const nav::Command& cmd, CommsBase comms) {
   switch (page) {
     case nav::Page::TRADE_ENTRY:
       if (cmd == nav::Command::UP) {
