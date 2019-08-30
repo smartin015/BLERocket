@@ -14,6 +14,9 @@ then
     chmod a+r $XAUTH
 fi
 
+# Optional device path as first argument, to allow for flashing to device from container.
+[[ $1 ]] && DEVMAPFLAG="--device=$1:/dev/ttyUSB0" || DEVMAPFLAG=""
+
 # Include display/NVIDIA environment vars and use
 # nvidia runtime to allow for GLX display from inside container
 RESOLVE_PATH=$(pwd)
@@ -26,4 +29,5 @@ docker run -v $RESOLVE_PATH:/volume \
   --env="XAUTHORITY=${XAUTH}" \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   -v /tmp/.docker.xauth:/tmp/.docker.xauth \
+  ${DEVMAPFLAG} \
   -it blerocket:latest
