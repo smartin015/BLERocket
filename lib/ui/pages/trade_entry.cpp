@@ -9,7 +9,7 @@ void UI::drawTradeEntry(const Engine& engine) {
     if (kv.second == 0) {
       continue;
     }
-    std::string text = enumStr((game::ShipPartType)kv.first);
+    std::string text = game::EnumNameShipPartType(kv.first);
     drawText(text + " " + std::to_string(kv.second), SZ_S,  BODY_X, BODY_Y + SZ_M*((uint8_t)kv.first));
   }
 }

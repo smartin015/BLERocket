@@ -2,201 +2,200 @@
 #define NAV_H
 
 #include <map>
-#include "nav.capnp.h"
+#include "nav_generated.h"
 #include <stdint.h>
 
-using nav::Page;
-using nav::Command;
+using namespace nav;
 
 const std::map<Page, std::map<Command, Page>> NAV_STATE_TRANSITION = {
   {
-    Page::MAIN,
+    Page_main,
     {
-      {Command::UP,     Page::LAUNCH_ENTRY},
-      {Command::DOWN,   Page::FLEET_ENTRY},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::TRADE_ENTRY},
-      {Command::ENTER,  Page::SETTINGS_ENTRY}
+      {Command_up,     Page_launchEntry},
+      {Command_down,   Page_fleetEntry},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_tradeEntry},
+      {Command_enter,  Page_settingsEntry}
     }
   },
   {
-    Page::SETTINGS_ENTRY,
+    Page_settingsEntry,
     {
-      {Command::UP,     Page::SETTINGS_RESET},
-      {Command::DOWN,   Page::SETTINGS_SELECT_USER},
-      {Command::LEFT,   Page::MAIN},
-      {Command::RIGHT,  Page::SETTINGS_CHANGE_NAME},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_settingsReset},
+      {Command_down,   Page_settingsSelectUser},
+      {Command_left,   Page_main},
+      {Command_right,  Page_settingsChangeName},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::TRADE_ENTRY,
+    Page_tradeEntry,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::MAIN},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_main},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::FLEET_ENTRY,
+    Page_fleetEntry,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::MAIN},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::SHIP_DETAILS}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_main},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_shipDetails}
     }
   },
   {
-    Page::LAUNCH_ENTRY,
+    Page_launchEntry,
     {
-      {Command::UP,     Page::MAIN},
-      {Command::DOWN,   Page::MAIN},
-      {Command::LEFT,   Page::MAIN},
-      {Command::RIGHT,  Page::MAIN},
-      {Command::ENTER,  Page::LAUNCH_SPLASH}
+      {Command_up,     Page_main},
+      {Command_down,   Page_main},
+      {Command_left,   Page_main},
+      {Command_right,  Page_main},
+      {Command_enter,  Page_launchSplash}
     }
   },
   {
-    Page::SETTINGS_CHANGE_NAME,
+    Page_settingsChangeName,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::SETTINGS_ENTRY}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_settingsEntry}
     }
   },
   {
-    Page::SETTINGS_SELECT_USER,
+    Page_settingsSelectUser,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::SETTINGS_ENTRY},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::MAIN}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_settingsEntry},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_main}
     }
   },
   {
-    Page::SETTINGS_RESET,
+    Page_settingsReset,
     {
-      {Command::UP,     Page::MAIN},
-      {Command::DOWN,   Page::MAIN},
-      {Command::LEFT,   Page::MAIN},
-      {Command::RIGHT,  Page::MAIN},
-      {Command::ENTER,  Page::MAIN}
+      {Command_up,     Page_main},
+      {Command_down,   Page_main},
+      {Command_left,   Page_main},
+      {Command_right,  Page_main},
+      {Command_enter,  Page_main}
     }
   },
   {
-    Page::SHIP_DETAILS,
+    Page_shipDetails,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::SHIP_RENAME},
-      {Command::LEFT,   Page::FLEET_ENTRY},
-      {Command::RIGHT,  Page::SHIP_MISSION_SELECT},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_shipRename},
+      {Command_left,   Page_fleetEntry},
+      {Command_right,  Page_shipMissionSelect},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::SHIP_MISSION_SELECT,
+    Page_shipMissionSelect,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::SHIP_DETAILS},
-      {Command::RIGHT,  Page::SHIP_DEST_SELECT},
-      {Command::ENTER,  Page::SHIP_DEST_SELECT}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_shipDetails},
+      {Command_right,  Page_shipDestSelect},
+      {Command_enter,  Page_shipDestSelect}
     }
   },
   {
-    Page::SHIP_DEST_SELECT,
+    Page_shipDestSelect,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::SHIP_MISSION_SELECT},
-      {Command::RIGHT,  Page::SHIP_CONFIRM},
-      {Command::ENTER,  Page::SHIP_CONFIRM}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_shipMissionSelect},
+      {Command_right,  Page_shipConfirm},
+      {Command_enter,  Page_shipConfirm}
     }
   },
   {
-    Page::SHIP_CONFIRM,
+    Page_shipConfirm,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::SHIP_DEST_SELECT},
-      {Command::RIGHT,  Page::SHIP_SPLASH},
-      {Command::ENTER,  Page::SHIP_SPLASH}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_shipDestSelect},
+      {Command_right,  Page_shipSplash},
+      {Command_enter,  Page_shipSplash}
     }
   },
   {
-    Page::SHIP_SPLASH,
+    Page_shipSplash,
     {
-      {Command::UP,     Page::FLEET_ENTRY},
-      {Command::DOWN,   Page::FLEET_ENTRY},
-      {Command::LEFT,   Page::FLEET_ENTRY},
-      {Command::RIGHT,  Page::FLEET_ENTRY},
-      {Command::ENTER,  Page::FLEET_ENTRY}
+      {Command_up,     Page_fleetEntry},
+      {Command_down,   Page_fleetEntry},
+      {Command_left,   Page_fleetEntry},
+      {Command_right,  Page_fleetEntry},
+      {Command_enter,  Page_fleetEntry}
     }
   },
   {
-    Page::SHIP_RENAME,
+    Page_shipRename,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::SHIP_DETAILS}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_shipDetails}
     }
   },
   {
-    Page::EVENT_SHIP_VISIT,
+    Page_eventShipVisit,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::EVENT_PLAYER_LAUNCH,
+    Page_eventPlayerLaunch,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::SHIP_VISIT_DECISION,
+    Page_shipVisitDecision,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::SHIP_VISIT_OUTCOME,
+    Page_shipVisitOutcome,
     {
-      {Command::UP,     Page::NO_OP},
-      {Command::DOWN,   Page::NO_OP},
-      {Command::LEFT,   Page::NO_OP},
-      {Command::RIGHT,  Page::NO_OP},
-      {Command::ENTER,  Page::NO_OP}
+      {Command_up,     Page_noOp},
+      {Command_down,   Page_noOp},
+      {Command_left,   Page_noOp},
+      {Command_right,  Page_noOp},
+      {Command_enter,  Page_noOp}
     }
   },
   {
-    Page::LAUNCH_SPLASH,
+    Page_launchSplash,
     {
-      {Command::UP,     Page::SHIP_RENAME},
-      {Command::DOWN,   Page::SHIP_RENAME},
-      {Command::LEFT,   Page::SHIP_RENAME},
-      {Command::RIGHT,  Page::SHIP_RENAME},
-      {Command::ENTER,  Page::SHIP_RENAME}
+      {Command_up,     Page_shipRename},
+      {Command_down,   Page_shipRename},
+      {Command_left,   Page_shipRename},
+      {Command_right,  Page_shipRename},
+      {Command_enter,  Page_shipRename}
     }
   }
 };

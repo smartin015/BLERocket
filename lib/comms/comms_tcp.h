@@ -3,10 +3,11 @@
 #define COMMS_TCP_H
 
 #include "comms_base.h"
+#include <string>
 
 class CommsTCP : public CommsBase {
 public:
-  CommsTCP();
+  CommsTCP(std::string address, std::string topic, std::string client_id);
   void loop();
   void sendMessage(const message::Message& msg, bool retryUntilAck);
   const message::Message* receiveMessage();

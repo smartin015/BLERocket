@@ -25,15 +25,15 @@ Command UINative::nextCommand() {
       case sf::Event::KeyPressed:
         switch (event.key.code) {
           case sf::Keyboard::Left:
-            return Command::LEFT;
+            return nav::Command_left;
           case sf::Keyboard::Right:
-            return Command::RIGHT;
+            return nav::Command_right;
           case sf::Keyboard::Up:
-            return Command::UP;
+            return nav::Command_up;
           case sf::Keyboard::Down:
-            return Command::DOWN;
+            return nav::Command_down;
           case sf::Keyboard::Return:
-            return Command::ENTER;
+            return nav::Command_enter;
           case sf::Keyboard::Escape:
             window->close();
             break;
@@ -45,7 +45,7 @@ Command UINative::nextCommand() {
         break;
     }
   }
-  return Command::UNKNOWN;
+  return nav::Command_unknown;
 }
 
 void UINative::clear() {

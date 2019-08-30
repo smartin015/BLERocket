@@ -7,14 +7,14 @@
 #include "ui_native.h"
 #include "engine.h"
 #include "comms_tcp.h"
-#include "nav.capnp.h"
+#include "nav_generated.h"
 
 #include <string>
 #include <iostream>
 
 UINative ui;
 Engine engine;
-CommsTCP comms;
+CommsTCP comms("asdf", "ghjk", "cli");
 
 int main(int argc, char** argv) {
   ui.clear();
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     }
 
     nav::Command cmd = ui.nextCommand();
-    while (cmd != nav::Command::UNKNOWN) {
+    while (cmd != nav::Command_unknown) {
      engine.handleInput(cmd, comms);
      cmd = ui.nextCommand();
     }

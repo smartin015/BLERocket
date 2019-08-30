@@ -6,7 +6,7 @@
 
 - https://docs.platformio.org/en/latest/installation.html#python-package-manager
 - https://www.sfml-dev.org/tutorials/2.5/start-linux.php
-- https://capnproto.org/install.html
+- https://capnproto.org/install.html (or maybe https://github.com/google/flatbuffers/releases ?)
 
 ## Links
 

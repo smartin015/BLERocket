@@ -13,68 +13,68 @@ void UI::drawControls(const int& cx, const int& cy, const std::string& top, cons
 void UI::render(const Engine& engine) {
   const auto p = engine.getPage();
   drawControls(150, 5,
-    engine.suppressNav(Command::UP) ? "" : enumStr(nextPage(p, Command::UP)),
-    engine.suppressNav(Command::LEFT) ? "" : enumStr(nextPage(p, Command::LEFT)),
-    engine.suppressNav(Command::DOWN) ? "" : enumStr(nextPage(p, Command::DOWN)),
-    engine.suppressNav(Command::RIGHT) ? "" : enumStr(nextPage(p, Command::RIGHT)),
-    engine.suppressNav(Command::ENTER) ? "" : enumStr(nextPage(p, Command::ENTER)));
+    engine.suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
+    engine.suppressNav(nav::Command_left) ? "" : EnumNamePage(nextPage(p, nav::Command_left)),
+    engine.suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
+    engine.suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
+    engine.suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
 
   switch (p) {
-    case nav::Page::MAIN:
+    case nav::Page_main:
       drawMain(engine);
       break;
-    case nav::Page::SETTINGS_ENTRY:
+    case nav::Page_settingsEntry:
       drawSettingsEntry(engine);
       break;
-    case nav::Page::TRADE_ENTRY:
+    case nav::Page_tradeEntry:
       drawTradeEntry(engine);
       break;
-    case nav::Page::FLEET_ENTRY:
+    case nav::Page_fleetEntry:
       drawFleetEntry(engine);
       break;
-    case nav::Page::LAUNCH_ENTRY:
+    case nav::Page_launchEntry:
       drawLaunchEntry(engine);
       break;
-    case nav::Page::SETTINGS_CHANGE_NAME:
+    case nav::Page_settingsChangeName:
       drawSettingsChangeName(engine);
       break;
-    case nav::Page::SETTINGS_SELECT_USER:
+    case nav::Page_settingsSelectUser:
       drawSettingsSelectUser(engine);
       break;
-    case nav::Page::SETTINGS_RESET:
+    case nav::Page_settingsReset:
       drawSettingsReset(engine);
       break;
-    case nav::Page::SHIP_DETAILS:
+    case nav::Page_shipDetails:
       drawShipDetails(engine);
       break;
-    case nav::Page::SHIP_MISSION_SELECT:
+    case nav::Page_shipMissionSelect:
       drawShipMissionSelect(engine);
       break;
-    case nav::Page::SHIP_DEST_SELECT:
+    case nav::Page_shipDestSelect:
       drawShipDestSelect(engine);
       break;
-    case nav::Page::SHIP_CONFIRM:
+    case nav::Page_shipConfirm:
       drawShipConfirm(engine);
       break;
-    case nav::Page::SHIP_SPLASH:
+    case nav::Page_shipSplash:
       drawShipSplash(engine);
       break;
-    case nav::Page::SHIP_RENAME:
+    case nav::Page_shipRename:
       drawShipRename(engine);
       break;
-    case nav::Page::EVENT_SHIP_VISIT:
+    case nav::Page_eventShipVisit:
       drawEventShipVisit(engine);
       break;
-    case nav::Page::EVENT_PLAYER_LAUNCH:
+    case nav::Page_eventPlayerLaunch:
       drawEventPlayerLaunch(engine);
       break;
-    case nav::Page::SHIP_VISIT_DECISION:
+    case nav::Page_shipVisitDecision:
       drawShipVisitDecision(engine);
       break;
-    case nav::Page::SHIP_VISIT_OUTCOME:
+    case nav::Page_shipVisitOutcome:
       drawShipVisitOutcome(engine);
       break;
-    case nav::Page::LAUNCH_SPLASH:
+    case nav::Page_launchSplash:
       drawLaunchSplash(engine);
       break;
     default:

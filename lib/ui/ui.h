@@ -2,7 +2,7 @@
 #define BLE_UI_H
 
 #include "engine.h"
-#include "nav.capnp.h"
+#include "nav_generated.h"
 #include <capnp/schema.h>
 #include <vector>
 
@@ -16,16 +16,6 @@
 #define TITLE_SZ 18
 #define TITLE_X 15
 #define TITLE_Y 15
-
-// implementation is in header for viz (https://stackoverflow.com/questions/10632251/undefined-reference-to-template-function)
-template <class T> std::string enumStr(const T& e) {
-  auto x = capnp::Schema::from<T>();
-  auto es = x.asEnum().getEnumerants();
-  if ((int)e > es.size()) {
-    return "UNKNOWN";
-  }
-  return es[(int)e].getProto().getName().cStr();
-}
 
 class UI {
 public:

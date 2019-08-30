@@ -1,0 +1,50 @@
+include "nav.fbs";
+include "game.fbs";
+
+namespace message;
+
+enum Type:ubyte {
+ // Resource messages
+ give = 0,
+ // MAKE
+ // LAUNCH
+
+ // Ship action messages
+ race = 1,
+ trade = 2,
+ explore = 3,
+
+ // Status messages
+ score = 4,
+}
+
+union Message {
+  status:Status,
+  ship:Ship,
+  part:Part,
+}
+
+table Status {
+  // Metadata
+  firmwareVersion:ubyte;
+  user:game.User;
+  site:ubyte;
+
+  // Game state details
+  phase:game.Phase;
+  score:ushort;
+  reputation:ushort;
+}
+
+table Ship {
+  action:Type;
+  ship:game.Ship;
+  dest:game.User;
+}
+
+table Part {
+  action:Type;
+  part:game.ShipPart;
+  quality:ubyte;
+  dest:game.User;
+}

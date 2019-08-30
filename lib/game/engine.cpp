@@ -11,10 +11,10 @@ template <class T> std::string enumStr(T e) {
 }
 
 Engine::Engine() {
-  page = nav::Page::MAIN;
-  const auto& es = capnp::Schema::from<game::ShipPartType>().asEnum().getEnumerants();
-  for (int i = 0; i < es.size(); i++) {
-    game::ShipPartType t = (game::ShipPartType) es[i].getIndex();
+  page = nav::Page_main;
+  const auto& es = game::EnumValuesShipPartType();
+  for (int i = game::ShipPartType_MIN; i <= game::ShipPartType_MAX; i++) {
+    game::ShipPartType t = es[i];
     parts[t] = 0;
   }
 }
@@ -29,7 +29,7 @@ const std::map<game::ShipPartType, uint8_t> Engine::getParts() const {
 
 bool Engine::suppressNav(const nav::Command& cmd) const {
   // Suppress non-back action on launch page if not enough parts.
-  if (page == nav::Page::LAUNCH_ENTRY && cmd != nav::Command::LEFT) {
+  if (page == nav::Page_launchEntry && cmd != nav::Command_left) {
     for (const auto& kv : parts) {
       if (kv.second == 0) {
         return true;
@@ -41,14 +41,14 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase comms) {
   switch (page) {
-    case nav::Page::TRADE_ENTRY:
-      if (cmd == nav::Command::UP) {
+    case nav::Page_tradeEntry:
+      if (cmd == nav::Command_up) {
         // Test user action to "receive" a part (really just increment)
         // TODO: Handle user input code.
-        parts[game::ShipPartType::HULL]++;
-        parts[game::ShipPartType::THRUSTER]++;
-        parts[game::ShipPartType::CARGO]++;
-        parts[game::ShipPartType::SENSORS]++;
+        parts[game::ShipPartType_hull]++;
+        parts[game::ShipPartType_thruster]++;
+        parts[game::ShipPartType_cargo]++;
+        parts[game::ShipPartType_sensors]++;
       }
       break;
     default:
@@ -60,7 +60,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase comms) {
   }
 
   auto next = nextPage(page, cmd);
-  if (next != nav::Page::NO_OP) {
+  if (next != nav::Page_noOp) {
     page = next;
   }
 }

@@ -2,7 +2,7 @@
 #ifndef UI_NATIVE_H
 #define UI_NATIVE_H
 
-#include "nav.capnp.h"
+#include "nav_generated.h"
 #include "ui.h"
 #include "engine.h"
 #include <SFML/Graphics.hpp>

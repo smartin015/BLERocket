@@ -1,0 +1,29 @@
+namespace game;
+
+enum ShipPartType:byte {
+  hull = 0,
+  thruster = 1,
+  cargo = 2,
+  sensors = 3,
+}
+
+table ShipPart {
+  type:ShipPartType;
+  quality:ubyte;
+}
+
+table User {
+  id:ubyte;
+}
+
+table Ship {
+  name:string;
+  parts:[ShipPart];
+  creators:[User];
+  owner:User;
+}
+
+table Phase {
+  id:ubyte;
+  txn:ubyte;
+}

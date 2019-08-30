@@ -5,10 +5,9 @@
 #include "comms_base.h"
 #include <stdint.h>
 #include <vector>
-#include "nav.capnp.h"
-#include "game.capnp.h"
-#include "message.capnp.h"
-#include <capnp/message.h>
+#include "nav_generated.h"
+#include "game_generated.h"
+#include "message_generated.h"
 
 // Define ShipType as POCS
 typedef struct {

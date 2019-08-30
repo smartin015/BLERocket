@@ -7,7 +7,7 @@ void UI::drawLaunchEntry(const Engine& engine) {
   const auto& parts = engine.getParts();
   for (const auto& kv : parts) {
     if (kv.second == 0) {
-      drawText("Missing part " + enumStr(kv.first), SZ_S, BODY_X, BODY_Y);
+      drawText("Missing part " + std::string(game::EnumNameShipPartType(kv.first)), SZ_S, BODY_X, BODY_Y);
       return;
     }
   }

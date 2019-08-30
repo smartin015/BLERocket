@@ -1,7 +1,7 @@
 #ifndef COMMS_BASE_H
 #define COMMS_BASE_H
 
-#include "message.capnp.h"
+#include "message_generated.h"
 
 class CommsBase {
 public:
