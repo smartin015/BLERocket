@@ -3,7 +3,6 @@
 
 #include "engine.h"
 #include "nav_generated.h"
-#include <capnp/schema.h>
 #include <vector>
 
 #define SZ_S 10

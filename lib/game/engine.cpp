@@ -2,13 +2,7 @@
 
 #include <iostream>
 #include <string.h>
-#include <capnp/schema.h>
 #include <stdlib.h>
-
-template <class T> std::string enumStr(T e) {
-  auto x = capnp::Schema::from<T>();
-  return x.asEnum().getEnumerants()[(int)e].getProto().getName().cStr();
-}
 
 Engine::Engine() {
   page = nav::Page_main;
