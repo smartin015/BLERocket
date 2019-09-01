@@ -1,3 +1,5 @@
+include "nav.fbs";
+
 namespace game;
 
 enum ShipPartType:byte {
@@ -23,3 +25,11 @@ table Phase {
   id:ubyte;
   txn:ubyte;
 }
+
+table State {
+  page:nav.Page;
+  parts:[ShipPart];
+  ships:[Ship];
+}
+
+root_type State;

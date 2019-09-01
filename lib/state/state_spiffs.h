@@ -6,8 +6,8 @@
 
 class StateSPIFFS : public State {
 public:
-  StateSPIFFS();
-  Engine load(std::string path);
+  StateSPIFFS(std::string path);
+  Engine load();
   bool save(const Engine& engine);
 };
 

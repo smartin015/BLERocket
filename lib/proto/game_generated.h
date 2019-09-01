@@ -6,6 +6,8 @@
 
 #include "flatbuffers/flatbuffers.h"
 
+#include "nav_generated.h"
+
 namespace game {
 
 struct ShipPart;
@@ -16,6 +18,9 @@ struct ShipT;
 
 struct Phase;
 struct PhaseT;
+
+struct State;
+struct StateT;
 
 enum ShipPartType {
   ShipPartType_hull = 0,
@@ -293,6 +298,100 @@ inline flatbuffers::Offset<Phase> CreatePhase(
 
 flatbuffers::Offset<Phase> CreatePhase(flatbuffers::FlatBufferBuilder &_fbb, const PhaseT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
+struct StateT : public flatbuffers::NativeTable {
+  typedef State TableType;
+  nav::Page page;
+  std::vector<std::unique_ptr<ShipPartT>> parts;
+  std::vector<std::unique_ptr<ShipT>> ships;
+  StateT()
+      : page(nav::Page_main) {
+  }
+};
+
+struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef StateT NativeTableType;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_PAGE = 4,
+    VT_PARTS = 6,
+    VT_SHIPS = 8
+  };
+  nav::Page page() const {
+    return static_cast<nav::Page>(GetField<int8_t>(VT_PAGE, 0));
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<ShipPart>> *parts() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<ShipPart>> *>(VT_PARTS);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Ship>> *ships() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Ship>> *>(VT_SHIPS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int8_t>(verifier, VT_PAGE) &&
+           VerifyOffset(verifier, VT_PARTS) &&
+           verifier.VerifyVector(parts()) &&
+           verifier.VerifyVectorOfTables(parts()) &&
+           VerifyOffset(verifier, VT_SHIPS) &&
+           verifier.VerifyVector(ships()) &&
+           verifier.VerifyVectorOfTables(ships()) &&
+           verifier.EndTable();
+  }
+  StateT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(StateT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<State> Pack(flatbuffers::FlatBufferBuilder &_fbb, const StateT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct StateBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_page(nav::Page page) {
+    fbb_.AddElement<int8_t>(State::VT_PAGE, static_cast<int8_t>(page), 0);
+  }
+  void add_parts(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ShipPart>>> parts) {
+    fbb_.AddOffset(State::VT_PARTS, parts);
+  }
+  void add_ships(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Ship>>> ships) {
+    fbb_.AddOffset(State::VT_SHIPS, ships);
+  }
+  explicit StateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  StateBuilder &operator=(const StateBuilder &);
+  flatbuffers::Offset<State> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<State>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<State> CreateState(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    nav::Page page = nav::Page_main,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ShipPart>>> parts = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Ship>>> ships = 0) {
+  StateBuilder builder_(_fbb);
+  builder_.add_ships(ships);
+  builder_.add_parts(parts);
+  builder_.add_page(page);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<State> CreateStateDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    nav::Page page = nav::Page_main,
+    const std::vector<flatbuffers::Offset<ShipPart>> *parts = nullptr,
+    const std::vector<flatbuffers::Offset<Ship>> *ships = nullptr) {
+  auto parts__ = parts ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>>(*parts) : 0;
+  auto ships__ = ships ? _fbb.CreateVector<flatbuffers::Offset<Ship>>(*ships) : 0;
+  return game::CreateState(
+      _fbb,
+      page,
+      parts__,
+      ships__);
+}
+
+flatbuffers::Offset<State> CreateState(flatbuffers::FlatBufferBuilder &_fbb, const StateT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
 inline ShipPartT *ShipPart::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
   auto _o = new ShipPartT();
   UnPackTo(_o, _resolver);
@@ -384,6 +483,74 @@ inline flatbuffers::Offset<Phase> CreatePhase(flatbuffers::FlatBufferBuilder &_f
       _fbb,
       _id,
       _txn);
+}
+
+inline StateT *State::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = new StateT();
+  UnPackTo(_o, _resolver);
+  return _o;
+}
+
+inline void State::UnPackTo(StateT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = page(); _o->page = _e; };
+  { auto _e = parts(); if (_e) { _o->parts.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->parts[_i] = std::unique_ptr<ShipPartT>(_e->Get(_i)->UnPack(_resolver)); } } };
+  { auto _e = ships(); if (_e) { _o->ships.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->ships[_i] = std::unique_ptr<ShipT>(_e->Get(_i)->UnPack(_resolver)); } } };
+}
+
+inline flatbuffers::Offset<State> State::Pack(flatbuffers::FlatBufferBuilder &_fbb, const StateT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateState(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<State> CreateState(flatbuffers::FlatBufferBuilder &_fbb, const StateT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const StateT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _page = _o->page;
+  auto _parts = _o->parts.size() ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>> (_o->parts.size(), [](size_t i, _VectorArgs *__va) { return CreateShipPart(*__va->__fbb, __va->__o->parts[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _ships = _o->ships.size() ? _fbb.CreateVector<flatbuffers::Offset<Ship>> (_o->ships.size(), [](size_t i, _VectorArgs *__va) { return CreateShip(*__va->__fbb, __va->__o->ships[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return game::CreateState(
+      _fbb,
+      _page,
+      _parts,
+      _ships);
+}
+
+inline const game::State *GetState(const void *buf) {
+  return flatbuffers::GetRoot<game::State>(buf);
+}
+
+inline const game::State *GetSizePrefixedState(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<game::State>(buf);
+}
+
+inline bool VerifyStateBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<game::State>(nullptr);
+}
+
+inline bool VerifySizePrefixedStateBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifySizePrefixedBuffer<game::State>(nullptr);
+}
+
+inline void FinishStateBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<game::State> root) {
+  fbb.Finish(root);
+}
+
+inline void FinishSizePrefixedStateBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<game::State> root) {
+  fbb.FinishSizePrefixed(root);
+}
+
+inline std::unique_ptr<StateT> UnPackState(
+    const void *buf,
+    const flatbuffers::resolver_function_t *res = nullptr) {
+  return std::unique_ptr<StateT>(GetState(buf)->UnPack(res));
 }
 
 }  // namespace game

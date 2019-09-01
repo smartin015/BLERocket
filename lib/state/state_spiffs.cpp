@@ -2,11 +2,11 @@
 
 #include "state_spiffs.h"
 
-StateSPIFFS::StateSPIFFS() {
+StateSPIFFS::StateSPIFFS(std::string path) {
 
 }
 
-Engine StateSPIFFS::load(std::string path) {
+Engine StateSPIFFS::load() {
 
 }
 

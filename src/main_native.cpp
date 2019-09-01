@@ -16,11 +16,11 @@
 UINative ui;
 Engine engine;
 CommsMQ comms;
-StateFS state;
+StateFS state("./game.save");
 
 void setup() {
   ui.clear();
-  engine = state.load("./test.save");
+  engine = state.load();
 }
 
 bool loop() {
@@ -46,6 +46,7 @@ bool loop() {
 int main(int argc, char** argv) {
   setup();
   while (loop()) {}
+  state.save(engine);
 }
 
 #endif // !ARDUINO_LOLIN_D32_PRO

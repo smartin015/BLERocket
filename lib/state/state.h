@@ -5,7 +5,7 @@
 
 class State {
 public:
-  virtual Engine load(std::string path) = 0;
+  virtual Engine load() = 0;
   virtual bool save(const Engine& engine) = 0;
 };
 

@@ -9,32 +9,19 @@
 #include "game_generated.h"
 #include "message_generated.h"
 
-// Define ShipType as POCS
-typedef struct {
-  std::string name;
-  std::map<game::ShipPartType, uint8_t> parts;
-  std::vector<uint8_t> creators;
-  uint8_t owner;
-} ShipType;
-
 class Engine {
 public:
-  Engine();
+  Engine(const game::State* gameState);
+  Engine() {};
 
   void handleInput(const nav::Command& cmd, CommsBase& comms);
   void handleMessage(const message::MessageT& msg);
-
-  nav::Page getPage() const;
-  const std::map<game::ShipPartType, uint8_t> getParts() const;
-
   bool suppressNav(const nav::Command& cmd) const;
+  nav::Page getPage() const;
+  const game::StateT* getState() const;
 
 private:
-  nav::Page page;
-  // game::ShipPart
-  std::map<game::ShipPartType, uint8_t> parts;
-  // game::Ship
-  std::vector<ShipType> ships;
+  game::StateT state;
 };
 
 #endif // ENGINE_H

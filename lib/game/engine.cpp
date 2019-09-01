@@ -4,28 +4,23 @@
 #include <string.h>
 #include <stdlib.h>
 
-Engine::Engine() {
-  page = nav::Page_main;
-  const auto& es = game::EnumValuesShipPartType();
-  for (int i = game::ShipPartType_MIN; i <= game::ShipPartType_MAX; i++) {
-    game::ShipPartType t = es[i];
-    parts[t] = 0;
-  }
+Engine::Engine(const game::State* gameState) {
+  gameState->UnPackTo(&state, NULL);
 }
+
+const game::StateT* Engine::getState() const {
+  return &state;
+};
 
 nav::Page Engine::getPage() const {
-  return page;
-}
-
-const std::map<game::ShipPartType, uint8_t> Engine::getParts() const {
-  return parts;
+  return state.page;
 }
 
 bool Engine::suppressNav(const nav::Command& cmd) const {
   // Suppress non-back action on launch page if not enough parts.
-  if (page == nav::Page_launchEntry && cmd != nav::Command_left) {
-    for (const auto& kv : parts) {
-      if (kv.second == 0) {
+  if (state.page == nav::Page_launchEntry && cmd != nav::Command_left) {
+    for (const auto& p : state.parts) {
+      if (p->quality == 0) {
         return true;
       }
     }
@@ -34,15 +29,18 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
 }
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
-  switch (page) {
+  switch (state.page) {
     case nav::Page_tradeEntry:
       if (cmd == nav::Command_up) {
         // Test user action to "receive" a part (really just increment)
         // TODO: Handle user input code.
-        parts[game::ShipPartType_hull]++;
-        parts[game::ShipPartType_thruster]++;
-        parts[game::ShipPartType_cargo]++;
-        parts[game::ShipPartType_sensors]++;
+        if (state.parts.size() == 0) {
+          for (int i = game::ShipPartType_MIN; i <= game::ShipPartType_MAX; i++) {
+            // state.parts.push_back(game::ShipPartT());
+            // state.parts[i]->type = (game::ShipPartType) i;
+            // state.parts[i]->quality = 1;
+          }
+        }
       } else if (cmd == nav::Command_down) {
         // Send example status message
         message::MessageT msg;
@@ -84,9 +82,9 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
     return;
   }
 
-  auto next = nextPage(page, cmd);
+  auto next = nextPage(state.page, cmd);
   if (next != nav::Page_noOp) {
-    page = next;
+    state.page = next;
   }
 }
 

@@ -3,12 +3,15 @@
 #define STATE_FS_H
 
 #include "state.h"
+#include <string.h>
 
 class StateFS : public State {
 public:
-  StateFS();
-  Engine load(std::string path);
+  StateFS(std::string path);
+  Engine load();
   bool save(const Engine& engine);
+private:
+  std::string path;
 };
 
 #endif // STATE_FS_H
