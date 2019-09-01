@@ -31,14 +31,13 @@ Engine StateFS::load() {
 }
 
 bool StateFS::save(const Engine& engine) {
-  flatbuffers::FlatBufferBuilder fbb;
-
   std::ofstream file(path, std::ofstream::binary);
   if (!file.is_open()) {
     std::cerr << "Could not open file " << path << " to save state." << std::endl;
     return false;
   }
 
+  flatbuffers::FlatBufferBuilder fbb;
   fbb.Finish(game::State::Pack(fbb, engine.getState(), NULL));
   file.write((const char*) fbb.GetBufferPointer(), fbb.GetSize());
   file.close();

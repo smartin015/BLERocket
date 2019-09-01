@@ -10,12 +10,12 @@
 UIEPaper ui;
 Engine engine;
 CommsBLE comms;
-StateSPIFFS state;
+StateSPIFFS state("./test.save");
 
 void setup() {
   Serial.begin(115200);
   ui.clear();
-  engine = state.load("./test.save");
+  engine = state.load();
 }
 
 void loop() {

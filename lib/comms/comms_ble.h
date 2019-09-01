@@ -3,7 +3,6 @@
 #define COMMS_BLE_H
 
 #include <BLEDevice.h>
-#include <BLEUtils.h>
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
 
