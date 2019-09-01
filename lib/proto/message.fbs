@@ -19,7 +19,7 @@ enum Type:ubyte {
 }
 
 union UMessage {
-  status:Status,
+  status:game.Status,
   ship:Ship,
   part:Part,
 }
@@ -28,23 +28,10 @@ table Message {
   oneof:UMessage;
 }
 
-table Status {
-  // Metadata
-  firmwareVersion:ubyte;
-  user:ubyte;
-  site:ubyte;
-
-  // Game state details
-  phase_id:ubyte;
-  phase_txn:ubyte;
-  score:ushort;
-  reputation:ushort;
-}
-
 table Ship {
   action:Type;
   ship:game.Ship;
-  dest:ubyte;
+  dest_user:ubyte;
 }
 
 table Part {

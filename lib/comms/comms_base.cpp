@@ -6,13 +6,13 @@ void CommsBase::packMessage(const message::MessageT& msg, adv_packet_t& p) {
   p[0] = msg.oneof.type;
   switch (msg.oneof.type) {
     case message::UMessage_status:
-      *((message::StatusT*) &p[1]) = *msg.oneof.Asstatus();
+      *((game::StatusT*) &p[1]) = *msg.oneof.Asstatus();
       break;
     case message::UMessage_ship:
       {
         auto s = msg.oneof.Asship();
         p[1] = s->action;
-        p[2] = s->dest;
+        p[2] = s->dest_user;
         p[3] = s->ship->owner;
         // *(&p[4]) = s->ship->name.c_str();
         // TODO creators
@@ -38,9 +38,9 @@ const message::MessageT CommsBase::unpackMessage(const adv_packet_t& p) {
   switch ((message::UMessage) p[0]) {
     case message::UMessage_status:
       {
-        result.oneof.Set<message::StatusT>(message::StatusT());
+        result.oneof.Set<game::StatusT>(game::StatusT());
         auto s = result.oneof.Asstatus();
-        *s = *((message::StatusT*) &p[1]);
+        *s = *((game::StatusT*) &p[1]);
       }
       break;
     case message::UMessage_ship:
@@ -48,7 +48,7 @@ const message::MessageT CommsBase::unpackMessage(const adv_packet_t& p) {
         result.oneof.Set<message::ShipT>(message::ShipT());
         auto s = result.oneof.Asship();
         s->action = (message::Type) p[1];
-        s->dest = p[2];
+        s->dest_user = p[2];
         s->ship.reset(new game::ShipT());
         s->ship->owner = p[3];
         // s->ship->name = p[4];
@@ -96,5 +96,9 @@ const message::MessageT CommsBase::receiveMessage() {
   std::cerr << "unpacking" << std::endl;
   auto result = unpackMessage(buffer);
   std::cerr << "Got " << message::EnumNameUMessage(result.oneof.type) << " message" << std::endl;
+
+  // Ignore Ship / Part actions not meant for us
+
+
   return result;
 }

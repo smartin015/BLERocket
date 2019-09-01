@@ -14,9 +14,6 @@ namespace message {
 struct Message;
 struct MessageT;
 
-struct Status;
-struct StatusT;
-
 struct Ship;
 struct ShipT;
 
@@ -102,7 +99,7 @@ template<typename T> struct UMessageTraits {
   static const UMessage enum_value = UMessage_NONE;
 };
 
-template<> struct UMessageTraits<Status> {
+template<> struct UMessageTraits<game::Status> {
   static const UMessage enum_value = UMessage_status;
 };
 
@@ -146,13 +143,13 @@ struct UMessageUnion {
   static void *UnPack(const void *obj, UMessage type, const flatbuffers::resolver_function_t *resolver);
   flatbuffers::Offset<void> Pack(flatbuffers::FlatBufferBuilder &_fbb, const flatbuffers::rehasher_function_t *_rehasher = nullptr) const;
 
-  StatusT *Asstatus() {
+  game::StatusT *Asstatus() {
     return type == UMessage_status ?
-      reinterpret_cast<StatusT *>(value) : nullptr;
+      reinterpret_cast<game::StatusT *>(value) : nullptr;
   }
-  const StatusT *Asstatus() const {
+  const game::StatusT *Asstatus() const {
     return type == UMessage_status ?
-      reinterpret_cast<const StatusT *>(value) : nullptr;
+      reinterpret_cast<const game::StatusT *>(value) : nullptr;
   }
   ShipT *Asship() {
     return type == UMessage_ship ?
@@ -195,8 +192,8 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return GetPointer<const void *>(VT_ONEOF);
   }
   template<typename T> const T *oneof_as() const;
-  const Status *oneof_as_status() const {
-    return oneof_type() == UMessage_status ? static_cast<const Status *>(oneof()) : nullptr;
+  const game::Status *oneof_as_status() const {
+    return oneof_type() == UMessage_status ? static_cast<const game::Status *>(oneof()) : nullptr;
   }
   const Ship *oneof_as_ship() const {
     return oneof_type() == UMessage_ship ? static_cast<const Ship *>(oneof()) : nullptr;
@@ -216,7 +213,7 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   static flatbuffers::Offset<Message> Pack(flatbuffers::FlatBufferBuilder &_fbb, const MessageT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
-template<> inline const Status *Message::oneof_as<Status>() const {
+template<> inline const game::Status *Message::oneof_as<game::Status>() const {
   return oneof_as_status();
 }
 
@@ -261,140 +258,14 @@ inline flatbuffers::Offset<Message> CreateMessage(
 
 flatbuffers::Offset<Message> CreateMessage(flatbuffers::FlatBufferBuilder &_fbb, const MessageT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
-struct StatusT : public flatbuffers::NativeTable {
-  typedef Status TableType;
-  uint8_t firmwareVersion;
-  uint8_t user;
-  uint8_t site;
-  uint8_t phase_id;
-  uint8_t phase_txn;
-  uint16_t score;
-  uint16_t reputation;
-  StatusT()
-      : firmwareVersion(0),
-        user(0),
-        site(0),
-        phase_id(0),
-        phase_txn(0),
-        score(0),
-        reputation(0) {
-  }
-};
-
-struct Status FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  typedef StatusT NativeTableType;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_FIRMWAREVERSION = 4,
-    VT_USER = 6,
-    VT_SITE = 8,
-    VT_PHASE_ID = 10,
-    VT_PHASE_TXN = 12,
-    VT_SCORE = 14,
-    VT_REPUTATION = 16
-  };
-  uint8_t firmwareVersion() const {
-    return GetField<uint8_t>(VT_FIRMWAREVERSION, 0);
-  }
-  uint8_t user() const {
-    return GetField<uint8_t>(VT_USER, 0);
-  }
-  uint8_t site() const {
-    return GetField<uint8_t>(VT_SITE, 0);
-  }
-  uint8_t phase_id() const {
-    return GetField<uint8_t>(VT_PHASE_ID, 0);
-  }
-  uint8_t phase_txn() const {
-    return GetField<uint8_t>(VT_PHASE_TXN, 0);
-  }
-  uint16_t score() const {
-    return GetField<uint16_t>(VT_SCORE, 0);
-  }
-  uint16_t reputation() const {
-    return GetField<uint16_t>(VT_REPUTATION, 0);
-  }
-  bool Verify(flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_FIRMWAREVERSION) &&
-           VerifyField<uint8_t>(verifier, VT_USER) &&
-           VerifyField<uint8_t>(verifier, VT_SITE) &&
-           VerifyField<uint8_t>(verifier, VT_PHASE_ID) &&
-           VerifyField<uint8_t>(verifier, VT_PHASE_TXN) &&
-           VerifyField<uint16_t>(verifier, VT_SCORE) &&
-           VerifyField<uint16_t>(verifier, VT_REPUTATION) &&
-           verifier.EndTable();
-  }
-  StatusT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
-  void UnPackTo(StatusT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
-  static flatbuffers::Offset<Status> Pack(flatbuffers::FlatBufferBuilder &_fbb, const StatusT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
-};
-
-struct StatusBuilder {
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_firmwareVersion(uint8_t firmwareVersion) {
-    fbb_.AddElement<uint8_t>(Status::VT_FIRMWAREVERSION, firmwareVersion, 0);
-  }
-  void add_user(uint8_t user) {
-    fbb_.AddElement<uint8_t>(Status::VT_USER, user, 0);
-  }
-  void add_site(uint8_t site) {
-    fbb_.AddElement<uint8_t>(Status::VT_SITE, site, 0);
-  }
-  void add_phase_id(uint8_t phase_id) {
-    fbb_.AddElement<uint8_t>(Status::VT_PHASE_ID, phase_id, 0);
-  }
-  void add_phase_txn(uint8_t phase_txn) {
-    fbb_.AddElement<uint8_t>(Status::VT_PHASE_TXN, phase_txn, 0);
-  }
-  void add_score(uint16_t score) {
-    fbb_.AddElement<uint16_t>(Status::VT_SCORE, score, 0);
-  }
-  void add_reputation(uint16_t reputation) {
-    fbb_.AddElement<uint16_t>(Status::VT_REPUTATION, reputation, 0);
-  }
-  explicit StatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  StatusBuilder &operator=(const StatusBuilder &);
-  flatbuffers::Offset<Status> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<Status>(end);
-    return o;
-  }
-};
-
-inline flatbuffers::Offset<Status> CreateStatus(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t firmwareVersion = 0,
-    uint8_t user = 0,
-    uint8_t site = 0,
-    uint8_t phase_id = 0,
-    uint8_t phase_txn = 0,
-    uint16_t score = 0,
-    uint16_t reputation = 0) {
-  StatusBuilder builder_(_fbb);
-  builder_.add_reputation(reputation);
-  builder_.add_score(score);
-  builder_.add_phase_txn(phase_txn);
-  builder_.add_phase_id(phase_id);
-  builder_.add_site(site);
-  builder_.add_user(user);
-  builder_.add_firmwareVersion(firmwareVersion);
-  return builder_.Finish();
-}
-
-flatbuffers::Offset<Status> CreateStatus(flatbuffers::FlatBufferBuilder &_fbb, const StatusT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
-
 struct ShipT : public flatbuffers::NativeTable {
   typedef Ship TableType;
   Type action;
   std::unique_ptr<game::ShipT> ship;
-  uint8_t dest;
+  uint8_t dest_user;
   ShipT()
       : action(Type_give),
-        dest(0) {
+        dest_user(0) {
   }
 };
 
@@ -403,7 +274,7 @@ struct Ship FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ACTION = 4,
     VT_SHIP = 6,
-    VT_DEST = 8
+    VT_DEST_USER = 8
   };
   Type action() const {
     return static_cast<Type>(GetField<uint8_t>(VT_ACTION, 0));
@@ -411,15 +282,15 @@ struct Ship FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const game::Ship *ship() const {
     return GetPointer<const game::Ship *>(VT_SHIP);
   }
-  uint8_t dest() const {
-    return GetField<uint8_t>(VT_DEST, 0);
+  uint8_t dest_user() const {
+    return GetField<uint8_t>(VT_DEST_USER, 0);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_ACTION) &&
            VerifyOffset(verifier, VT_SHIP) &&
            verifier.VerifyTable(ship()) &&
-           VerifyField<uint8_t>(verifier, VT_DEST) &&
+           VerifyField<uint8_t>(verifier, VT_DEST_USER) &&
            verifier.EndTable();
   }
   ShipT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -436,8 +307,8 @@ struct ShipBuilder {
   void add_ship(flatbuffers::Offset<game::Ship> ship) {
     fbb_.AddOffset(Ship::VT_SHIP, ship);
   }
-  void add_dest(uint8_t dest) {
-    fbb_.AddElement<uint8_t>(Ship::VT_DEST, dest, 0);
+  void add_dest_user(uint8_t dest_user) {
+    fbb_.AddElement<uint8_t>(Ship::VT_DEST_USER, dest_user, 0);
   }
   explicit ShipBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -455,10 +326,10 @@ inline flatbuffers::Offset<Ship> CreateShip(
     flatbuffers::FlatBufferBuilder &_fbb,
     Type action = Type_give,
     flatbuffers::Offset<game::Ship> ship = 0,
-    uint8_t dest = 0) {
+    uint8_t dest_user = 0) {
   ShipBuilder builder_(_fbb);
   builder_.add_ship(ship);
-  builder_.add_dest(dest);
+  builder_.add_dest_user(dest_user);
   builder_.add_action(action);
   return builder_.Finish();
 }
@@ -572,50 +443,6 @@ inline flatbuffers::Offset<Message> CreateMessage(flatbuffers::FlatBufferBuilder
       _oneof);
 }
 
-inline StatusT *Status::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new StatusT();
-  UnPackTo(_o, _resolver);
-  return _o;
-}
-
-inline void Status::UnPackTo(StatusT *_o, const flatbuffers::resolver_function_t *_resolver) const {
-  (void)_o;
-  (void)_resolver;
-  { auto _e = firmwareVersion(); _o->firmwareVersion = _e; };
-  { auto _e = user(); _o->user = _e; };
-  { auto _e = site(); _o->site = _e; };
-  { auto _e = phase_id(); _o->phase_id = _e; };
-  { auto _e = phase_txn(); _o->phase_txn = _e; };
-  { auto _e = score(); _o->score = _e; };
-  { auto _e = reputation(); _o->reputation = _e; };
-}
-
-inline flatbuffers::Offset<Status> Status::Pack(flatbuffers::FlatBufferBuilder &_fbb, const StatusT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
-  return CreateStatus(_fbb, _o, _rehasher);
-}
-
-inline flatbuffers::Offset<Status> CreateStatus(flatbuffers::FlatBufferBuilder &_fbb, const StatusT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
-  (void)_rehasher;
-  (void)_o;
-  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const StatusT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _firmwareVersion = _o->firmwareVersion;
-  auto _user = _o->user;
-  auto _site = _o->site;
-  auto _phase_id = _o->phase_id;
-  auto _phase_txn = _o->phase_txn;
-  auto _score = _o->score;
-  auto _reputation = _o->reputation;
-  return message::CreateStatus(
-      _fbb,
-      _firmwareVersion,
-      _user,
-      _site,
-      _phase_id,
-      _phase_txn,
-      _score,
-      _reputation);
-}
-
 inline ShipT *Ship::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
   auto _o = new ShipT();
   UnPackTo(_o, _resolver);
@@ -627,7 +454,7 @@ inline void Ship::UnPackTo(ShipT *_o, const flatbuffers::resolver_function_t *_r
   (void)_resolver;
   { auto _e = action(); _o->action = _e; };
   { auto _e = ship(); if (_e) _o->ship = std::unique_ptr<game::ShipT>(_e->UnPack(_resolver)); };
-  { auto _e = dest(); _o->dest = _e; };
+  { auto _e = dest_user(); _o->dest_user = _e; };
 }
 
 inline flatbuffers::Offset<Ship> Ship::Pack(flatbuffers::FlatBufferBuilder &_fbb, const ShipT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -640,12 +467,12 @@ inline flatbuffers::Offset<Ship> CreateShip(flatbuffers::FlatBufferBuilder &_fbb
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const ShipT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _action = _o->action;
   auto _ship = _o->ship ? CreateShip(_fbb, _o->ship.get(), _rehasher) : 0;
-  auto _dest = _o->dest;
+  auto _dest_user = _o->dest_user;
   return message::CreateShip(
       _fbb,
       _action,
       _ship,
-      _dest);
+      _dest_user);
 }
 
 inline PartT *Part::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -686,7 +513,7 @@ inline bool VerifyUMessage(flatbuffers::Verifier &verifier, const void *obj, UMe
       return true;
     }
     case UMessage_status: {
-      auto ptr = reinterpret_cast<const Status *>(obj);
+      auto ptr = reinterpret_cast<const game::Status *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case UMessage_ship: {
@@ -716,7 +543,7 @@ inline bool VerifyUMessageVector(flatbuffers::Verifier &verifier, const flatbuff
 inline void *UMessageUnion::UnPack(const void *obj, UMessage type, const flatbuffers::resolver_function_t *resolver) {
   switch (type) {
     case UMessage_status: {
-      auto ptr = reinterpret_cast<const Status *>(obj);
+      auto ptr = reinterpret_cast<const game::Status *>(obj);
       return ptr->UnPack(resolver);
     }
     case UMessage_ship: {
@@ -734,7 +561,7 @@ inline void *UMessageUnion::UnPack(const void *obj, UMessage type, const flatbuf
 inline flatbuffers::Offset<void> UMessageUnion::Pack(flatbuffers::FlatBufferBuilder &_fbb, const flatbuffers::rehasher_function_t *_rehasher) const {
   switch (type) {
     case UMessage_status: {
-      auto ptr = reinterpret_cast<const StatusT *>(value);
+      auto ptr = reinterpret_cast<const game::StatusT *>(value);
       return CreateStatus(_fbb, ptr, _rehasher).Union();
     }
     case UMessage_ship: {
@@ -752,7 +579,7 @@ inline flatbuffers::Offset<void> UMessageUnion::Pack(flatbuffers::FlatBufferBuil
 inline UMessageUnion::UMessageUnion(const UMessageUnion &u) FLATBUFFERS_NOEXCEPT : type(u.type), value(nullptr) {
   switch (type) {
     case UMessage_status: {
-      value = new StatusT(*reinterpret_cast<StatusT *>(u.value));
+      value = new game::StatusT(*reinterpret_cast<game::StatusT *>(u.value));
       break;
     }
     case UMessage_ship: {
@@ -771,7 +598,7 @@ inline UMessageUnion::UMessageUnion(const UMessageUnion &u) FLATBUFFERS_NOEXCEPT
 inline void UMessageUnion::Reset() {
   switch (type) {
     case UMessage_status: {
-      auto ptr = reinterpret_cast<StatusT *>(value);
+      auto ptr = reinterpret_cast<game::StatusT *>(value);
       delete ptr;
       break;
     }

@@ -4,8 +4,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-Engine::Engine(const game::State* gameState) {
-  gameState->UnPackTo(&state, NULL);
+Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
+  if (gameState != NULL) {
+    gameState->UnPackTo(&state, NULL);
+  }
+  if (metadata != NULL) {
+    metadata->UnPackTo(&data, NULL);
+  }
 }
 
 const game::StateT* Engine::getState() const {
@@ -44,7 +49,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
       } else if (cmd == nav::Command_down) {
         // Send example status message
         message::MessageT msg;
-        msg.oneof.Set<message::StatusT>(message::StatusT());
+        msg.oneof.Set<game::StatusT>(game::StatusT());
         auto* stat = msg.oneof.Asstatus();
         stat->firmwareVersion = 5;
         stat->user = 123;
@@ -57,7 +62,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
         msg.oneof.Set<message::ShipT>(message::ShipT());
         auto* s = msg.oneof.Asship();
         s->action = message::Type_give;
-        s->dest = 1;
+        s->dest_user = 1;
         s->ship.reset(new game::ShipT());
         s->ship->owner = 2;
         comms.sendMessage(msg, false);
@@ -107,7 +112,7 @@ void Engine::handleMessage(const message::MessageT& msg) {
         auto m = msg.oneof.Asship();
         std::cout << "Ship: \n"
           << "action " << message::EnumNameType(m->action) << "\n"
-          << "destination " << uint16_t(m->dest) << "\n"
+          << "destination " << uint16_t(m->dest_user) << "\n"
           //<< "name " << m->ship->name << "\n"
           //<< "owner " << uint16_t(m->ship->owner) << "\n";
           << "parts TODO" << "\n"

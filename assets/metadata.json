@@ -1,0 +1,17 @@
+{
+  users: [
+    {
+      id:0,
+      name: "Scott Martin",
+      username: "semartin",
+      mac: "11:22:33:44"
+    }
+  ],
+  sites: [
+    {
+      id: 0,
+      name: "Pittsburgh",
+      shortname: "PIT"
+    }
+  ]
+}

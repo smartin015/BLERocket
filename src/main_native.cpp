@@ -16,7 +16,7 @@
 UINative ui;
 Engine engine;
 CommsMQ comms;
-StateFS state("./game.save");
+StateFS state("./data/game.save", "./data/metadata.bin");
 
 void setup() {
   ui.clear();

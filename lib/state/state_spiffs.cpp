@@ -2,35 +2,44 @@
 
 #include "state_spiffs.h"
 
-StateSPIFFS::StateSPIFFS(std::string path) {
-  this->path = path;
+StateSPIFFS::StateSPIFFS(std::string savePath, std::string metaPath) {
+  this->savePath = savePath;
+  this->metaPath = metaPath;
   if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
     std::cerr << "SPIFFS Mount Failed" << std::endl;
     return;
   }
 }
 
-Engine StateSPIFFS::load() {
+std::vector<char> readFile(std::string path) {
   File file = SPIFFS.open(path.c_str());
   if(!file || file.isDirectory()){
     std::cerr << "failed to open file for reading" << std::endl;
-    return Engine();
+    return {};
   }
   std::vector<char> buffer(file.size());
   if (!file.readBytes(buffer.data(), file.size())) {
     std::cerr << "Failed to read from path " << path << std::endl;
-    return Engine();
+    return {};
   }
   file.close();
-  auto engine = Engine(game::GetState(buffer.data()));
-  std::cout << "Loaded game state from " << path << std::endl;
+  std::cout << "Loaded from " << path << std::endl;
+  return buffer;
+}
+
+Engine StateSPIFFS::load() {
+  std::vector<char> stateBuf = readFile(savePath);
+  std::vector<char> metaBuf = readFile(metaPath);
+  auto engine = Engine(
+    (stateBuf.size()) ? game::GetState(stateBuf.data()) : NULL,
+    (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);
   return engine;
 }
 
 bool StateSPIFFS::save(const Engine& engine) {
-  File file = SPIFFS.open(path.c_str(), FILE_WRITE);
+  File file = SPIFFS.open(savePath.c_str(), FILE_WRITE);
   if(!file){
-    std::cerr << "failed to open file " << path << " for writing" << std::endl;
+    std::cerr << "failed to open file " << savePath << " for writing" << std::endl;
     return false;
   }
   flatbuffers::FlatBufferBuilder fbb;

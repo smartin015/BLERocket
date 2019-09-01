@@ -5,16 +5,17 @@
 #include "state_fs.h"
 #include "game_generated.h"
 
-StateFS::StateFS(std::string path) {
-  this->path = path;
+StateFS::StateFS(std::string savePath, std::string metaPath) {
+  this->savePath = savePath;
+  this->metaPath = metaPath;
 }
 
-Engine StateFS::load() {
+std::vector<char> readFile(std::string path) {
   std::ifstream file(path, std::ios::binary | std::ios::ate);
 
   if (!file.is_open()) {
     std::cerr << "No save at file " << path << "; starting new game." << std::endl;
-    return Engine();
+    return {};
   }
 
   std::streamsize size = file.tellg();
@@ -22,18 +23,26 @@ Engine StateFS::load() {
   std::vector<char> buffer(size);
   if (!file.read(buffer.data(), size)) {
     std::cerr << "Failed to read from path " << path << std::endl;
-    return Engine();
+    return {};
   }
 
-  auto engine = Engine(game::GetState(buffer.data()));
-  std::cout << "Loaded game state from " << path << std::endl;
+  std::cout << "Loaded from " << path << std::endl;
+  return buffer;
+}
+
+Engine StateFS::load() {
+  std::vector<char> stateBuf = readFile(savePath);
+  std::vector<char> metaBuf = readFile(metaPath);
+  auto engine = Engine(
+    (stateBuf.size()) ? game::GetState(stateBuf.data()) : NULL,
+    (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);
   return engine;
 }
 
 bool StateFS::save(const Engine& engine) {
-  std::ofstream file(path, std::ofstream::binary);
+  std::ofstream file(savePath, std::ofstream::binary);
   if (!file.is_open()) {
-    std::cerr << "Could not open file " << path << " to save state." << std::endl;
+    std::cerr << "Could not open file " << savePath << " to save state." << std::endl;
     return false;
   }
 

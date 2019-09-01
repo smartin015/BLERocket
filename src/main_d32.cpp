@@ -10,7 +10,7 @@
 UIEPaper ui;
 Engine engine;
 CommsBLE comms;
-StateSPIFFS state("./test.save");
+StateSPIFFS state("./test.save", "./metadata.bin");
 
 void setup() {
   Serial.begin(115200);

@@ -1,0 +1,21 @@
+namespace meta;
+
+table User {
+  id:ubyte;
+  name:string;
+  username: string;
+  mac:string;
+}
+
+table Site {
+  id:ubyte;
+  name:string;
+  shortname:string;
+}
+
+table Data {
+  users:[User];
+  sites:[Site];
+}
+
+root_type Data;

@@ -13,11 +13,12 @@
 
 class StateSPIFFS : public State {
 public:
-  StateSPIFFS(std::string path);
+  StateSPIFFS(std::string savePath, std::string metaPath);
   Engine load();
   bool save(const Engine& engine);
 private:
-  std::string path;
+  std::string savePath;
+  std::string metaPath;
 };
 
 #endif // STATE_SPIFFS_H

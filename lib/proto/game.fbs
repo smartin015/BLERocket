@@ -26,10 +26,24 @@ table Phase {
   txn:ubyte;
 }
 
+table Status {
+  // Metadata
+  firmwareVersion:ubyte;
+  user:ubyte;
+  site:ubyte;
+
+  // Game state details
+  phase_id:ubyte;
+  phase_txn:ubyte;
+  score:ushort;
+  reputation:ushort;
+}
+
 table State {
   page:nav.Page;
   parts:[ShipPart];
   ships:[Ship];
+  status:Status;
 }
 
 root_type State;

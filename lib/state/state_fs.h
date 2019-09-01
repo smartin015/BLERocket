@@ -7,11 +7,12 @@
 
 class StateFS : public State {
 public:
-  StateFS(std::string path);
+  StateFS(std::string savePath, std::string metaPath);
   Engine load();
   bool save(const Engine& engine);
 private:
-  std::string path;
+  std::string savePath;
+  std::string metaPath;
 };
 
 #endif // STATE_FS_H
