@@ -5,10 +5,12 @@
 #include "engine.h"
 #include "comms_ble.h"
 #include "ui_epaper.h"
+#include "state_spiffs.h"
 
 UIEPaper ui;
 Engine engine;
 CommsBLE comms;
+StateSPIFFS state;
 
 void setup() {
   Serial.begin(115200);
