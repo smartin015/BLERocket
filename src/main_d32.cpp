@@ -13,6 +13,7 @@ CommsBLE comms;
 void setup() {
   Serial.begin(115200);
   ui.clear();
+  engine = state.load("./test.save");
 }
 
 void loop() {

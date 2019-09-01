@@ -7,6 +7,7 @@
 #include "ui_native.h"
 #include "engine.h"
 #include "comms_mq.h"
+#include "state_fs.h"
 #include "nav_generated.h"
 
 #include <string>
@@ -15,9 +16,11 @@
 UINative ui;
 Engine engine;
 CommsMQ comms;
+StateFS state;
 
 void setup() {
   ui.clear();
+  engine = state.load("./test.save");
 }
 
 bool loop() {
