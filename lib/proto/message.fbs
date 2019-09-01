@@ -18,20 +18,25 @@ enum Type:ubyte {
  score = 4,
 }
 
-union Message {
+union UMessage {
   status:Status,
   ship:Ship,
   part:Part,
 }
 
+table Message {
+  oneof:UMessage;
+}
+
 table Status {
   // Metadata
   firmwareVersion:ubyte;
-  user:game.User;
+  user:ubyte;
   site:ubyte;
 
   // Game state details
-  phase:game.Phase;
+  phase_id:ubyte;
+  phase_txn:ubyte;
   score:ushort;
   reputation:ushort;
 }
@@ -39,12 +44,13 @@ table Status {
 table Ship {
   action:Type;
   ship:game.Ship;
-  dest:game.User;
+  dest:ubyte;
 }
 
 table Part {
   action:Type;
   part:game.ShipPart;
-  quality:ubyte;
-  dest:game.User;
+  dest_user:ubyte;
 }
+
+root_type Message;

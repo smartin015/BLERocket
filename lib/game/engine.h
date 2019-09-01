@@ -21,8 +21,8 @@ class Engine {
 public:
   Engine();
 
-  void handleInput(const nav::Command& cmd, CommsBase comms);
-  void handleMessage(const message::Message& msg);
+  void handleInput(const nav::Command& cmd, CommsBase& comms);
+  void handleMessage(const message::MessageT& msg);
 
   nav::Page getPage() const;
   const std::map<game::ShipPartType, uint8_t> getParts() const;

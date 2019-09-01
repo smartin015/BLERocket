@@ -12,15 +12,11 @@ table ShipPart {
   quality:ubyte;
 }
 
-table User {
-  id:ubyte;
-}
-
 table Ship {
   name:string;
   parts:[ShipPart];
-  creators:[User];
-  owner:User;
+  creators:[ubyte];
+  owner:ubyte;
 }
 
 table Phase {

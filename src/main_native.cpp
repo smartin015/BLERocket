@@ -6,7 +6,7 @@
 
 #include "ui_native.h"
 #include "engine.h"
-#include "comms_tcp.h"
+#include "comms_mq.h"
 #include "nav_generated.h"
 
 #include <string>
@@ -14,7 +14,7 @@
 
 UINative ui;
 Engine engine;
-CommsTCP comms("asdf", "ghjk", "cli");
+CommsMQ comms;
 
 int main(int argc, char** argv) {
   ui.clear();
@@ -23,9 +23,9 @@ int main(int argc, char** argv) {
     comms.loop();
 
     // Handle any inbound messages before handling user input
-    auto* msg = comms.receiveMessage();
-    if (msg != NULL) {
-      engine.handleMessage(*msg);
+    message::MessageT msg = comms.receiveMessage();
+    if (msg.oneof.type != message::UMessage_NONE) {
+      engine.handleMessage(msg);
       continue;
     }
 
