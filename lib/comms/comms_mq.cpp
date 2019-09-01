@@ -3,18 +3,6 @@
 #include "comms_mq.h"
 #include <errno.h>
 #include <iostream>
-#include <sstream>
-#include <iomanip>
-#include "flatbuffers/flatbuffers.h"
-
-std::string hexStr(const char *data, int len) {
-  std::stringstream ss;
-  ss<<std::hex;
-  for(int i(0);i<len;++i)
-      ss<<(int)data[i];
-  return ss.str();
-}
-
 
 CommsMQ::CommsMQ() {
   struct mq_attr attr;
@@ -36,8 +24,6 @@ CommsMQ::~CommsMQ() {
 void CommsMQ::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
    if (mq_send(mq, p, MAX_PACKET_SIZE, 0) == -1) {
     std::cerr << "Send message: " << errno << " " << strerror(errno) << std::endl;
-  } else {
-    std::cout << "Sent " << hexStr(p, MAX_PACKET_SIZE).c_str() << std::endl;
   }
 }
 

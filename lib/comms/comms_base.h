@@ -13,7 +13,7 @@ class CommsBase {
 public:
   // Maintain the connection to other devices.
   // Subsequent calls to loop() may clear any queued messages
-  void loop() {}
+  virtual void loop() = 0;
 
   void sendMessage(const message::MessageT& msg, const bool& retryUntilAck);
 

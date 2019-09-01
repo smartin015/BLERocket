@@ -16,28 +16,33 @@ UINative ui;
 Engine engine;
 CommsMQ comms;
 
-int main(int argc, char** argv) {
+void setup() {
   ui.clear();
-  bool ok = true;
-  while (ok) {
-    comms.loop();
+}
 
-    // Handle any inbound messages before handling user input
-    message::MessageT msg = comms.receiveMessage();
-    if (msg.oneof.type != message::UMessage_NONE) {
-      engine.handleMessage(msg);
-      continue;
-    }
+bool loop() {
+  comms.loop();
 
-    nav::Command cmd = ui.nextCommand();
-    while (cmd != nav::Command_unknown) {
-     engine.handleInput(cmd, comms);
-     cmd = ui.nextCommand();
-    }
-    ui.clear();
-    ui.render(engine);
-    ok = ui.flush();
+  // Handle any inbound messages before handling user input
+  message::MessageT msg = comms.receiveMessage();
+  if (msg.oneof.type != message::UMessage_NONE) {
+    engine.handleMessage(msg);
+    return true;
   }
+
+  nav::Command cmd = ui.nextCommand();
+  while (cmd != nav::Command_unknown) {
+   engine.handleInput(cmd, comms);
+   cmd = ui.nextCommand();
+  }
+  ui.clear();
+  ui.render(engine);
+  return ui.flush();
+}
+
+int main(int argc, char** argv) {
+  setup();
+  while (loop()) {}
 }
 
 #endif // !ARDUINO_LOLIN_D32_PRO

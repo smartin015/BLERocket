@@ -4,16 +4,14 @@
 
 #include <mqueue.h>
 #include "comms_base.h"
-#include "message_generated.h"
-#include <string>
 
 #define QUEUE_NAME  "/rocketsnat"
-#define MSG_STOP    "exit"
 
 class CommsMQ : public CommsBase {
 public:
   CommsMQ();
   ~CommsMQ();
+  void loop() {};
 protected:
   virtual void sendBytes(const adv_packet_t& p, const bool& retryUntilAck);
   virtual int receiveToBuffer();
