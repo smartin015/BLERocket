@@ -2,7 +2,7 @@
 
 #include "state_spiffs.h"
 
-StateSPIFFS::StateSPIFFS(std::string savePath, std::string metaPath) {
+void StateSPIFFS::init(std::string savePath, std::string metaPath) {
   this->savePath = savePath;
   this->metaPath = metaPath;
   if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){

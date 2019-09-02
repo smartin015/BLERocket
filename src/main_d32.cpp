@@ -10,12 +10,16 @@
 UIEPaper ui;
 Engine engine;
 CommsBLE comms;
-StateSPIFFS state("./test.save", "./metadata.bin");
+StateSPIFFS state;
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("Initializing...");
+  state.init("/game.save", "/metadata.bin");
+  comms.init();
   ui.clear();
   engine = state.load();
+  Serial.println("Ready");
 }
 
 void loop() {

@@ -7,6 +7,8 @@
 Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   if (gameState != NULL) {
     gameState->UnPackTo(&state, NULL);
+  } else {
+    state.status.reset();
   }
   if (metadata != NULL) {
     metadata->UnPackTo(&data, NULL);

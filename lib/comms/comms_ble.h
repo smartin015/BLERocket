@@ -13,8 +13,9 @@
 
 class CommsBLE : public CommsBase, public BLEAdvertisedDeviceCallbacks {
 public:
-  CommsBLE();
+  CommsBLE() {};
   ~CommsBLE();
+  void init();
   void loop();
   void onResult(BLEAdvertisedDevice d);
 protected:

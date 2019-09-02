@@ -12,7 +12,7 @@ void CommsBLE::onResult(BLEAdvertisedDevice d) {
   parseAdvertisement(d.getPayload(), d.getPayloadLength());
 }
 
-CommsBLE::CommsBLE() {
+void CommsBLE::init() {
   BLEDevice::init(BEACON_NAME);
   Serial.println(BLEDevice::getAddress().toString().c_str());
 
@@ -83,6 +83,7 @@ void CommsBLE::loop() {
 
 int CommsBLE::receiveToBuffer() {
   // TODO
+  return 0;
 }
 
 void CommsBLE::parseAdvertisement(uint8_t* payload, size_t total_len) {

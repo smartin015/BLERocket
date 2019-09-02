@@ -51,24 +51,25 @@ void UI::render(Engine& engine) {
     case nav::Page_main:
       drawMain(engine);
       break;
-    case nav::Page_settingsEntry:
-      drawSettingsEntry(engine);
-      break;
-    case nav::Page_tradeEntry:
-      drawTradeEntry(engine);
-      break;
-    case nav::Page_fleetEntry:
-      drawFleetEntry(engine);
-      break;
-    case nav::Page_launchEntry:
-      drawLaunchEntry(engine);
-      break;
-    case nav::Page_settingsChangeName:
-      drawSettingsChangeName(engine);
-      break;
-    case nav::Page_settingsSelectUser:
-      drawSettingsSelectUser(engine);
-      break;
+    // TODO: Why are these causing crashloops?
+    // case nav::Page_settingsEntry:
+    //   drawSettingsEntry(engine);
+    //   break;
+    // case nav::Page_tradeEntry:
+    //   drawTradeEntry(engine);
+    //   break;
+    // case nav::Page_fleetEntry:
+    //   drawFleetEntry(engine);
+    //   break;
+    // case nav::Page_launchEntry:
+    //   drawLaunchEntry(engine);
+    //   break;
+    // case nav::Page_settingsChangeName:
+    //   drawSettingsChangeName(engine);
+    //   break;
+    // case nav::Page_settingsSelectUser:
+    //   drawSettingsSelectUser(engine);
+    //   break;
     case nav::Page_settingsReset:
       drawSettingsReset(engine);
       break;
