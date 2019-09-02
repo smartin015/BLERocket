@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "nav_generated.h"
 #include <vector>
+#include <time.h>
 
 #define SZ_S 10
 #define SZ_M 20
@@ -12,15 +13,20 @@
 #define BODY_X 10
 #define BODY_Y 40
 
+#define NOTIFY_X 10
+#define NOTIFY_Y 100
+
 #define TITLE_SZ 18
 #define TITLE_X 15
 #define TITLE_Y 15
+
+#define NOTIFY_DURATION_SECONDS 5
 
 class UI {
 public:
   UI() {}
 
-  void render(const Engine& engine);
+  void render(Engine& engine);
   virtual Command nextCommand() = 0;
   virtual void clear() = 0;
   virtual bool flush() = 0;
@@ -30,6 +36,11 @@ protected:
   virtual void drawShape(const std::vector<std::pair<int, int>>& points) = 0;
 
 private:
+  std::string notification;
+  time_t notify_start;
+  void handleNotification(const message::MessageT& msg);
+  void persistNotification();
+
   void drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center);
 
   // Individual page render functions in ./ui/pages

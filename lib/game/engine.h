@@ -20,10 +20,17 @@ public:
   bool suppressNav(const nav::Command& cmd) const;
   nav::Page getPage() const;
   const game::StateT* getState() const;
-
+  const meta::DataT* getData() const;
+  const message::MessageT* getNotification() const;
+  void ackNotification();
+  const message::MessageT* peekMessage() const;
+  void ackMessage();
 private:
   game::StateT state;
   meta::DataT data;
+  std::vector<message::MessageT> messages;
+  message::MessageT notification;
+  bool notifyAcked;
 };
 
 #endif // ENGINE_H

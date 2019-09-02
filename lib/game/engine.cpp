@@ -11,6 +11,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   if (metadata != NULL) {
     metadata->UnPackTo(&data, NULL);
   }
+  notifyAcked = true;
 }
 
 const game::StateT* Engine::getState() const {
@@ -117,6 +118,15 @@ void Engine::handleMessage(const message::MessageT& msg) {
           //<< "owner " << uint16_t(m->ship->owner) << "\n";
           << "parts TODO" << "\n"
           << "creators TODO" << "\n";
+
+        notification.oneof.Set<message::ShipT>(message::ShipT());
+        auto s = notification.oneof.Asship();
+        s->action = message::Type_launch;
+        s->dest_user = 0;
+        s->ship.reset(new game::ShipT());
+        s->ship->name = "aship";
+        notifyAcked = false;
+        std::cout << "Set notification" << std::endl;
       }
       break;
     case message::UMessage_part:
@@ -132,4 +142,33 @@ void Engine::handleMessage(const message::MessageT& msg) {
     default:
       std::cerr << "Unhandled message type " << message::EnumNameUMessage(msg.oneof.type) << std::endl;
   }
+}
+
+const meta::DataT* Engine::getData() const {
+  return &data;
+}
+
+const message::MessageT* Engine::getNotification() const {
+  if (notifyAcked) {
+    return NULL;
+  }
+  return &notification;
+}
+
+void Engine::ackNotification() {
+  notifyAcked = true;
+}
+
+const message::MessageT* Engine::peekMessage() const {
+  if (messages.size() == 0) {
+    return NULL;
+  }
+  return &(messages[0]);
+}
+
+void Engine::ackMessage() {
+  if (messages.size() == 0) {
+    return;
+  }
+  messages.erase(messages.begin());
 }

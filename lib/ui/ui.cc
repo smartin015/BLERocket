@@ -10,7 +10,28 @@ void UI::drawControls(const int& cx, const int& cy, const std::string& top, cons
   drawText("X " + center, SZ_S, cx, cy + 4*SZ_M);
 }
 
-void UI::render(const Engine& engine) {
+void UI::handleNotification(const message::MessageT& msg) {
+  // TODO switch statement
+  notification = "TEST NOTIFICATION";
+  time(&notify_start);
+}
+
+void UI::persistNotification() {
+  if (notification == "") {
+    return;
+  }
+
+  time_t now = time(NULL);
+  if (now - notify_start > NOTIFY_DURATION_SECONDS) {
+    notification = "";
+    notify_start = 0;
+    return;
+  }
+
+  drawText(notification, SZ_S, NOTIFY_X, NOTIFY_Y);
+}
+
+void UI::render(Engine& engine) {
   const auto p = engine.getPage();
   drawControls(150, 5,
     engine.suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
@@ -18,6 +39,13 @@ void UI::render(const Engine& engine) {
     engine.suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
     engine.suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
     engine.suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
+
+  auto* n = engine.getNotification();
+  if (n != NULL) {
+    handleNotification(*n);
+    engine.ackNotification();
+  }
+  persistNotification();
 
   switch (p) {
     case nav::Page_main:

@@ -7,15 +7,15 @@ enum Type:ubyte {
  // Resource messages
  give = 0,
  // MAKE
- // LAUNCH
+ launch = 1,
 
  // Ship action messages
- race = 1,
- trade = 2,
- explore = 3,
+ race = 2,
+ trade = 3,
+ explore = 4,
 
  // Status messages
- score = 4,
+ score = 5,
 }
 
 union UMessage {
