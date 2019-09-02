@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "engine.h"
 #include <memory>
+#include "GxEPD2_BW.h"
 
 #define WINDOW_SCALE 2
 #define EPAPER_W_PX  250
@@ -21,6 +22,7 @@ public:
   bool flush();
 private:
   // TODO
+  GxEPD2_BW<GxEPD2_213_B72, GxEPD2_213_B72::HEIGHT> display;
 };
 
 #endif // UI_EPAPER_H

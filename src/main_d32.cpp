@@ -4,13 +4,16 @@
 
 #include "engine.h"
 #include "comms_ble.h"
+#include "comms_dummy.h"
 #include "ui_epaper.h"
 #include "state_spiffs.h"
+#include "state_dummy.h"
 
 UIEPaper ui;
 Engine engine;
 CommsBLE comms;
 StateSPIFFS state;
+StateDummy state;
 
 void setup() {
   Serial.begin(115200);
@@ -38,7 +41,7 @@ void loop() {
    cmd = ui.nextCommand();
   }
   ui.clear();
-  ui.render(engine);
+  //ui.render(engine);
   ui.flush();
 }
 
