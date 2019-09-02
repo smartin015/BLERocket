@@ -29,14 +29,11 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
 
   display.fillScreen(GxEPD_WHITE); // set the background to white (fill the buffer with value for white)
   display.setCursor(x, y); // set the postition to start printing text
-  display.print(text); // print some text
-  display.display(false);
 
   // here we use paged drawing, even if the processor has enough RAM for full buffer
   // so this can be used with any supported processor board.
   // the cost in code overhead and execution time penalty is marginal
   // tell the graphics class to use paged drawing mode
-  /*
   display.firstPage();
   do
   {
@@ -56,7 +53,6 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   // returns false for panels with fast partial update when the controller buffer has been written once more, to make the differential buffers equal
   // (for full buffered with fast partial update the (full) buffer is just transferred again, and false returned)
   while (display.nextPage());
-  */
   //Serial.println("helloWorld done");
 }
 

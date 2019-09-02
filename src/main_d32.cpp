@@ -9,7 +9,7 @@
 #include "state_spiffs.h"
 #include "state_dummy.h"
 
-UIEPaper ui;
+UIEPaper *ui;
 Engine engine;
 CommsBLE comms;
 StateSPIFFS state;
@@ -19,7 +19,8 @@ void setup() {
   Serial.println("Initializing...");
   state.init("/game.save", "/metadata.bin");
   comms.init();
-  ui.clear();
+  ui = new UIEPaper();
+  ui->clear();
   engine = state.load();
   Serial.println("Ready");
 }
@@ -34,14 +35,14 @@ void loop() {
     return;
   }
 
-  nav::Command cmd = ui.nextCommand();
+  nav::Command cmd = ui->nextCommand();
   while (cmd != nav::Command_unknown) {
    engine.handleInput(cmd, comms);
-   cmd = ui.nextCommand();
+   cmd = ui->nextCommand();
   }
-  ui.clear();
+  ui->clear();
   //ui.render(engine);
-  ui.flush();
+  ui->flush();
 }
 
 # endif // ARDUINO_LOLIN_D32_PRO
