@@ -13,7 +13,6 @@ UIEPaper ui;
 Engine engine;
 CommsBLE comms;
 StateSPIFFS state;
-StateDummy state;
 
 void setup() {
   Serial.begin(115200);
