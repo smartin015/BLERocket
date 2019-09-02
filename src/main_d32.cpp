@@ -3,16 +3,18 @@
 #include <Arduino.h>
 
 #include "engine.h"
-//#include "comms_ble.h"
+#include "comms_ble.h"
 #include "comms_dummy.h"
 #include "ui_epaper.h"
 #include "state_spiffs.h"
+#include "state_dummy.h"
 
 UIEPaper ui;
 Engine engine;
 //CommsBLE comms;
 CommsDummy comms;
-StateSPIFFS state("./test.save", "./metadata.bin");
+//StateSPIFFS state("./test.save", "./metadata.bin");
+StateDummy state;
 
 void setup() {
   Serial.begin(115200);
