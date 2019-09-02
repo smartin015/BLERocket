@@ -3,13 +3,15 @@
 #include <Arduino.h>
 
 #include "engine.h"
-#include "comms_ble.h"
+//#include "comms_ble.h"
+#include "comms_dummy.h"
 #include "ui_epaper.h"
 #include "state_spiffs.h"
 
 UIEPaper ui;
 Engine engine;
-CommsBLE comms;
+//CommsBLE comms;
+CommsDummy comms;
 StateSPIFFS state("./test.save", "./metadata.bin");
 
 void setup() {
