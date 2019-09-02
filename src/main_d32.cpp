@@ -38,7 +38,7 @@ void loop() {
    cmd = ui.nextCommand();
   }
   ui.clear();
-  ui.render(engine);
+  //ui.render(engine);
   ui.flush();
 }
 

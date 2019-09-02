@@ -8,6 +8,6 @@ CommsDummy::~CommsDummy() {}
 
 void CommsDummy::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {}
 
-int CommsDummy::receiveToBuffer() {}
+int CommsDummy::receiveToBuffer() {return 0;}
 
 #endif // COMMS_DUMMY
