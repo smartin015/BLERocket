@@ -30,13 +30,12 @@ std::vector<char> readFile(std::string path) {
   return buffer;
 }
 
-Engine StateFS::load() {
+Engine* StateFS::load() {
   std::vector<char> stateBuf = readFile(savePath);
   std::vector<char> metaBuf = readFile(metaPath);
-  auto engine = Engine(
+  return new Engine(
     (stateBuf.size()) ? game::GetState(stateBuf.data()) : NULL,
-    (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);
-  return engine;
+    (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);;
 }
 
 bool StateFS::save(const Engine& engine) {

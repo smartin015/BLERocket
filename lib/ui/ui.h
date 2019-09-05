@@ -26,7 +26,7 @@ class UI {
 public:
   UI() {}
 
-  void render(Engine& engine);
+  void render(Engine* engine);
   virtual Command nextCommand() = 0;
   virtual void clear() = 0;
   virtual bool flush() = 0;
@@ -44,25 +44,25 @@ private:
   void drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center);
 
   // Individual page render functions in ./ui/pages
-  void drawMain(const Engine& engine);
-  void drawSettingsEntry(const Engine& engine);
-  void drawTradeEntry(const Engine& engine);
-  void drawFleetEntry(const Engine& engine);
-  void drawLaunchEntry(const Engine& engine);
-  void drawSettingsChangeName(const Engine& engine);
-  void drawSettingsSelectUser(const Engine& engine);
-  void drawSettingsReset(const Engine& engine);
-  void drawShipDetails(const Engine& engine);
-  void drawShipMissionSelect(const Engine& engine);
-  void drawShipDestSelect(const Engine& engine);
-  void drawShipConfirm(const Engine& engine);
-  void drawShipSplash(const Engine& engine);
-  void drawShipRename(const Engine& engine);
-  void drawEventShipVisit(const Engine& engine);
-  void drawEventPlayerLaunch(const Engine& engine);
-  void drawShipVisitDecision(const Engine& engine);
-  void drawShipVisitOutcome(const Engine& engine);
-  void drawLaunchSplash(const Engine& engine);
+  void drawMain(const Engine* engine);
+  void drawSettingsEntry(const Engine* engine);
+  void drawTradeEntry(const Engine* engine);
+  void drawFleetEntry(const Engine* engine);
+  void drawLaunchEntry(const Engine* engine);
+  void drawSettingsChangeName(const Engine* engine);
+  void drawSettingsSelectUser(const Engine* engine);
+  void drawSettingsReset(const Engine* engine);
+  void drawShipDetails(const Engine* engine);
+  void drawShipMissionSelect(const Engine* engine);
+  void drawShipDestSelect(const Engine* engine);
+  void drawShipConfirm(const Engine* engine);
+  void drawShipSplash(const Engine* engine);
+  void drawShipRename(const Engine* engine);
+  void drawEventShipVisit(const Engine* engine);
+  void drawEventPlayerLaunch(const Engine* engine);
+  void drawShipVisitDecision(const Engine* engine);
+  void drawShipVisitOutcome(const Engine* engine);
+  void drawLaunchSplash(const Engine* engine);
 };
 
 #endif // BLE_UI_H

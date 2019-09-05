@@ -15,7 +15,7 @@ public:
   Engine(const game::State* gameState, const meta::Data* metadata);
   Engine() {};
 
-  void handleInput(const nav::Command& cmd, CommsBase& comms);
+  void handleInput(const nav::Command& cmd, CommsBase* comms);
   void handleMessage(const message::MessageT& msg);
   bool suppressNav(const nav::Command& cmd) const;
   nav::Page getPage() const;

@@ -8,10 +8,9 @@
 - https://github.com/eclipse/paho.mqtt.cpp (requires pajo.mqtt.c lib)
 - https://github.com/NVIDIA/nvidia-docker <-- for UI via docker
 
-Extra:
-
-
 ## Links
 
 - https://docs.platformio.org/en/latest/boards/espressif32/lolin_d32_pro.html
 - Photos: https://photos.app.goo.gl/SCY7WTNyaFZkhxnp9
+- https://github.com/platformio/platform-espressif32/tree/develop/examples/espidf-arduino-blink <-- example using both espidf and arduino frameworks in platformio
+

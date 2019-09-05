@@ -36,7 +36,7 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   return false;
 }
 
-void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
+void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   switch (state.page) {
     case nav::Page_tradeEntry:
       if (cmd == nav::Command_up) {
@@ -58,7 +58,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
         stat->user = 123;
         stat->phase_id = 1;
         stat->phase_txn = 3;
-        comms.sendMessage(msg, false);
+        comms->sendMessage(msg, false);
       } else if (cmd == nav::Command_right) {
         // Send example ship message
         message::MessageT msg;
@@ -68,7 +68,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
         s->dest_user = 1;
         s->ship.reset(new game::ShipT());
         s->ship->owner = 2;
-        comms.sendMessage(msg, false);
+        comms->sendMessage(msg, false);
       } else if (cmd == nav::Command_left) {
         // Send example part message
         message::MessageT msg;
@@ -79,7 +79,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase& comms) {
         s->part.reset(new game::ShipPartT());
         s->part->type = game::ShipPartType_hull;
         s->part->quality = 5;
-        comms.sendMessage(msg, false);
+        comms->sendMessage(msg, false);
       }
       break;
     default:

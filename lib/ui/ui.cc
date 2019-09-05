@@ -1,6 +1,7 @@
 #include "ui.h"
 #include <iostream>
 #include "nav.h"
+#include <Arduino.h>
 
 void UI::drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center) {
   drawText("^ " + top, SZ_S, cx, cy);
@@ -31,45 +32,51 @@ void UI::persistNotification() {
   drawText(notification, SZ_S, NOTIFY_X, NOTIFY_Y);
 }
 
-void UI::render(Engine& engine) {
-  const auto p = engine.getPage();
-  drawControls(150, 5,
-    engine.suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
-    engine.suppressNav(nav::Command_left) ? "" : EnumNamePage(nextPage(p, nav::Command_left)),
-    engine.suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
-    engine.suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
-    engine.suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
+void aRandomFunction(Engine* engine) {
+  return;
+}
 
-  auto* n = engine.getNotification();
+void UI::render(Engine* engine) {
+  std::cout << "remaining stack " << uxTaskGetStackHighWaterMark(NULL) << std::endl;
+  std::cout << "remaining heap " << xPortGetFreeHeapSize() << std::endl;
+  const auto p = engine->getPage();
+  drawControls(150, 5,
+    engine->suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
+    engine->suppressNav(nav::Command_left) ? "" : EnumNamePage(nextPage(p, nav::Command_left)),
+    engine->suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
+    engine->suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
+    engine->suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
+
+  auto* n = engine->getNotification();
   if (n != NULL) {
     handleNotification(*n);
-    engine.ackNotification();
+    engine->ackNotification();
   }
   persistNotification();
+  aRandomFunction(engine);
 
   switch (p) {
     case nav::Page_main:
       drawMain(engine);
       break;
-    // TODO: Why are these causing crashloops?
-    // case nav::Page_settingsEntry:
-    //   drawSettingsEntry(engine);
-    //   break;
-    // case nav::Page_tradeEntry:
-    //   drawTradeEntry(engine);
-    //   break;
-    // case nav::Page_fleetEntry:
-    //   drawFleetEntry(engine);
-    //   break;
-    // case nav::Page_launchEntry:
-    //   drawLaunchEntry(engine);
-    //   break;
-    // case nav::Page_settingsChangeName:
-    //   drawSettingsChangeName(engine);
-    //   break;
-    // case nav::Page_settingsSelectUser:
-    //   drawSettingsSelectUser(engine);
-    //   break;
+    case nav::Page_settingsEntry:
+      drawSettingsEntry(engine);
+      break;
+    case nav::Page_tradeEntry:
+      drawTradeEntry(engine);
+      break;
+    case nav::Page_fleetEntry:
+      drawFleetEntry(engine);
+      break;
+    case nav::Page_launchEntry:
+      drawLaunchEntry(engine);
+      break;
+    case nav::Page_settingsChangeName:
+      drawSettingsChangeName(engine);
+      break;
+    case nav::Page_settingsSelectUser:
+      drawSettingsSelectUser(engine);
+      break;
     case nav::Page_settingsReset:
       drawSettingsReset(engine);
       break;
@@ -110,4 +117,5 @@ void UI::render(Engine& engine) {
       // TODO show error page
       break;
   }
+  std::cout << "remaining stack " << uxTaskGetStackHighWaterMark(NULL) << std::endl;
 }

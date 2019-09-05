@@ -1,5 +1,7 @@
 #ifdef ARDUINO_LOLIN_D32_PRO
 
+#include "sdkconfig.h"
+
 #include <Arduino.h>
 
 #include "engine.h"
@@ -10,34 +12,42 @@
 #include "state_dummy.h"
 
 UIEPaper *ui;
-Engine engine;
-CommsBLE comms;
-StateSPIFFS state;
+Engine *engine;
+CommsBLE *comms;
+StateSPIFFS *state;
+bool once;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(CONFIG_CONSOLE_UART_BAUDRATE);
   Serial.println("Initializing...");
-  state.init("/game.save", "/metadata.bin");
-  comms.init();
+  state = new StateSPIFFS();
+  engine = new Engine();
   ui = new UIEPaper();
+  comms = new CommsBLE();
+
+  state->init("/game.save", "/metadata.bin");
+  comms->init();
   ui->clear();
-  engine = state.load();
+  engine = state->load();
   Serial.println("Ready");
+  once = false;
 }
 
-void loop() {
-  comms.loop();
 
-  // Handle any inbound messages before handling user input
-  message::MessageT msg = comms.receiveMessage();
+void loop() {
+  //std::cout << "stack size " << uxTaskGetStackHighWaterMark(NULL) << std::endl;
+  comms->loop();
+
+  // // Handle any inbound messages before handling user input
+  message::MessageT msg = comms->receiveMessage();
   if (msg.oneof.type != message::UMessage_NONE) {
-    engine.handleMessage(msg);
+    engine->handleMessage(msg);
     return;
   }
 
   nav::Command cmd = ui->nextCommand();
   while (cmd != nav::Command_unknown) {
-   engine.handleInput(cmd, comms);
+   engine->handleInput(cmd, comms);
    cmd = ui->nextCommand();
   }
   ui->clear();

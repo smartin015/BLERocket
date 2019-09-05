@@ -27,13 +27,12 @@ std::vector<char> readFile(std::string path) {
   return buffer;
 }
 
-Engine StateSPIFFS::load() {
+Engine* StateSPIFFS::load() {
   std::vector<char> stateBuf = readFile(savePath);
   std::vector<char> metaBuf = readFile(metaPath);
-  auto engine = Engine(
+  return new Engine(
     (stateBuf.size()) ? game::GetState(stateBuf.data()) : NULL,
     (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);
-  return engine;
 }
 
 bool StateSPIFFS::save(const Engine& engine) {

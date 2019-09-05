@@ -2,7 +2,7 @@
 #include <iostream>
 
 // Player selecting a mission destination
-void UI::drawShipDestSelect(const Engine& engine) {
+void UI::drawShipDestSelect(const Engine* engine) {
   drawText("ShipDestSelect", TITLE_SZ, TITLE_X, TITLE_Y);
 
   // TODO:

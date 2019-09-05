@@ -2,7 +2,7 @@
 #include <iostream>
 
 // Main landing page (and badge display)
-void UI::drawMain(const Engine& engine) {
+void UI::drawMain(const Engine* engine) {
   drawText("Main", TITLE_SZ, TITLE_X, TITLE_Y);
 
   // TODO display

@@ -1,10 +1,10 @@
 #include "ui.h"
 #include <iostream>
 
-void UI::drawTradeEntry(const Engine& engine) {
+void UI::drawTradeEntry(const Engine* engine) {
   drawText("Trade", TITLE_SZ, TITLE_X, TITLE_Y);
 
-  const auto& parts = engine.getState()->parts;
+  const auto& parts = engine->getState()->parts;
   for (int i = 0; i < parts.size(); i++) {
     if (parts[i]->quality == 0) {
       continue;
