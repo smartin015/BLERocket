@@ -9,7 +9,7 @@ class StateFS : public State {
 public:
   StateFS(std::string savePath, std::string metaPath);
   Engine* load();
-  bool save(const Engine& engine);
+  bool save(const Engine* engine);
 private:
   std::string savePath;
   std::string metaPath;

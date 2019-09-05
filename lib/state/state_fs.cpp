@@ -38,7 +38,7 @@ Engine* StateFS::load() {
     (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);;
 }
 
-bool StateFS::save(const Engine& engine) {
+bool StateFS::save(const Engine* engine) {
   std::ofstream file(savePath, std::ofstream::binary);
   if (!file.is_open()) {
     std::cerr << "Could not open file " << savePath << " to save state." << std::endl;
@@ -46,7 +46,7 @@ bool StateFS::save(const Engine& engine) {
   }
 
   flatbuffers::FlatBufferBuilder fbb;
-  fbb.Finish(game::State::Pack(fbb, engine.getState(), NULL));
+  fbb.Finish(game::State::Pack(fbb, engine->getState(), NULL));
   file.write((const char*) fbb.GetBufferPointer(), fbb.GetSize());
   file.close();
   std::cout << "Saved game state." << std::endl;

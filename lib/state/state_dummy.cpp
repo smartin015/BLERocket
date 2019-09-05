@@ -8,6 +8,6 @@ Engine StateDummy::load() {
   return Engine(NULL, NULL);
 }
 
-bool StateDummy::save(const Engine& engine) {return true;}
+bool StateDummy::save(const Engine* engine) {return true;}
 
 #endif

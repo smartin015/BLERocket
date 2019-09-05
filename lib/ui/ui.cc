@@ -1,7 +1,6 @@
 #include "ui.h"
 #include <iostream>
 #include "nav.h"
-#include <Arduino.h>
 
 void UI::drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center) {
   drawText("^ " + top, SZ_S, cx, cy);
@@ -37,8 +36,6 @@ void aRandomFunction(Engine* engine) {
 }
 
 void UI::render(Engine* engine) {
-  std::cout << "remaining stack " << uxTaskGetStackHighWaterMark(NULL) << std::endl;
-  std::cout << "remaining heap " << xPortGetFreeHeapSize() << std::endl;
   const auto p = engine->getPage();
   drawControls(150, 5,
     engine->suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
@@ -117,5 +114,4 @@ void UI::render(Engine* engine) {
       // TODO show error page
       break;
   }
-  std::cout << "remaining stack " << uxTaskGetStackHighWaterMark(NULL) << std::endl;
 }

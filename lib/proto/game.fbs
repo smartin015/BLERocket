@@ -12,12 +12,12 @@ enum ShipPartType:byte {
 table ShipPart {
   type:ShipPartType;
   quality:ubyte;
+  creator: ubyte;
 }
 
 table Ship {
   name:string;
   parts:[ShipPart];
-  creators:[ubyte];
   owner:ubyte;
 }
 

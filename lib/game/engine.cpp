@@ -44,9 +44,11 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         // TODO: Handle user input code.
         if (state.parts.size() == 0) {
           for (int i = game::ShipPartType_MIN; i <= game::ShipPartType_MAX; i++) {
-            // state.parts.push_back(game::ShipPartT());
-            // state.parts[i]->type = (game::ShipPartType) i;
-            // state.parts[i]->quality = 1;
+            auto part = std::unique_ptr<game::ShipPartT>(new game::ShipPartT());
+            part->type = (game::ShipPartType) i;
+            part->quality = 1;
+            part->creator = 2; // TODO
+            state.parts.emplace_back(std::move(part));
           }
         }
       } else if (cmd == nav::Command_down) {
@@ -82,6 +84,21 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         comms->sendMessage(msg, false);
       }
       break;
+    case nav::Page_launchEntry:
+      if (cmd != nav::Command_left && !suppressNav(cmd)) {
+        // Launching a new rocket - add it to the list of ships
+        auto ship = std::unique_ptr<game::ShipT>(new game::ShipT());
+        ship->name = "aship";
+        for (const auto& p : state.parts) {
+          ship->parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(*p)));
+        }
+        ship->owner = 2; // TODO
+        state.ships.emplace_back(std::move(ship));
+        std::cout << "New ship created" << std::endl;
+
+        // Get rid of built up parts
+        state.parts.clear();
+      }
     default:
       break;
   }

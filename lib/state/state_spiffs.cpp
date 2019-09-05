@@ -35,14 +35,14 @@ Engine* StateSPIFFS::load() {
     (metaBuf.size()) ? meta::GetData(metaBuf.data()) : NULL);
 }
 
-bool StateSPIFFS::save(const Engine& engine) {
+bool StateSPIFFS::save(const Engine* engine) {
   File file = SPIFFS.open(savePath.c_str(), FILE_WRITE);
   if(!file){
     std::cerr << "failed to open file " << savePath << " for writing" << std::endl;
     return false;
   }
   flatbuffers::FlatBufferBuilder fbb;
-  fbb.Finish(game::State::Pack(fbb, engine.getState(), NULL));
+  fbb.Finish(game::State::Pack(fbb, engine->getState(), NULL));
   if(!file.write(fbb.GetBufferPointer(), fbb.GetSize())){
     std::cerr << "failed to save game" << std::endl;
   } else {

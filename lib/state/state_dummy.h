@@ -9,7 +9,7 @@ class StateDummy : public State {
 public:
   StateDummy();
   Engine load();
-  bool save(const Engine& engine);
+  bool save(const Engine* engine);
 };
 
 #endif // STATE_DUMMY_H

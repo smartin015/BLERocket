@@ -22,9 +22,11 @@
 
 #define NOTIFY_DURATION_SECONDS 5
 
+#define SELECTOR_NUM_ITEMS 5
+
 class UI {
 public:
-  UI() {}
+  UI() : fleetSelect(0), fleetTop(0) {}
 
   void render(Engine* engine);
   virtual Command nextCommand() = 0;
@@ -48,6 +50,9 @@ private:
   void drawMain(const Engine* engine);
   void drawSettingsEntry(const Engine* engine);
   void drawTradeEntry(const Engine* engine);
+
+  int fleetTop;
+  int fleetSelect;
   void drawFleetEntry(const Engine* engine);
   void drawLaunchEntry(const Engine* engine);
   void drawSettingsChangeName(const Engine* engine);

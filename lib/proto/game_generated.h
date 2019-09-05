@@ -65,9 +65,11 @@ struct ShipPartT : public flatbuffers::NativeTable {
   typedef ShipPart TableType;
   ShipPartType type;
   uint8_t quality;
+  uint8_t creator;
   ShipPartT()
       : type(ShipPartType_hull),
-        quality(0) {
+        quality(0),
+        creator(0) {
   }
 };
 
@@ -75,7 +77,8 @@ struct ShipPart FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ShipPartT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_TYPE = 4,
-    VT_QUALITY = 6
+    VT_QUALITY = 6,
+    VT_CREATOR = 8
   };
   ShipPartType type() const {
     return static_cast<ShipPartType>(GetField<int8_t>(VT_TYPE, 0));
@@ -83,10 +86,14 @@ struct ShipPart FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   uint8_t quality() const {
     return GetField<uint8_t>(VT_QUALITY, 0);
   }
+  uint8_t creator() const {
+    return GetField<uint8_t>(VT_CREATOR, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int8_t>(verifier, VT_TYPE) &&
            VerifyField<uint8_t>(verifier, VT_QUALITY) &&
+           VerifyField<uint8_t>(verifier, VT_CREATOR) &&
            verifier.EndTable();
   }
   ShipPartT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -103,6 +110,9 @@ struct ShipPartBuilder {
   void add_quality(uint8_t quality) {
     fbb_.AddElement<uint8_t>(ShipPart::VT_QUALITY, quality, 0);
   }
+  void add_creator(uint8_t creator) {
+    fbb_.AddElement<uint8_t>(ShipPart::VT_CREATOR, creator, 0);
+  }
   explicit ShipPartBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -118,8 +128,10 @@ struct ShipPartBuilder {
 inline flatbuffers::Offset<ShipPart> CreateShipPart(
     flatbuffers::FlatBufferBuilder &_fbb,
     ShipPartType type = ShipPartType_hull,
-    uint8_t quality = 0) {
+    uint8_t quality = 0,
+    uint8_t creator = 0) {
   ShipPartBuilder builder_(_fbb);
+  builder_.add_creator(creator);
   builder_.add_quality(quality);
   builder_.add_type(type);
   return builder_.Finish();
@@ -131,7 +143,6 @@ struct ShipT : public flatbuffers::NativeTable {
   typedef Ship TableType;
   std::string name;
   std::vector<std::unique_ptr<ShipPartT>> parts;
-  std::vector<uint8_t> creators;
   uint8_t owner;
   ShipT()
       : owner(0) {
@@ -143,17 +154,13 @@ struct Ship FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
     VT_PARTS = 6,
-    VT_CREATORS = 8,
-    VT_OWNER = 10
+    VT_OWNER = 8
   };
   const flatbuffers::String *name() const {
     return GetPointer<const flatbuffers::String *>(VT_NAME);
   }
   const flatbuffers::Vector<flatbuffers::Offset<ShipPart>> *parts() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<ShipPart>> *>(VT_PARTS);
-  }
-  const flatbuffers::Vector<uint8_t> *creators() const {
-    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_CREATORS);
   }
   uint8_t owner() const {
     return GetField<uint8_t>(VT_OWNER, 0);
@@ -165,8 +172,6 @@ struct Ship FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyOffset(verifier, VT_PARTS) &&
            verifier.VerifyVector(parts()) &&
            verifier.VerifyVectorOfTables(parts()) &&
-           VerifyOffset(verifier, VT_CREATORS) &&
-           verifier.VerifyVector(creators()) &&
            VerifyField<uint8_t>(verifier, VT_OWNER) &&
            verifier.EndTable();
   }
@@ -183,9 +188,6 @@ struct ShipBuilder {
   }
   void add_parts(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ShipPart>>> parts) {
     fbb_.AddOffset(Ship::VT_PARTS, parts);
-  }
-  void add_creators(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> creators) {
-    fbb_.AddOffset(Ship::VT_CREATORS, creators);
   }
   void add_owner(uint8_t owner) {
     fbb_.AddElement<uint8_t>(Ship::VT_OWNER, owner, 0);
@@ -206,10 +208,8 @@ inline flatbuffers::Offset<Ship> CreateShip(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> name = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ShipPart>>> parts = 0,
-    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> creators = 0,
     uint8_t owner = 0) {
   ShipBuilder builder_(_fbb);
-  builder_.add_creators(creators);
   builder_.add_parts(parts);
   builder_.add_name(name);
   builder_.add_owner(owner);
@@ -220,16 +220,13 @@ inline flatbuffers::Offset<Ship> CreateShipDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
     const std::vector<flatbuffers::Offset<ShipPart>> *parts = nullptr,
-    const std::vector<uint8_t> *creators = nullptr,
     uint8_t owner = 0) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
   auto parts__ = parts ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>>(*parts) : 0;
-  auto creators__ = creators ? _fbb.CreateVector<uint8_t>(*creators) : 0;
   return game::CreateShip(
       _fbb,
       name__,
       parts__,
-      creators__,
       owner);
 }
 
@@ -546,6 +543,7 @@ inline void ShipPart::UnPackTo(ShipPartT *_o, const flatbuffers::resolver_functi
   (void)_resolver;
   { auto _e = type(); _o->type = _e; };
   { auto _e = quality(); _o->quality = _e; };
+  { auto _e = creator(); _o->creator = _e; };
 }
 
 inline flatbuffers::Offset<ShipPart> ShipPart::Pack(flatbuffers::FlatBufferBuilder &_fbb, const ShipPartT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -558,10 +556,12 @@ inline flatbuffers::Offset<ShipPart> CreateShipPart(flatbuffers::FlatBufferBuild
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const ShipPartT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _type = _o->type;
   auto _quality = _o->quality;
+  auto _creator = _o->creator;
   return game::CreateShipPart(
       _fbb,
       _type,
-      _quality);
+      _quality,
+      _creator);
 }
 
 inline ShipT *Ship::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -575,7 +575,6 @@ inline void Ship::UnPackTo(ShipT *_o, const flatbuffers::resolver_function_t *_r
   (void)_resolver;
   { auto _e = name(); if (_e) _o->name = _e->str(); };
   { auto _e = parts(); if (_e) { _o->parts.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->parts[_i] = std::unique_ptr<ShipPartT>(_e->Get(_i)->UnPack(_resolver)); } } };
-  { auto _e = creators(); if (_e) { _o->creators.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->creators[_i] = _e->Get(_i); } } };
   { auto _e = owner(); _o->owner = _e; };
 }
 
@@ -589,13 +588,11 @@ inline flatbuffers::Offset<Ship> CreateShip(flatbuffers::FlatBufferBuilder &_fbb
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const ShipT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
   auto _parts = _o->parts.size() ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>> (_o->parts.size(), [](size_t i, _VectorArgs *__va) { return CreateShipPart(*__va->__fbb, __va->__o->parts[i].get(), __va->__rehasher); }, &_va ) : 0;
-  auto _creators = _o->creators.size() ? _fbb.CreateVector(_o->creators) : 0;
   auto _owner = _o->owner;
   return game::CreateShip(
       _fbb,
       _name,
       _parts,
-      _creators,
       _owner);
 }
 

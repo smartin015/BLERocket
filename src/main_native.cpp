@@ -13,40 +13,44 @@
 #include <string>
 #include <iostream>
 
-UINative ui;
-Engine engine;
-CommsMQ comms;
-StateFS state("./data/game.save", "./data/metadata.bin");
+UINative* ui;
+Engine* engine;
+CommsMQ* comms;
+StateFS* state;
 
 void setup() {
-  ui.clear();
-  engine = state.load();
+  ui = new UINative();
+  comms = new CommsMQ();
+  state = new StateFS("./data/game.save", "./data/metadata.bin");
+  engine = state->load();
+
+  ui->clear();
 }
 
 bool loop() {
-  comms.loop();
+  comms->loop();
 
   // Handle any inbound messages before handling user input
-  message::MessageT msg = comms.receiveMessage();
+  message::MessageT msg = comms->receiveMessage();
   if (msg.oneof.type != message::UMessage_NONE) {
-    engine.handleMessage(msg);
+    engine->handleMessage(msg);
     return true;
   }
 
-  nav::Command cmd = ui.nextCommand();
+  nav::Command cmd = ui->nextCommand();
   while (cmd != nav::Command_unknown) {
-   engine.handleInput(cmd, comms);
-   cmd = ui.nextCommand();
+   engine->handleInput(cmd, comms);
+   cmd = ui->nextCommand();
   }
-  ui.clear();
-  ui.render(engine);
-  return ui.flush();
+  ui->clear();
+  ui->render(engine);
+  return ui->flush();
 }
 
 int main(int argc, char** argv) {
   setup();
   while (loop()) {}
-  state.save(engine);
+  state->save(engine);
 }
 
 #endif // !ARDUINO_LOLIN_D32_PRO
