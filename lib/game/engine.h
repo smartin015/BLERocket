@@ -9,6 +9,9 @@
 #include "game_generated.h"
 #include "message_generated.h"
 #include "meta_generated.h"
+#include "esp_log.h"
+
+#define ENGINE_TAG "engine"
 
 class Engine {
 public:

@@ -26,7 +26,7 @@
 
 class UI {
 public:
-  UI() : fleetSelect(0), fleetTop(0) {}
+  UI() : fleetTop(0), fleetSelect(0) {}
 
   void render(Engine* engine);
   virtual Command nextCommand() = 0;

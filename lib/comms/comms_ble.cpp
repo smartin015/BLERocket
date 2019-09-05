@@ -2,13 +2,15 @@
 #ifdef COMMS_BLE
 #include "comms_ble.h"
 #include <Arduino.h>
+#include <functional>
+using namespace std::placeholders;
 
-BLEAddress match1("24:0a:c4:9a:a5:de");
-BLEAddress match2("24:0a:c4:9a:a6:ce");
+// BLEAddress match1("24:0a:c4:9a:a5:de");
+// BLEAddress match2("24:0a:c4:9a:a6:ce");
 void CommsBLE::onResult(BLEAdvertisedDevice d) {
-  if (!d.getAddress().equals(match1) && !d.getAddress().equals(match2)) {
-    return;
-  }
+  // if (!d.getAddress().equals(match1) && !d.getAddress().equals(match2)) {
+  //   return;
+  // }
   parseAdvertisement(d.getPayload(), d.getPayloadLength());
 }
 
@@ -20,10 +22,9 @@ void CommsBLE::init() {
 
   // Init receiver
   advertise_start = 0;
-  scanning = false;
   pBLEScan = BLEDevice::getScan(); //create new scan
   pBLEScan->setAdvertisedDeviceCallbacks(this);
-  pBLEScan->setActiveScan(false); //active scan uses more power, but get results faster
+  pBLEScan->setActiveScan(false); //active scan uses more power, but gets results faster
   pBLEScan->setInterval(100);
   pBLEScan->setWindow(99);  // less or equal setInterval value
 }
@@ -57,6 +58,7 @@ void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
 
   advertise_start = millis();
   pAdvertising->start();
+  ESP_LOGI(BLE_TAG, "Starting advertisement");
 }
 
 void CommsBLE::loop() {
@@ -66,12 +68,11 @@ void CommsBLE::loop() {
     pAdvertising->stop();
   }
 
-  // TODO periodically start scan
-  // if (scanning) {
-  //   return;
-  // }
-  // scanning = true;
-  // pBLEScan->start(SCAN_TIME, &scanComplete, false);
+  if (advertise_start == 0 && millis() - scan_start > SCAN_INTERVAL_MILLIS) {
+    //pBLEScan->stop();
+    pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
+    pBLEScan->start(SCAN_TIME_SECONDS, NULL, false);
+  }
 }
 
 int CommsBLE::receiveToBuffer() {
@@ -84,11 +85,6 @@ void CommsBLE::parseAdvertisement(uint8_t* payload, size_t total_len) {
   uint8_t len;
   uint8_t ad_type;
   uint8_t sizeConsumed = 0;
-  Serial.print("Recv ");
-  for (int i = 0; i < total_len; i++) {
-    Serial.printf("%x|", payload[i]);
-  }
-  Serial.println("");
 
   while(true) {
     len = *payload;
@@ -100,23 +96,25 @@ void CommsBLE::parseAdvertisement(uint8_t* payload, size_t total_len) {
     }
 
     ad_type = *payload;
-    // Serial.printf("section type %02x len %d\n", ad_type, len);
-    Serial.printf("Unknown advertisement, type %02x\n", ad_type);
-    payload += len;
-    // adv_packet_t packet;
-    // memcpy(packet, payload)
-    // stored_packets.
-
+    if (ad_type != PACKET_ID) {
+      // Serial.printf("Skipping unknown advertisement, type %02x\n", ad_type);
+      payload += len;
+    } else {
+      Serial.println("TODO buffer advertisement matching PACKET_ID");
+      Serial.print("Recv ");
+      for (int i = 0; i < (total_len-sizeConsumed); i++) {
+        Serial.printf("%x|", payload[i]);
+      }
+      Serial.printf("section type %02x len %d\n", ad_type, len);
+      // adv_packet_t packet;
+      // memcpy(packet, payload)
+      // stored_packets.
+    }
 
     if (sizeConsumed >= total_len) {
       break;
     }
   }
-}
-
-void CommsBLE::scanComplete(BLEScanResults foundDevices) {
-  pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
-  scanning = false;
 }
 
 #endif // COMMS_BLE

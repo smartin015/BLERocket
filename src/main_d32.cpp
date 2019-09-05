@@ -11,15 +11,16 @@
 #include "state_spiffs.h"
 #include "state_dummy.h"
 
+#define MAIN_TAG "main_d32"
+
 UIEPaper *ui;
 Engine *engine;
 CommsBLE *comms;
 StateSPIFFS *state;
-bool once;
 
 void setup() {
-  Serial.begin(CONFIG_CONSOLE_UART_BAUDRATE);
-  Serial.println("Initializing...");
+  //Serial.begin(CONFIG_CONSOLE_UART_BAUDRATE);
+  ESP_LOGI(MAIN_TAG, "Initializing...");
   state = new StateSPIFFS();
   engine = new Engine();
   ui = new UIEPaper();
@@ -29,16 +30,15 @@ void setup() {
   comms->init();
   ui->clear();
   engine = state->load();
-  Serial.println("Ready");
-  once = false;
+
+  ESP_LOGI(MAIN_TAG, "Entering main loop");
 }
 
 
 void loop() {
-  //std::cout << "stack size " << uxTaskGetStackHighWaterMark(NULL) << std::endl;
   comms->loop();
 
-  // // Handle any inbound messages before handling user input
+  // Handle any inbound messages before handling user input
   message::MessageT msg = comms->receiveMessage();
   if (msg.oneof.type != message::UMessage_NONE) {
     engine->handleMessage(msg);
@@ -47,12 +47,13 @@ void loop() {
 
   nav::Command cmd = ui->nextCommand();
   while (cmd != nav::Command_unknown) {
-   engine->handleInput(cmd, comms);
-   cmd = ui->nextCommand();
+    ESP_LOGI(MAIN_TAG, "CMD %s", nav::EnumNameCommand(cmd));
+    engine->handleInput(cmd, comms);
+    cmd = ui->nextCommand();
   }
-  ui->clear();
-  ui->render(engine);
-  ui->flush();
+  //ui->clear();
+  //ui->render(engine);
+  //ui->flush();
 }
 
 # endif // ARDUINO_LOLIN_D32_PRO

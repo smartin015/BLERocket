@@ -6,7 +6,7 @@ void StateSPIFFS::init(std::string savePath, std::string metaPath) {
   this->savePath = savePath;
   this->metaPath = metaPath;
   if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
-    std::cerr << "SPIFFS Mount Failed" << std::endl;
+    ESP_LOGE(STATE_TAG, "SPIFFS Mount Failed; cannot load state");
     return;
   }
 }
@@ -14,16 +14,16 @@ void StateSPIFFS::init(std::string savePath, std::string metaPath) {
 std::vector<char> readFile(std::string path) {
   File file = SPIFFS.open(path.c_str());
   if(!file || file.isDirectory()){
-    std::cerr << "failed to open file for reading" << std::endl;
+    ESP_LOGE(STATE_TAG, "failed to open file %s for reading", path.c_str());
     return {};
   }
   std::vector<char> buffer(file.size());
   if (!file.readBytes(buffer.data(), file.size())) {
-    std::cerr << "Failed to read from path " << path << std::endl;
+    ESP_LOGE(STATE_TAG, "Failed to read from path %s", path.c_str());
     return {};
   }
   file.close();
-  std::cout << "Loaded from " << path << std::endl;
+  ESP_LOGI(STATE_TAG, "Loaded from %s", path.c_str());
   return buffer;
 }
 
@@ -38,15 +38,15 @@ Engine* StateSPIFFS::load() {
 bool StateSPIFFS::save(const Engine* engine) {
   File file = SPIFFS.open(savePath.c_str(), FILE_WRITE);
   if(!file){
-    std::cerr << "failed to open file " << savePath << " for writing" << std::endl;
+    ESP_LOGE(STATE_TAG, "failed to open file %s for writing", savePath.c_str());
     return false;
   }
   flatbuffers::FlatBufferBuilder fbb;
   fbb.Finish(game::State::Pack(fbb, engine->getState(), NULL));
   if(!file.write(fbb.GetBufferPointer(), fbb.GetSize())){
-    std::cerr << "failed to save game" << std::endl;
+    ESP_LOGE(STATE_TAG, "failed to save game");
   } else {
-    std::cout << "game saved" << std::endl;
+    ESP_LOGI(STATE_TAG, "game saved");
   }
   file.close();
   return true;

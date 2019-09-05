@@ -94,7 +94,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         }
         ship->owner = 2; // TODO
         state.ships.emplace_back(std::move(ship));
-        std::cout << "New ship created" << std::endl;
+        ESP_LOGI(ENGINE_TAG, "New ship created");
 
         // Get rid of built up parts
         state.parts.clear();
@@ -109,6 +109,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
 
   auto next = nextPage(state.page, cmd);
   if (next != nav::Page_noOp) {
+    ESP_LOGI(ENGINE_TAG, "Nav to page %s", nav::EnumNamePage(next));
     state.page = next;
   }
 }
@@ -118,13 +119,14 @@ void Engine::handleMessage(const message::MessageT& msg) {
     case message::UMessage_status:
       {
         auto m = msg.oneof.Asstatus();
-        std::cout << "Status: \n"
-          << "firmwareVersion " << uint16_t(m->firmwareVersion) << "\n"
-          << "site " << uint16_t(m->site) << "\n"
-          << "score " << m->score << "\n"
-          << "reputation " << m->reputation << "\n"
-          << "user " << uint16_t(m->user) << "\n"
-          << "phase " << uint16_t(m->phase_id) << " (tx " << uint16_t(m->phase_txn) << ")" << std::endl;
+        ESP_LOGI(ENGINE_TAG, "Status: FirmwareVersion %d Site %d Score %d Rep %d User %d Phase %d (tx %d)",
+         uint16_t(m->firmwareVersion),
+         uint16_t(m->site),
+         m->score,
+         m->reputation,
+         uint16_t(m->user),
+         uint16_t(m->phase_id),
+         uint16_t(m->phase_txn));
       }
       break;
     case message::UMessage_ship:

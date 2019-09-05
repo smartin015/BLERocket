@@ -2,6 +2,7 @@
 #ifndef STATE_SPIFFS_H
 #define STATE_SPIFFS_H
 
+#define STATE_TAG "state_spiffs"
 #include "state.h"
 #include "FS.h"
 #include "SPIFFS.h"

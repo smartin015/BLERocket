@@ -8,9 +8,11 @@
 
 #include "comms_base.h"
 
+#define BLE_TAG "comms_ble"
 #define ADVERTISE_DURATION_MILLIS 100
+#define SCAN_INTERVAL_MILLIS 5000
 #define BEACON_NAME "ROCKETSNAT"
-#define SCAN_TIME 5 // Seconds
+#define SCAN_TIME_SECONDS 3 // Seconds
 
 class CommsBLE : public CommsBase, public BLEAdvertisedDeviceCallbacks {
 public:
@@ -24,7 +26,7 @@ protected:
   virtual int receiveToBuffer();
 private:
   uint64_t advertise_start;
-  bool scanning;
+  uint64_t scan_start;
   BLEAdvertising *pAdvertising;
   BLEScan* pBLEScan;
   std::vector<adv_packet_t> stored_packets;

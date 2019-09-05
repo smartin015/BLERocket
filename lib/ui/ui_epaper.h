@@ -8,6 +8,7 @@
 #include <memory>
 #include "GxEPD2_BW.h"
 
+#define UI_TAG "ui_epaper"
 #define WINDOW_SCALE 2
 #define EPAPER_W_PX  250
 #define EPAPER_H_PX  122

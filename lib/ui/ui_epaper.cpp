@@ -57,7 +57,32 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
 }
 
 Command UIEPaper::nextCommand() {
-  // TODO
+  // Handle serial commands
+  if (Serial.available()) {
+    char c = Serial.read();
+    ESP_LOGI(UI_TAG, "Parsing serial %c", c);
+    switch (c) {
+      case 'w':
+        return nav::Command_up;
+        break;
+      case 'a':
+        return nav::Command_left;
+        break;
+      case 's':
+        return nav::Command_down;
+        break;
+      case 'd':
+        return nav::Command_right;
+        break;
+      case 'e':
+        return nav::Command_enter;
+        break;
+      default:
+        break;
+    }
+  }
+
+  // TODO handle button commands
   return nav::Command_unknown;
 }
 
