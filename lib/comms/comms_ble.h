@@ -8,6 +8,7 @@
 
 #include "comms_base.h"
 
+#define ADVERTISE_DURATION_MILLIS 100
 #define BEACON_NAME "ROCKETSNAT"
 #define SCAN_TIME 5 // Seconds
 
@@ -22,9 +23,11 @@ protected:
   virtual void sendBytes(const adv_packet_t& p, const bool& retryUntilAck);
   virtual int receiveToBuffer();
 private:
+  uint64_t advertise_start;
   bool scanning;
   BLEAdvertising *pAdvertising;
   BLEScan* pBLEScan;
+  std::vector<adv_packet_t> stored_packets;
 
   void parseAdvertisement(uint8_t* payload, size_t total_len);
   void scanComplete(BLEScanResults foundDevices);

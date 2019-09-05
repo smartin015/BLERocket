@@ -34,6 +34,7 @@ public:
 protected:
   virtual void drawText(const std::string& text, const int& size, const int& x, const int& y) = 0;
   virtual void drawShape(const std::vector<std::pair<int, int>>& points) = 0;
+  virtual void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) = 0;
 
 private:
   std::string notification;

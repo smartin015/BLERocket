@@ -19,6 +19,7 @@ void CommsBLE::init() {
   pAdvertising = BLEDevice::getAdvertising();
 
   // Init receiver
+  advertise_start = 0;
   scanning = false;
   pBLEScan = BLEDevice::getScan(); //create new scan
   pBLEScan->setAdvertisedDeviceCallbacks(this);
@@ -33,45 +34,37 @@ CommsBLE::~CommsBLE() {
 
 void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
   BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
-  BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
   oAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED 0x04
-  //setShipActionMessage(oAdvertisementData, TYPE_RACE, testShip, dest);
-  // char d[sizeof(ship_action_msg_t) + 2];
 
-  // d[0] = sizeof(ship_action_msg_t);
-  // d[sizeof(ship_action_msg_t)+1] = 0;
+  // Copy packet to BLE advertisement
+  char d[MAX_PACKET_SIZE + 3];
+  d[0] = MAX_PACKET_SIZE;
+  d[1] = PACKET_ID;
+  memcpy(d+2, p, MAX_PACKET_SIZE);
+  d[1+MAX_PACKET_SIZE+1] = 0;
+  oAdvertisementData.addData(d);
 
-  // ship_action_msg_t m;
-  // m.msg = msg;
-  // m.ship = ship;
-  // m.dest = dest;
-  // memcpy(d+1, &m, sizeof(m));
-
-  // Serial.print("Msg ");
-  // for (int i = 0; i < sizeof(ship_action_msg_t) + 2; i++) {
-  //   Serial.printf("%02x|", d[i]);
-  // }
-  // Serial.println("");
-  // adv.addData(d);
-
-  // Max 31 bytes
-  // std::string payload = oAdvertisementData.getPayload();
-  // Serial.print("Payload ");
-  // for (int i = 0; i < payload.size(); i++) {
-  //   Serial.printf("%02x|", payload[i]);
-  // }
-  // Serial.println("");
+  Serial.print("Msg ");
+  for (int i = 0; i < MAX_PACKET_SIZE + 3; i++) {
+    Serial.printf("%02x|", d[i]);
+  }
+  Serial.println("");
   pAdvertising->setAdvertisementData(oAdvertisementData);
+
+  // Empty scan response
+  BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
   pAdvertising->setScanResponseData(oScanResponseData);
 
-  // TODO
-  // advertise_start = millis();
-  // pAdvertising->start();
+  advertise_start = millis();
+  pAdvertising->start();
 }
 
 void CommsBLE::loop() {
-
-  // TODO  pAdvertising->stop();
+  // Wait required time before stopping advertisement.
+  if (advertise_start != 0 && millis() > advertise_start + ADVERTISE_DURATION_MILLIS) {
+    advertise_start = 0;
+    pAdvertising->stop();
+  }
 
   // TODO periodically start scan
   // if (scanning) {
@@ -110,6 +103,10 @@ void CommsBLE::parseAdvertisement(uint8_t* payload, size_t total_len) {
     // Serial.printf("section type %02x len %d\n", ad_type, len);
     Serial.printf("Unknown advertisement, type %02x\n", ad_type);
     payload += len;
+    // adv_packet_t packet;
+    // memcpy(packet, payload)
+    // stored_packets.
+
 
     if (sizeConsumed >= total_len) {
       break;

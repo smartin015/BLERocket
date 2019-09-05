@@ -80,4 +80,11 @@ void UINative::drawShape(const std::vector<std::pair<int, int>>& points) {
   window->draw(convex);
 }
 
+void UINative::drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) {
+  for (int i = 0; i < items.size(); i++) {
+    drawText(items[i], SZ_M, x + SZ_S, y-(i*SZ_M));
+  }
+  drawText(">", SZ_M, x, y-(selected*SZ_M));
+}
+
 #endif // UI_NATIVE

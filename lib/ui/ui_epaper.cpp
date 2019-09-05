@@ -91,4 +91,8 @@ void UIEPaper::drawShape(const std::vector<std::pair<int, int>>& points) {
   // TODO
 }
 
+void UIEPaper::drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) {
+  // TODO
+}
+
 #endif // UI_EPAPER
