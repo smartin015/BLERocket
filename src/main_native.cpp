@@ -45,7 +45,9 @@ bool loop() {
   }
   ui->clear();
   ui->render(engine);
-  return ui->flush();
+  ui->fullUpdate();
+
+  return ui->isOpen();
 }
 
 int main(int argc, char** argv) {

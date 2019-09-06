@@ -52,12 +52,22 @@ void UINative::clear() {
   window->clear();
 }
 
-bool UINative::flush() {
-  if (!window->isOpen()) {
-    return false;
-  }
+void UINative::partialUpdate() {
   window->display();
-  return true;
+}
+
+void UINative::fullUpdate() {
+  window->display();
+}
+
+void UINative::loop() {
+  if (window->isOpen()) {
+    window->display();
+  }
+}
+
+bool UINative::isOpen() {
+  return window->isOpen();
 }
 
 void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y) {

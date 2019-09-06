@@ -20,7 +20,10 @@ public:
   void drawText(const std::string& text, const int& size, const int& x, const int& y);
   void drawShape(const std::vector<std::pair<int, int>>& points);
   void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y);
-  bool flush();
+  void partialUpdate();
+  void fullUpdate();
+  void loop();
+  bool isOpen();
 private:
   std::unique_ptr<sf::RenderWindow> window;
   sf::Font font;

@@ -209,15 +209,19 @@ Command UIEPaper::nextCommand() {
 }
 
 void UIEPaper::clear() {
-  // TODO
-  //display.fillScreen(GxEPD_WHITE);
-  //display.display(false);
+  display.fillScreen(GxEPD_WHITE);
 }
 
-bool UIEPaper::flush() {
-  // TODO
-  return true;
+void UIEPaper::partialUpdate() {
+  display.display(true);
 }
+
+void UIEPaper::fullUpdate() {
+  display.display(false);
+}
+
+void UIEPaper::loop() {};
+bool UIEPaper::isOpen() { return true; };
 
 void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y) {
   // dont' use windowed updates. we don't need to.

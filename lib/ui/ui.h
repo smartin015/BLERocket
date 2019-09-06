@@ -30,8 +30,21 @@ public:
 
   void render(Engine* engine);
   virtual Command nextCommand() = 0;
+
+  // blank the buffer
   virtual void clear() = 0;
-  virtual bool flush() = 0;
+
+  // do any maintenance required for the output (eg redraw on native)
+  virtual void loop() = 0;
+
+  // do a full update of the screen
+  virtual void fullUpdate() = 0;
+
+  // do a partial update of the screen
+  virtual void partialUpdate() = 0;
+
+  // whether the UI has been closed
+  virtual bool isOpen() = 0;
 
 protected:
   virtual void drawText(const std::string& text, const int& size, const int& x, const int& y) = 0;
