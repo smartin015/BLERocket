@@ -57,10 +57,10 @@ void UIEPaper::DrawStringAt(
     ) {
   int16_t xx, yy;
   uint16_t ww, hh;
-  this->display.getTextBounds(s.c_str(), x, y, &xx, &yy, &ww, &hh);
-  this->display.setCursor(x, y+hh);
+  display.getTextBounds(s.c_str(), x, y, &xx, &yy, &ww, &hh);
+  display.setCursor(x, y+hh);
   // TODO - blank bounding rect?
-  this->display.print(s.c_str());
+  display.print(s.c_str());
 
   if (xmax) {
     *xmax = x + ww;
@@ -81,9 +81,9 @@ void UIEPaper::DrawStringWithin(
     const GFXfont* const fonts[] // fonts to pick from
     ) {
 
-  const GFXfont* f = this->PickBestFontForString(s, maxw, fonts);
-  this->display.setFont(f);
-  this->DrawStringAt(s, x, y, xmax, ymax);
+  const GFXfont* f = PickBestFontForString(s, maxw, fonts);
+  display.setFont(f);
+  DrawStringAt(s, x, y, xmax, ymax);
 }
 
 
@@ -94,16 +94,16 @@ void UIEPaper::DrawNametagScreen(
     std::string username,
     std::string site) {
 
-  this->display.setFullWindow();
-  this->display.fillScreen(GxEPD_WHITE);
-  this->display.setRotation(ROTATION_NAMETAG);
+  display.setFullWindow();
+  display.fillScreen(GxEPD_WHITE);
+  display.setRotation(ROTATION_NAMETAG);
 
-  this->DrawSidebarText("press any key to play", true);
+  DrawSidebarText("press any key to play", true);
 
   int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;
   int y_offset = NAMETAG_TOP_MARGIN;
 
-  this->DrawStringWithin(
+  DrawStringWithin(
       firstname,
       x_offset,
       y_offset,
@@ -113,7 +113,7 @@ void UIEPaper::DrawNametagScreen(
       );
   y_offset +=  LINESPACING;
 
-  this->DrawStringWithin(
+  DrawStringWithin(
       lastname,
       x_offset,
       y_offset,
@@ -123,15 +123,15 @@ void UIEPaper::DrawNametagScreen(
       );
   y_offset +=  2*LINESPACING;
 
-  this->display.setFont(&RobotoMonoBold6pt7b);
-  this->DrawStringAt(
+  display.setFont(&RobotoMonoBold6pt7b);
+  DrawStringAt(
       username,
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;
 
-  this->display.setFont(&RobotoMonoBold6pt7b);
-  this->DrawStringAt(
+  display.setFont(&RobotoMonoBold6pt7b);
+  DrawStringAt(
       site,
       x_offset, y_offset,
       NULL, &y_offset);
@@ -140,21 +140,21 @@ void UIEPaper::DrawNametagScreen(
 }
 
 void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
-  int16_t rotation = this->display.getRotation();
+  int16_t rotation = display.getRotation();
   if (leftside) {
     display.setRotation(ROTATION_GAME_LEFTSIDE);
   } else {
     display.setRotation(ROTATION_GAME_RIGHTSIDE);
   }
-  this->display.setFont(&Org_01);
-  this->display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
-  this->display.setTextColor(GxEPD_WHITE);
-  this->display.setCursor(9, 9);
-  this->display.print(text.c_str());
+  display.setFont(&Org_01);
+  display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
+  display.setTextColor(GxEPD_WHITE);
+  display.setCursor(9, 9);
+  display.print(text.c_str());
 
   // clean up
-  this->display.setTextColor(GxEPD_BLACK);
-  this->display.setRotation(rotation);
+  display.setTextColor(GxEPD_BLACK);
+  display.setRotation(rotation);
 }
 
 
@@ -170,7 +170,7 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   display.setFullWindow();
 
   display.fillScreen(GxEPD_WHITE);
-  this->DrawNametagScreen(
+  DrawNametagScreen(
       "Jeff",
       "Cooper",
       "jeffcooper@", 
@@ -210,6 +210,8 @@ Command UIEPaper::nextCommand() {
 
 void UIEPaper::clear() {
   // TODO
+  //display.fillScreen(GxEPD_WHITE);
+  //display.display(false);
 }
 
 bool UIEPaper::flush() {
@@ -218,14 +220,10 @@ bool UIEPaper::flush() {
 }
 
 void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y) {
-  display.setPartialWindow(0, 0, display.width(), display.height());
-
-  do {
-    display.setCursor(x, y); // set the postition to start printing text
-    display.print(text.c_str()); // print some text
-  } while (display.nextPage());
-
- // TODO
+  // dont' use windowed updates. we don't need to.
+  display.setCursor(x, y); // set the postition to start printing text
+  display.print(text.c_str()); // print some text
+  display.display(true);
 }
 
 void UIEPaper::drawShape(const std::vector<std::pair<int, int>>& points) {
