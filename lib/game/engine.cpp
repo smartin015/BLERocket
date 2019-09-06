@@ -142,7 +142,7 @@ void Engine::handleMessage(const message::MessageT& msg) {
         auto m = msg.oneof.Asship();
         ESP_LOGI(ENGINE_TAG, "Ship: Action %s Name %s Parts TODO Owner %d Dest %d",
           message::EnumNameType(m->action),
-          m->ship->name,
+          m->ship->name.c_str(),
           uint16_t(m->ship->owner),
           uint16_t(m->dest_user));
 
