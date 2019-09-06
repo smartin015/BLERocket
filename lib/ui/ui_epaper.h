@@ -25,6 +25,8 @@ public:
 private:
   // TODO
   GxEPD2_BW<GxEPD2_213_B72, GxEPD2_213_B72::HEIGHT> display;
+  void DrawNametagScreen();
+  void DrawSidebarText(std::string text, bool leftside);
 };
 
 #endif // UI_EPAPER_H

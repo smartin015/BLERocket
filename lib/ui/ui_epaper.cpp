@@ -3,6 +3,40 @@
 #include "ui_epaper.h"
 #include "GxEPD2_BW.h"
 #include <Fonts/Org_01.h>
+#include "fonts/PoppinsExtraBold18pt7b.h"
+#include "fonts/RobotoMonoBold6pt7b.h"
+
+#define ROTATION_GAME 3
+#define ROTATION_NAMETAG 1
+#define ROTATION_GAME_LEFTSIDE 0
+#define ROTATION_GAME_RIGHTSIDE 2
+
+static std::string first_name = "";
+static std::string last_name = "";
+
+void UIEPaper::DrawNametagScreen() {
+  this->display.setFullWindow();
+  this->display.fillScreen(GxEPD_WHITE);
+  this->display.setRotation(ROTATION_NAMETAG);
+}
+
+void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
+  int16_t rotation = this->display.getRotation();
+  if (leftside) {
+    display.setRotation(ROTATION_GAME_LEFTSIDE);
+  } else {
+    display.setRotation(ROTATION_GAME_RIGHTSIDE);
+  }
+  this->display.fillRect(0, 0, 122, 15, GxEPD_BLACK);
+  this->display.setTextColor(GxEPD_WHITE);
+  this->display.setCursor(10, 10);
+  this->display.setFont(&Org_01);
+  this->display.print(text.c_str());
+
+  // clean up
+  this->display.setTextColor(GxEPD_BLACK);
+  this->display.setRotation(rotation);
+}
 
 
 UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
@@ -13,7 +47,7 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   // most e-papers have width < height (portrait) as native orientation, especially the small ones
   // in GxEPD2 rotation 0 is used for native orientation (most TFT libraries use 0 fix for portrait orientation)
   // set rotation to 1 (rotate right 90 degrees) to have enough space on small displays (landscape)
-  display.setRotation(3);
+  display.setRotation(ROTATION_GAME);
   // select a suitable font in Adafruit_GFX
   display.setFont(&Org_01);
   // on e-papers black on white is more pleasant to read
@@ -43,7 +77,23 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
     // in case of full buffer it is executed once
     // IMPORTANT: each iteration needs to draw the same, to avoid strange effects
     // use a copy of values that might change, don't read e.g. from analog or pins in the loop!
+    // display.
     display.fillScreen(GxEPD_WHITE); // set the background to white (fill the buffer with value for white)
+    
+    display.setRotation(ROTATION_NAMETAG);
+    display.setFont(&PoppinsExtraBold18pt7b);
+    display.setCursor(30, 40);
+    display.print("JEFF");
+    display.setCursor(30, 70);
+    display.print("COOPER");
+    display.setCursor(30, 90);
+    display.setFont(&RobotoMonoBold6pt7b);
+    display.print("jeffcooper@");
+    display.setCursor(30, 110);
+    display.print("US-PIT");
+
+    this->DrawSidebarText("Rockets n'at 0.1 beta", true);
+
     // end of part executed multiple times
   }
   // tell the graphics class to transfer the buffer content (page) to the controller buffer
@@ -53,7 +103,6 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   // returns false for panels with fast partial update when the controller buffer has been written once more, to make the differential buffers equal
   // (for full buffered with fast partial update the (full) buffer is just transferred again, and false returned)
   while (display.nextPage());
-  //Serial.println("helloWorld done");
 }
 
 Command UIEPaper::nextCommand() {
