@@ -23,8 +23,8 @@
 #define SIDEBAR_WIDTH 15
 #define SIDEBAR_MARGIN 15
 
-#define NAMETAG_TOP_MARGIN 0
-#define LINESPACING 0
+#define NAMETAG_TOP_MARGIN 15
+#define LINESPACING 5
 
 #define EPAPER_LONG_DIMENSION 250
 #define EPAPER_SHORT_DIMENSION 122
@@ -55,6 +55,11 @@ private:
       int maxw,                // maximum width for drawing
       const GFXfont* const fonts[] // fonts to pick from
       );
+void DrawStringAt(
+    std::string s,           // string to draw
+    int x, int y,            // where to draw.
+    int* xmax, int* ymax     // where to store bottom right coords of bounds
+    );
 };
 
 #endif // UI_EPAPER_H

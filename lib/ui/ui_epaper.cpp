@@ -49,17 +49,12 @@ const GFXfont* UIEPaper::PickBestFontForString(
   return font_fount;
 }
 
-// draw text as large as possible given a top-left corner (x,y) and a maximum
-// width maxw. 
-void UIEPaper::DrawStringWithin(
+// draw text at a given location (x,y of top left corner) in the current font
+void UIEPaper::DrawStringAt(
     std::string s,           // string to draw
     int x, int y,            // where to draw.
-    int* xmax, int* ymax,    // where to store bottom right coords of bounds
-    int maxw,                // maximum width for drawing
-    const GFXfont* const fonts[] // fonts to pick from
+    int* xmax, int* ymax     // where to store bottom right coords of bounds
     ) {
-  const GFXfont* f = this->PickBestFontForString(s, maxw, fonts);
-  this->display.setFont(f);
   int16_t xx, yy;
   uint16_t ww, hh;
   this->display.getTextBounds(s.c_str(), x, y, &xx, &yy, &ww, &hh);
@@ -76,6 +71,21 @@ void UIEPaper::DrawStringWithin(
   }
 }
 
+// draw text as large as possible given a top-left corner (x,y) and a maximum
+// width maxw. 
+void UIEPaper::DrawStringWithin(
+    std::string s,           // string to draw
+    int x, int y,            // where to draw.
+    int* xmax, int* ymax,    // where to store bottom right coords of bounds
+    int maxw,                // maximum width for drawing
+    const GFXfont* const fonts[] // fonts to pick from
+    ) {
+
+  const GFXfont* f = this->PickBestFontForString(s, maxw, fonts);
+  this->display.setFont(f);
+  this->DrawStringAt(s, x, y, xmax, ymax);
+}
+
 
 
 void UIEPaper::DrawNametagScreen(
@@ -88,10 +98,10 @@ void UIEPaper::DrawNametagScreen(
   this->display.fillScreen(GxEPD_WHITE);
   this->display.setRotation(ROTATION_NAMETAG);
 
-  this->DrawSidebarText("Rockets n'at 0.1 beta", true);
+  this->DrawSidebarText("press any key to play", true);
 
   int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;
-  int y_offset = 10;
+  int y_offset = NAMETAG_TOP_MARGIN;
 
   this->DrawStringWithin(
       firstname,
@@ -111,6 +121,20 @@ void UIEPaper::DrawNametagScreen(
       EPAPER_LONG_DIMENSION - x_offset,
       KNOWN_FONTS_DISPLAY
       );
+  y_offset +=  2*LINESPACING;
+
+  this->display.setFont(&RobotoMonoBold6pt7b);
+  this->DrawStringAt(
+      username,
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  LINESPACING;
+
+  this->display.setFont(&RobotoMonoBold6pt7b);
+  this->DrawStringAt(
+      site,
+      x_offset, y_offset,
+      NULL, &y_offset);
   y_offset +=  LINESPACING;
 
 }
@@ -122,10 +146,10 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
   } else {
     display.setRotation(ROTATION_GAME_RIGHTSIDE);
   }
+  this->display.setFont(&Org_01);
   this->display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
   this->display.setTextColor(GxEPD_WHITE);
-  this->display.setCursor(10, 10);
-  this->display.setFont(&Org_01);
+  this->display.setCursor(9, 9);
   this->display.print(text.c_str());
 
   // clean up
@@ -134,73 +158,24 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
 }
 
 
+// magic values are SPI pin numbers for d32 pro shield
 UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
+  // set up the display
 	display.init(115200);
-  // TODO
-  //Serial.println("helloWorld");
-  const char text[] = "Hello World!";
-  // most e-papers have width < height (portrait) as native orientation, especially the small ones
-  // in GxEPD2 rotation 0 is used for native orientation (most TFT libraries use 0 fix for portrait orientation)
-  // set rotation to 1 (rotate right 90 degrees) to have enough space on small displays (landscape)
-  display.setRotation(ROTATION_GAME);
-  // select a suitable font in Adafruit_GFX
-  display.setFont(&Org_01);
-  // on e-papers black on white is more pleasant to read
   display.setTextColor(GxEPD_BLACK);
-  // disable text wrapping to avoid whackiness
   display.setTextWrap(false);
+  display.mirror(0);
 
-  // Adafruit_GFX has a handy method getTextBounds() to determine the boundary box for a text for the actual font
-  int16_t tbx, tby; uint16_t tbw, tbh; // boundary box window
-  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh); // it works for origin 0, 0, fortunately (negative tby!)
-  // center bounding box by transposition of origin:
-  uint16_t x = ((display.width() - tbw) / 2) - tbx;
-  uint16_t y = ((display.height() - tbh) / 2) - tby;
   // full window mode is the initial mode, set it anyway
   display.setFullWindow();
 
-  display.fillScreen(GxEPD_WHITE); // set the background to white (fill the buffer with value for white)
-  display.setCursor(x, y); // set the postition to start printing text
-
-  display.mirror(0);
-
-  // here we use paged drawing, even if the processor has enough RAM for full buffer
-  // so this can be used with any supported processor board.
-  // the cost in code overhead and execution time penalty is marginal
-  // tell the graphics class to use paged drawing mode
-  display.firstPage();
-  do
-  {
-    // this part of code is executed multiple times, as many as needed,
-    // in case of full buffer it is executed once
-    // IMPORTANT: each iteration needs to draw the same, to avoid strange effects
-    // use a copy of values that might change, don't read e.g. from analog or pins in the loop!
-    // display.
-    display.fillScreen(GxEPD_WHITE); // set the background to white (fill the buffer with value for white)
-    
-    display.setRotation(ROTATION_NAMETAG);
-    display.setFont(&PoppinsExtraBold18pt7b);
-
-    this->DrawNametagScreen("Firstname", "reallylonglastname", "jeffcooper@", "US-PIT");
-
-
-    display.setCursor(30, 90);
-    display.setFont(&RobotoMonoBold6pt7b);
-    display.print("jeffcooper@");
-    display.setCursor(30, 110);
-    display.print("US-PIT");
-
-    this->DrawSidebarText("Rockets n'at 0.1 beta", true);
-
-    // end of part executed multiple times
-  }
-  // tell the graphics class to transfer the buffer content (page) to the controller buffer
-  // the graphics class will command the controller to refresh to the screen when the last page has been transferred
-  // returns true if more pages need be drawn and transferred
-  // returns false if the last page has been transferred and the screen refreshed for panels without fast partial update
-  // returns false for panels with fast partial update when the controller buffer has been written once more, to make the differential buffers equal
-  // (for full buffered with fast partial update the (full) buffer is just transferred again, and false returned)
-  while (display.nextPage());
+  display.fillScreen(GxEPD_WHITE);
+  this->DrawNametagScreen(
+      "Jeff",
+      "Cooper",
+      "jeffcooper@", 
+      "US-PIT");
+  display.display(false); // do a full update
 }
 
 Command UIEPaper::nextCommand() {
@@ -243,12 +218,6 @@ bool UIEPaper::flush() {
 }
 
 void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y) {
- // int16_t tbx, tby; uint16_t tbw, tbh; // boundary box window
- // display.getTextBounds(text.c_str(), (uint16_t)x, (uint16_t)y, &tbx, &tby, &tbw, &tbh); // it works for origin 0, 0, fortunately (negative tby!)
- // // center bounding box by transposition of origin:
- // uint16_t cx = ((display.width() - tbw) / 2) - tbx;
- // uint16_t cy = ((display.height() - tbh) / 2) - tby;
-
   display.setPartialWindow(0, 0, display.width(), display.height());
 
   do {
