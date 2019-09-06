@@ -178,7 +178,7 @@ void UIEPaper::fullUpdate() {
   display.display(false);
 }
 
-void UIEPaper::setFont(FONT_T* f) {
+void UIEPaper::setFont(const FONT_T* f) {
   display.setFont(f);
 }
 

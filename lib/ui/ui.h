@@ -55,6 +55,9 @@ public:
   // whether the UI has been closed
   virtual bool isOpen() = 0;
 
+  // TODO - temporary while I refactor UI code
+  void drawText(const std::string& text, const int& size, const int& x, const int& y);
+
 protected:
   // draw text at a given location on the screen, with a given orientation.
   // pixels are given relative to specified orientation
@@ -67,20 +70,18 @@ protected:
   virtual void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) = 0;
 
   // set the working font
-  virtual void setFont(FONT_T* f) = 0;
+  virtual void setFont(const FONT_T* f) = 0;
 
   // get the bounds of a text using the currently set font
   virtual void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) = 0;
 
-  FONT_T* PickBestFontForString(
+  const FONT_T* PickBestFontForString(
       std::string s,                // the string to size
       int maxwidth,                 // the largest allowable width
       const FONT_T* const fonts[]   // the list of fonts to pick from
       );
 
 private:
-  // TODO - temporary while I refactor UI code
-  void drawText(const std::string& text, const int& size, const int& x, const int& y);
 
   std::string notification;
   time_t notify_start;

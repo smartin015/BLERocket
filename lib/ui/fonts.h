@@ -12,23 +12,23 @@
 typedef const GFXfont FONT_T;
 
 #include "fonts/PoppinsExtraBold18pt7b.h"
-//#include "fonts/PoppinsExtraBold16pt7b.h"
-//#include "fonts/PoppinsExtraBold12pt7b.h"
-//#include "fonts/PoppinsExtraBold8pt7b.h"
+#include "fonts/PoppinsExtraBold16pt7b.h"
+#include "fonts/PoppinsExtraBold12pt7b.h"
+#include "fonts/PoppinsExtraBold8pt7b.h"
 
 #include "fonts/RobotoMonoBold6pt7b.h"
 #include "fonts/RobotoMonoBold12pt7b.h"
 #include "fonts/RobotoMonoBold14pt7b.h"
 
 
-#define FONT_POPPINS_18 &PoppinsExtraBold18pt7b
-//#define FONT_POPPINS_16 &PoppinsExtraBold16pt7b
-//#define FONT_POPPINS_12 &PoppinsExtraBold12pt7b
-//#define FONT_POPPINS_8  &PoppinsExtraBold8pt7b
+#define FONT_POPPINS_18 PoppinsExtraBold18pt7b
+#define FONT_POPPINS_16 PoppinsExtraBold16pt7b
+#define FONT_POPPINS_12 PoppinsExtraBold12pt7b
+#define FONT_POPPINS_8  PoppinsExtraBold8pt7b
 
-#define FONT_ROBOTO_14  &RobotoMonoBold14pt7b
-#define FONT_ROBOTO_12  &RobotoMonoBold12pt7b
-#define FONT_ROBOTO_6   &RobotoMonoBold6pt7b
+#define FONT_ROBOTO_14  RobotoMonoBold14pt7b
+#define FONT_ROBOTO_12  RobotoMonoBold12pt7b
+#define FONT_ROBOTO_6   RobotoMonoBold6pt7b
 
 #endif // UI_EPAPER
 
@@ -45,43 +45,43 @@ typedef struct {
   int size; // in pixels
 } FONT_T;
 
-FONT_T FONT_POPPINS_18 {
+static FONT_T FONT_POPPINS_18 = {
   NULL,
   "lib/ui/fonts/PoppinsExtraBold.ttf",
   24
 };
 
-FONT_T FONT_POPPINS_16 {
+static FONT_T FONT_POPPINS_16 = {
   NULL,
   "lib/ui/fonts/PoppinsExtraBold.ttf",
   22
 };
 
-FONT_T FONT_POPPINS_12 {
+static FONT_T FONT_POPPINS_12 = {
   NULL,
   "lib/ui/fonts/PoppinsExtraBold.ttf",
   16
 };
 
-FONT_T FONT_POPPINS_8 {
+static FONT_T FONT_POPPINS_8 = {
   NULL,
   "lib/ui/fonts/PoppinsExtraBold.ttf",
   11
 };
 
-FONT_ROBOTO_14 {
+static FONT_T FONT_ROBOTO_14 = {
   NULL,
   "lib/ui/fonts/RobotoMonoBold.ttf",
   19
 };
 
-FONT_ROBOTO_12 {
+static FONT_T FONT_ROBOTO_12 = {
   NULL,
   "lib/ui/fonts/RobotoMonoBold.ttf",
   16
 };
 
-FONT_ROBOTO_6 {
+static FONT_T FONT_ROBOTO_6 = {
   NULL,
   "lib/ui/fonts/RobotoMonoBold.ttf",
   8
@@ -89,10 +89,10 @@ FONT_ROBOTO_6 {
 #endif // UI_NATIVE
 
 static const FONT_T* const KNOWN_FONTS_DISPLAY[] = {
-  FONT_POPPINS_18,
-//  FONT_POPPINS_16,
-//  FONT_POPPINS_12,
-//  FONT_POPPINS_8,
+  &FONT_POPPINS_18,
+  &FONT_POPPINS_16,
+  &FONT_POPPINS_12,
+  &FONT_POPPINS_8,
   NULL,
 };
 

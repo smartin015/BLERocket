@@ -119,7 +119,7 @@ void UI::drawText(const std::string& text, const int& size, const int& x, const 
   drawText(text, size, x, y, 0);
 }
 
-FONT_T* UI::PickBestFontForString(
+const FONT_T* UI::PickBestFontForString(
     std::string s,                // the string to size
     int maxwidth,                 // the largest allowable width
     const FONT_T* const fonts[]   // the list of fonts to pick from

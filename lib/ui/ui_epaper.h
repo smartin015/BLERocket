@@ -37,7 +37,7 @@ public:
   void fullUpdate();
   void loop();
   bool isOpen();
-  void setFont(FONT_T* f);
+  void setFont(const FONT_T* f);
   void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
 
 private:
