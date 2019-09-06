@@ -14,7 +14,7 @@ std::vector<char> readFile(std::string path) {
   std::ifstream file(path, std::ios::binary | std::ios::ate);
 
   if (!file.is_open()) {
-    std::cerr << "No save at file " << path << "; starting new game." << std::endl;
+    ESP_LOGE(FS_TAG, "No save at file %s; starting new game.", path.c_str());
     return {};
   }
 
@@ -22,11 +22,11 @@ std::vector<char> readFile(std::string path) {
   file.seekg(0, std::ios::beg);
   std::vector<char> buffer(size);
   if (!file.read(buffer.data(), size)) {
-    std::cerr << "Failed to read from path " << path << std::endl;
+    ESP_LOGE(FS_TAG, "Failed to read from path %s", path.c_str());
     return {};
   }
 
-  std::cout << "Loaded from " << path << std::endl;
+  ESP_LOGI(FS_TAG, "Loaded from %s", path.c_str());
   return buffer;
 }
 
@@ -41,7 +41,7 @@ Engine* StateFS::load() {
 bool StateFS::save(const Engine* engine) {
   std::ofstream file(savePath, std::ofstream::binary);
   if (!file.is_open()) {
-    std::cerr << "Could not open file " << savePath << " to save state." << std::endl;
+    ESP_LOGE(FS_TAG, "Could not open file %s to save state", savePath.c_str());
     return false;
   }
 
@@ -49,7 +49,7 @@ bool StateFS::save(const Engine* engine) {
   fbb.Finish(game::State::Pack(fbb, engine->getState(), NULL));
   file.write((const char*) fbb.GetBufferPointer(), fbb.GetSize());
   file.close();
-  std::cout << "Saved game state." << std::endl;
+  ESP_LOGI(FS_TAG, "Saved game state");
 }
 
 #endif // STATE_FS

@@ -14,6 +14,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
     metadata->UnPackTo(&data, NULL);
   }
   notifyAcked = true;
+  lastTradeAnnounce = 0;
 }
 
 const game::StateT* Engine::getState() const {
@@ -36,53 +37,51 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   return false;
 }
 
+void sendTestStatus(CommsBase* comms) {
+  // Send example status message
+  message::MessageT msg;
+  msg.oneof.Set<game::StatusT>(game::StatusT());
+  auto* stat = msg.oneof.Asstatus();
+  stat->firmwareVersion = 5;
+  stat->user = 123;
+  stat->phase_id = 1;
+  stat->phase_txn = 3;
+  comms->sendMessage(msg, false);
+}
+
+void sendTestShip(CommsBase* comms) {
+  // Send example ship message
+  message::MessageT msg;
+  msg.oneof.Set<message::ShipT>(message::ShipT());
+  auto* s = msg.oneof.Asship();
+  s->action = message::Type_give;
+  s->dest_user = 1;
+  s->ship.reset(new game::ShipT());
+  s->ship->owner = 2;
+  comms->sendMessage(msg, false);
+}
+
+void sendTestPart(CommsBase* comms) {
+  // Send example part message
+  message::MessageT msg;
+  msg.oneof.Set<message::PartT>(message::PartT());
+  auto* s = msg.oneof.Aspart();
+  s->action = message::Type_give;
+  s->dest_user = 1;
+  s->part.reset(new game::ShipPartT());
+  s->part->type = game::ShipPartType_hull;
+  s->part->quality = 5;
+  comms->sendMessage(msg, false);
+}
+
+void Engine::loop(CommsBase* comms) {
+  tradeLoop(comms);
+}
+
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   switch (state.page) {
     case nav::Page_tradeEntry:
-      if (cmd == nav::Command_up) {
-        // Test user action to "receive" a part (really just increment)
-        // TODO: Handle user input code.
-        if (state.parts.size() == 0) {
-          for (int i = game::ShipPartType_MIN; i <= game::ShipPartType_MAX; i++) {
-            auto part = std::unique_ptr<game::ShipPartT>(new game::ShipPartT());
-            part->type = (game::ShipPartType) i;
-            part->quality = 1;
-            part->creator = 2; // TODO
-            state.parts.emplace_back(std::move(part));
-          }
-        }
-      } else if (cmd == nav::Command_down) {
-        // Send example status message
-        message::MessageT msg;
-        msg.oneof.Set<game::StatusT>(game::StatusT());
-        auto* stat = msg.oneof.Asstatus();
-        stat->firmwareVersion = 5;
-        stat->user = 123;
-        stat->phase_id = 1;
-        stat->phase_txn = 3;
-        comms->sendMessage(msg, false);
-      } else if (cmd == nav::Command_right) {
-        // Send example ship message
-        message::MessageT msg;
-        msg.oneof.Set<message::ShipT>(message::ShipT());
-        auto* s = msg.oneof.Asship();
-        s->action = message::Type_give;
-        s->dest_user = 1;
-        s->ship.reset(new game::ShipT());
-        s->ship->owner = 2;
-        comms->sendMessage(msg, false);
-      } else if (cmd == nav::Command_left) {
-        // Send example part message
-        message::MessageT msg;
-        msg.oneof.Set<message::PartT>(message::PartT());
-        auto* s = msg.oneof.Aspart();
-        s->action = message::Type_give;
-        s->dest_user = 1;
-        s->part.reset(new game::ShipPartT());
-        s->part->type = game::ShipPartType_hull;
-        s->part->quality = 5;
-        comms->sendMessage(msg, false);
-      }
+      tradeInput(cmd, comms);
       break;
     case nav::Page_launchEntry:
       if (cmd != nav::Command_left && !suppressNav(cmd)) {
@@ -99,6 +98,15 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         // Get rid of built up parts
         state.parts.clear();
       }
+    case nav::Page_settingsEntry:
+      if (cmd == nav::Command_down) {
+        sendTestStatus(comms);
+      } else if (cmd == nav::Command_right) {
+        sendTestShip(comms);
+      } else if (cmd == nav::Command_left) {
+        sendTestPart(comms);
+      }
+      break;
     default:
       break;
   }
@@ -132,13 +140,11 @@ void Engine::handleMessage(const message::MessageT& msg) {
     case message::UMessage_ship:
       {
         auto m = msg.oneof.Asship();
-        std::cout << "Ship: \n"
-          << "action " << message::EnumNameType(m->action) << "\n"
-          << "destination " << uint16_t(m->dest_user) << "\n"
-          //<< "name " << m->ship->name << "\n"
-          //<< "owner " << uint16_t(m->ship->owner) << "\n";
-          << "parts TODO" << "\n"
-          << "creators TODO" << "\n";
+        ESP_LOGI(ENGINE_TAG, "Ship: Action %s Name %s Parts TODO Owner %d Dest %d",
+          message::EnumNameType(m->action),
+          m->ship->name,
+          uint16_t(m->ship->owner),
+          uint16_t(m->dest_user));
 
         notification.oneof.Set<message::ShipT>(message::ShipT());
         auto s = notification.oneof.Asship();
@@ -147,17 +153,20 @@ void Engine::handleMessage(const message::MessageT& msg) {
         s->ship.reset(new game::ShipT());
         s->ship->name = "aship";
         notifyAcked = false;
-        std::cout << "Set notification" << std::endl;
+        ESP_LOGI(ENGINE_TAG, "Set notification");
       }
       break;
     case message::UMessage_part:
       {
         auto m = msg.oneof.Aspart();
-        std::cout << "Part: \n"
-          << "action " << message::EnumNameType(m->action) << "\n"
-          << "part " << game::EnumNameShipPartType(m->part->type) << "\n"
-          << "quality " << uint16_t(m->part->quality) << "\n"
-          << "destination " << uint16_t(m->dest_user) << std::endl;
+        ESP_LOGI(ENGINE_TAG, "Part: Action %s Part %s Quality %d Dest %d",
+          message::EnumNameType(m->action),
+          game::EnumNameShipPartType(m->part->type),
+          uint16_t(m->part->quality),
+          uint16_t(m->dest_user));
+        if (m->action == message::Type_make) {
+          tradeMakePart(*(m->part));
+        }
       }
       break;
     default:

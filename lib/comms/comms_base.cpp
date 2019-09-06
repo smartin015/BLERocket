@@ -29,7 +29,7 @@ void CommsBase::packMessage(const message::MessageT& msg, adv_packet_t& p) {
       }
       break;
     default:
-      std::cerr << "Could not pack message type " << uint16_t(p[0]) << std::endl;
+      ESP_LOGE(COMMS_TAG, "Could not pack message type %d", uint16_t(p[0]));
   }
 }
 
@@ -66,7 +66,7 @@ const message::MessageT CommsBase::unpackMessage(const adv_packet_t& p) {
       }
       break;
     default:
-      std::cerr << "Could not unpack message type " << uint16_t(p[0]) << std::endl;
+      ESP_LOGE(COMMS_TAG, "Could not unpack message type %d", uint16_t(p[0]));
   }
   //message::GetMessage(packet)->UnPackTo(&result, NULL);
   return result;
@@ -85,20 +85,18 @@ const message::MessageT CommsBase::receiveMessage() {
   }
   if (bytes_read == -1) {
     if (errno != EAGAIN) {
-      std::cerr << "Recieve message: " << errno << " " << strerror(errno) << std::endl;
+      ESP_LOGE(COMMS_TAG, "Recieve message %d: %s ", errno, strerror(errno));
     }
     return message::MessageT();
   }
   if (bytes_read > MAX_PACKET_SIZE) {
-    std::cerr << "Message size exceeds max packet size" << std::endl;
+    ESP_LOGE(COMMS_TAG, "Message size exceeds max packet size");
   }
 
-  std::cerr << "unpacking" << std::endl;
   auto result = unpackMessage(buffer);
-  std::cerr << "Got " << message::EnumNameUMessage(result.oneof.type) << " message" << std::endl;
+  ESP_LOGI(COMMS_TAG, "Got %s message", message::EnumNameUMessage(result.oneof.type));
 
-  // Ignore Ship / Part actions not meant for us
-
+  // TODO ignore Ship / Part actions not meant for us (dest != user and dest != 0)
 
   return result;
 }

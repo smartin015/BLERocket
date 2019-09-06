@@ -5,6 +5,13 @@
 #include <memory>
 #include <iostream>
 
+#define COMMS_TAG "comms_base"
+#ifdef ARDUINO_LOLIN_D32_PRO
+#include "esp_log.h"
+#else
+#include "macrologger.h"
+#endif
+
 // This packet ID prefixes every game packet
 #define PACKET_ID 0x6CC6
 

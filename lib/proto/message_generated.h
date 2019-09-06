@@ -22,18 +22,20 @@ struct PartT;
 
 enum Type {
   Type_give = 0,
-  Type_launch = 1,
-  Type_race = 2,
-  Type_trade = 3,
-  Type_explore = 4,
-  Type_score = 5,
+  Type_make = 1,
+  Type_launch = 2,
+  Type_race = 3,
+  Type_trade = 4,
+  Type_explore = 5,
+  Type_score = 6,
   Type_MIN = Type_give,
   Type_MAX = Type_score
 };
 
-inline const Type (&EnumValuesType())[6] {
+inline const Type (&EnumValuesType())[7] {
   static const Type values[] = {
     Type_give,
+    Type_make,
     Type_launch,
     Type_race,
     Type_trade,
@@ -46,6 +48,7 @@ inline const Type (&EnumValuesType())[6] {
 inline const char * const *EnumNamesType() {
   static const char * const names[] = {
     "give",
+    "make",
     "launch",
     "race",
     "trade",

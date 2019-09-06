@@ -6,16 +6,16 @@ namespace message;
 enum Type:ubyte {
  // Resource messages
  give = 0,
- // MAKE
- launch = 1,
+ make = 1,
+ launch = 2,
 
  // Ship action messages
- race = 2,
- trade = 3,
- explore = 4,
+ race = 3,
+ trade = 4,
+ explore = 5,
 
  // Status messages
- score = 5,
+ score = 6,
 }
 
 union UMessage {

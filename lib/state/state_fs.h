@@ -5,6 +5,8 @@
 #include "state.h"
 #include <string.h>
 
+#define FS_TAG "state_fs"
+
 class StateFS : public State {
 public:
   StateFS(std::string savePath, std::string metaPath);

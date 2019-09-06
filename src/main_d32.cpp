@@ -36,6 +36,7 @@ void setup() {
 
 
 void loop() {
+  engine->loop(comms);
   comms->loop();
 
   // Handle any inbound messages before handling user input
