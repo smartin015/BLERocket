@@ -6,12 +6,13 @@
 #include <iostream>
 
 // This packet ID prefixes every game packet
-#define PACKET_ID 0x7A
+#define PACKET_ID 0x6CC6
 
 // BLE advertisement max payload size is 31 bytes,
-// but we limit to 30 to allow for a common ID at the head of every packet.
-#define MAX_PACKET_SIZE    30
-typedef char adv_packet_t[MAX_PACKET_SIZE+1];
+// but we allow for a common ID at the head of every packet.
+// This plus some other stuff brings us down to 26 usable bytes for data.
+#define MAX_PACKET_SIZE    26
+typedef std::array<char, MAX_PACKET_SIZE+1> adv_packet_t;
 
 class CommsBase {
 public:

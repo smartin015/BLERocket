@@ -8,10 +8,48 @@ using namespace std::placeholders;
 // BLEAddress match1("24:0a:c4:9a:a5:de");
 // BLEAddress match2("24:0a:c4:9a:a6:ce");
 void CommsBLE::onResult(BLEAdvertisedDevice d) {
-  // if (!d.getAddress().equals(match1) && !d.getAddress().equals(match2)) {
-  //   return;
-  // }
-  parseAdvertisement(d.getPayload(), d.getPayloadLength());
+  uint8_t* payload = d.getPayload();
+  size_t total_len = d.getPayloadLength();
+
+  uint8_t len;
+  uint16_t ad_type;
+  uint8_t msg_type;
+  uint8_t sizeConsumed = 0;
+
+  while(true) {
+    len = *payload;
+    payload++; // Skip to type
+    sizeConsumed += 1 + len;
+
+    if (len == 0) {
+      break; // A length of 0 indicates that we have reached the end.
+    }
+
+    ad_type = ((*(payload+1)) << 8) | (*(payload) & 0xFF);
+    msg_type = *(payload+2);
+    // I (109010) comms_ble: packet id 2c6 type 02 len 29
+    if (ad_type == PACKET_ID
+      && msg_type >= message::UMessage_MIN
+      && msg_type <= message::UMessage_MAX) {
+      ESP_LOGI(BLE_TAG, "packet id %x type %02x len %d", ad_type, msg_type, len);
+      // Msg 1d|c6|6c|02|00|01|02|f0|00|fd|3f|f0|00|fd|3f|03|00|00|00|c0|1a|0d|80|40|04|fd|3f|00|b3|fd|3f|88|
+      // Rcv    c6|6c|02|ba|20|00|84|be|fd|3f|00|10|2a|00|01|00|00|00|04|3e|28|02|01|02|01|70|e7|b3|a9|
+      Serial.print("Recv ");
+      for (int i = 0; i < std::min((int)len, MAX_PACKET_SIZE); i++) {
+        Serial.printf("%02x|", payload[i]);
+      }
+      adv_packet_t p;
+      memcpy(p.data(), payload+2, std::min((int)len, MAX_PACKET_SIZE));
+      stored_packets.push(p);
+    } else {
+      // Serial.printf("Skipping unknown advertisement, type %02x\n", ad_type);
+      payload += len;
+    }
+
+    if (sizeConsumed >= total_len) {
+      break;
+    }
+  }
 }
 
 void CommsBLE::init() {
@@ -34,31 +72,64 @@ CommsBLE::~CommsBLE() {
 }
 
 void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
-  BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
+  oAdvertisementData = BLEAdvertisementData();
   oAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED 0x04
 
   // Copy packet to BLE advertisement
-  char d[MAX_PACKET_SIZE + 3];
+  std::string d;
+  d.resize(MAX_PACKET_SIZE+2);
   d[0] = MAX_PACKET_SIZE;
-  d[1] = PACKET_ID;
-  memcpy(d+2, p, MAX_PACKET_SIZE);
-  d[1+MAX_PACKET_SIZE+1] = 0;
-  oAdvertisementData.addData(d);
-
-  Serial.print("Msg ");
-  for (int i = 0; i < MAX_PACKET_SIZE + 3; i++) {
-    Serial.printf("%02x|", d[i]);
+  d[1] = PACKET_ID & 0xFF;
+  d[2] = (PACKET_ID >> 8) & 0XFF;
+  for (int i = 0; i < MAX_PACKET_SIZE; i++) {
+    d[i+3] = p.data()[i];
   }
-  Serial.println("");
+  {
+    ESP_LOGI(BLE_TAG, "DMsg (%d) ", (int) d.length());
+    for (int i = 0; i < d.length(); i++) {
+      Serial.printf("%02x|", d[i]);
+    }
+    Serial.println("");
+  }
+  size_t size_pre = oAdvertisementData.getPayload().length();
+  {
+    std::string payload = oAdvertisementData.getPayload();
+    ESP_LOGI(BLE_TAG, "Premsg (%d) ", (int) payload.length());
+    for (int i = 0; i < payload.length(); i++) {
+      Serial.printf("%02x|", payload[i]);
+    }
+    Serial.println("");
+  }
+  oAdvertisementData.addData(d);
+  {
+    std::string payload = oAdvertisementData.getPayload();
+    ESP_LOGI(BLE_TAG, "Msg (%d)", (int) payload.length());
+    for (int i = 0; i < payload.length(); i++) {
+      Serial.printf("%02x|", payload[i]);
+    }
+    Serial.println("");
+  }
+  size_t size_post = oAdvertisementData.getPayload().length();
+  if (size_pre == size_post) {
+    ESP_LOGE(BLE_TAG, "Could not add message data to BLE advertisement! Too large?");
+  }
+
   pAdvertising->setAdvertisementData(oAdvertisementData);
 
   // Empty scan response
-  BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
+  oScanResponseData = BLEAdvertisementData();
   pAdvertising->setScanResponseData(oScanResponseData);
 
+
   advertise_start = millis();
-  pAdvertising->start();
   ESP_LOGI(BLE_TAG, "Starting advertisement");
+  pAdvertising->start();
+  // TODO RM
+  delay(100);
+  pAdvertising->stop();
+  advertise_start = 0;
+
+  ESP_LOGI(BLE_TAG, "stopped");
 }
 
 void CommsBLE::loop() {
@@ -66,6 +137,7 @@ void CommsBLE::loop() {
   if (advertise_start != 0 && millis() > advertise_start + ADVERTISE_DURATION_MILLIS) {
     advertise_start = 0;
     pAdvertising->stop();
+    ESP_LOGI(BLE_TAG, "Stopped advertisement");
   }
 
   if (advertise_start == 0 && millis() - scan_start > SCAN_INTERVAL_MILLIS) {
@@ -76,45 +148,12 @@ void CommsBLE::loop() {
 }
 
 int CommsBLE::receiveToBuffer() {
-  // TODO
-  return 0;
-}
-
-void CommsBLE::parseAdvertisement(uint8_t* payload, size_t total_len) {
-  // BLE packets are made up of a
-  uint8_t len;
-  uint8_t ad_type;
-  uint8_t sizeConsumed = 0;
-
-  while(true) {
-    len = *payload;
-    payload++; // Skip to type
-    sizeConsumed += 1 + len;
-
-    if (len == 0) {
-      break; // A length of 0 indicates that we have reached the end.
-    }
-
-    ad_type = *payload;
-    if (ad_type != PACKET_ID) {
-      // Serial.printf("Skipping unknown advertisement, type %02x\n", ad_type);
-      payload += len;
-    } else {
-      Serial.println("TODO buffer advertisement matching PACKET_ID");
-      Serial.print("Recv ");
-      for (int i = 0; i < (total_len-sizeConsumed); i++) {
-        Serial.printf("%x|", payload[i]);
-      }
-      Serial.printf("section type %02x len %d\n", ad_type, len);
-      // adv_packet_t packet;
-      // memcpy(packet, payload)
-      // stored_packets.
-    }
-
-    if (sizeConsumed >= total_len) {
-      break;
-    }
+  if (stored_packets.empty()) {
+    return 0;
   }
+  memcpy(buffer.data(), stored_packets.front().data(), MAX_PACKET_SIZE);
+  stored_packets.pop();
+  return MAX_PACKET_SIZE;
 }
 
 #endif // COMMS_BLE

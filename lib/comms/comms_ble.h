@@ -5,11 +5,12 @@
 #include <BLEDevice.h>
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
+#include <queue>
 
 #include "comms_base.h"
 
 #define BLE_TAG "comms_ble"
-#define ADVERTISE_DURATION_MILLIS 100
+#define ADVERTISE_DURATION_MILLIS 300
 #define SCAN_INTERVAL_MILLIS 5000
 #define BEACON_NAME "ROCKETSNAT"
 #define SCAN_TIME_SECONDS 3 // Seconds
@@ -28,11 +29,10 @@ private:
   uint64_t advertise_start;
   uint64_t scan_start;
   BLEAdvertising *pAdvertising;
+  BLEAdvertisementData oAdvertisementData;
+  BLEAdvertisementData oScanResponseData;
   BLEScan* pBLEScan;
-  std::vector<adv_packet_t> stored_packets;
-
-  void parseAdvertisement(uint8_t* payload, size_t total_len);
-  void scanComplete(BLEScanResults foundDevices);
+  std::queue<adv_packet_t> stored_packets;
 };
 
 #endif // COMMS_BLE_H

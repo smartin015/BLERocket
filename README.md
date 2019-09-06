@@ -14,3 +14,7 @@
 - Photos: https://photos.app.goo.gl/SCY7WTNyaFZkhxnp9
 - https://github.com/platformio/platform-espressif32/tree/develop/examples/espidf-arduino-blink <-- example using both espidf and arduino frameworks in platformio
 
+## Notes
+
+https://github.com/nkolban/esp32-snippets/issues/797
+Requires commenting out start() in `.platformio/packages/framework-arduinoespressif32/libraries/BLE/src/BLEAdvertising.cpp`
