@@ -9,6 +9,7 @@ public:
   CommsDummy();
   ~CommsDummy();
   void loop() {};
+  void init() {};
 protected:
   virtual void sendBytes(const adv_packet_t& p, const bool& retryUntilAck);
   virtual int receiveToBuffer();
