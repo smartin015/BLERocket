@@ -3,21 +3,116 @@
 #include "ui_epaper.h"
 #include "GxEPD2_BW.h"
 #include <Fonts/Org_01.h>
-#include "fonts/PoppinsExtraBold18pt7b.h"
-#include "fonts/RobotoMonoBold6pt7b.h"
+#include <gfxfont.h>
 
-#define ROTATION_GAME 3
-#define ROTATION_NAMETAG 1
-#define ROTATION_GAME_LEFTSIDE 0
-#define ROTATION_GAME_RIGHTSIDE 2
+
+#include "fonts/PoppinsExtraBold18pt7b.h"
+#include "fonts/PoppinsExtraBold16pt7b.h"
+#include "fonts/PoppinsExtraBold12pt7b.h"
+#include "fonts/PoppinsExtraBold8pt7b.h"
+
+#include "fonts/RobotoMonoBold6pt7b.h"
+#include "fonts/RobotoMonoBold12pt7b.h"
+#include "fonts/RobotoMonoBold14pt7b.h"
+
 
 static std::string first_name = "";
 static std::string last_name = "";
 
-void UIEPaper::DrawNametagScreen() {
+static const GFXfont* const KNOWN_FONTS_DISPLAY[] = {
+  &PoppinsExtraBold18pt7b,
+  &PoppinsExtraBold16pt7b,
+  &PoppinsExtraBold12pt7b,
+  &PoppinsExtraBold8pt7b,
+  NULL,
+};
+
+const GFXfont* UIEPaper::PickBestFontForString(
+    std::string s,                // the string to size
+    int maxwidth,                 // the largest allowable width
+    const GFXfont* const fonts[]  // the list of fonts to pick from
+    ) {
+  int max_width_found = -1;
+  const GFXfont* font_fount = NULL;
+
+  for (int i = 0; KNOWN_FONTS_DISPLAY[i] != NULL; i++) {
+    int16_t xmin, ymin;
+    uint16_t w, h;
+    display.setFont(fonts[i]);
+    display.getTextBounds(s.c_str(), 0, 0, &xmin, &ymin, &w, &h);
+    int totalw = w - xmin;
+    if (totalw - xmin > max_width_found  && totalw <= maxwidth) {
+      max_width_found = w - xmin;
+      font_fount = fonts[i];
+    }
+  }
+  return font_fount;
+}
+
+// draw text as large as possible given a top-left corner (x,y) and a maximum
+// width maxw. 
+void UIEPaper::DrawStringWithin(
+    std::string s,           // string to draw
+    int x, int y,            // where to draw.
+    int* xmax, int* ymax,    // where to store bottom right coords of bounds
+    int maxw,                // maximum width for drawing
+    const GFXfont* const fonts[] // fonts to pick from
+    ) {
+  const GFXfont* f = this->PickBestFontForString(s, maxw, fonts);
+  this->display.setFont(f);
+  int16_t xx, yy;
+  uint16_t ww, hh;
+  this->display.getTextBounds(s.c_str(), x, y, &xx, &yy, &ww, &hh);
+  this->display.setCursor(x, y+hh);
+  // TODO - blank bounding rect?
+  this->display.print(s.c_str());
+
+  if (xmax) {
+    *xmax = x + ww;
+  }
+
+  if (ymax) {
+    *ymax = y+hh;;
+  }
+}
+
+
+
+void UIEPaper::DrawNametagScreen(
+    std::string firstname,
+    std::string lastname,
+    std::string username,
+    std::string site) {
+
   this->display.setFullWindow();
   this->display.fillScreen(GxEPD_WHITE);
   this->display.setRotation(ROTATION_NAMETAG);
+
+  this->DrawSidebarText("Rockets n'at 0.1 beta", true);
+
+  int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;
+  int y_offset = 10;
+
+  this->DrawStringWithin(
+      firstname,
+      x_offset,
+      y_offset,
+      NULL, &y_offset,
+      EPAPER_LONG_DIMENSION - x_offset,
+      KNOWN_FONTS_DISPLAY
+      );
+  y_offset +=  LINESPACING;
+
+  this->DrawStringWithin(
+      lastname,
+      x_offset,
+      y_offset,
+      NULL, &y_offset,
+      EPAPER_LONG_DIMENSION - x_offset,
+      KNOWN_FONTS_DISPLAY
+      );
+  y_offset +=  LINESPACING;
+
 }
 
 void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
@@ -27,7 +122,7 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
   } else {
     display.setRotation(ROTATION_GAME_RIGHTSIDE);
   }
-  this->display.fillRect(0, 0, 122, 15, GxEPD_BLACK);
+  this->display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
   this->display.setTextColor(GxEPD_WHITE);
   this->display.setCursor(10, 10);
   this->display.setFont(&Org_01);
@@ -52,6 +147,9 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   display.setFont(&Org_01);
   // on e-papers black on white is more pleasant to read
   display.setTextColor(GxEPD_BLACK);
+  // disable text wrapping to avoid whackiness
+  display.setTextWrap(false);
+
   // Adafruit_GFX has a handy method getTextBounds() to determine the boundary box for a text for the actual font
   int16_t tbx, tby; uint16_t tbw, tbh; // boundary box window
   display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh); // it works for origin 0, 0, fortunately (negative tby!)
@@ -82,10 +180,10 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
     
     display.setRotation(ROTATION_NAMETAG);
     display.setFont(&PoppinsExtraBold18pt7b);
-    display.setCursor(30, 40);
-    display.print("JEFF");
-    display.setCursor(30, 70);
-    display.print("COOPER");
+
+    this->DrawNametagScreen("Firstname", "reallylonglastname", "jeffcooper@", "US-PIT");
+
+
     display.setCursor(30, 90);
     display.setFont(&RobotoMonoBold6pt7b);
     display.print("jeffcooper@");
