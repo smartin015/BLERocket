@@ -6,6 +6,8 @@
 #include <vector>
 #include <time.h>
 
+#include "fonts.h"
+
 #define SZ_S 10
 #define SZ_M 20
 #define SZ_L 30
@@ -65,6 +67,16 @@ protected:
   virtual void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) = 0;
 
   // set the working font
+  virtual void setFont(FONT_T* f) = 0;
+
+  // get the bounds of a text using the currently set font
+  virtual void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) = 0;
+
+  FONT_T* PickBestFontForString(
+      std::string s,                // the string to size
+      int maxwidth,                 // the largest allowable width
+      const FONT_T* const fonts[]   // the list of fonts to pick from
+      );
 
 private:
   // TODO - temporary while I refactor UI code

@@ -8,6 +8,8 @@
 #include <memory>
 #include "GxEPD2_BW.h"
 
+#include "fonts.h"
+
 #define UI_TAG "ui_epaper"
 #define WINDOW_SCALE 2
 #define EPAPER_W_PX  250
@@ -35,8 +37,10 @@ public:
   void fullUpdate();
   void loop();
   bool isOpen();
+  void setFont(FONT_T* f);
+  void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
+
 private:
-  // TODO
   GxEPD2_BW<GxEPD2_213_B72, GxEPD2_213_B72::HEIGHT> display;
   void DrawNametagScreen(
       std::string firstname,
@@ -44,19 +48,18 @@ private:
       std::string username,
       std::string site);
   void DrawSidebarText(std::string text, bool leftside);
-  const GFXfont* PickBestFontForString(std::string s, int maxwidth, const GFXfont* const fonts[]);
   void DrawStringWithin(
       std::string s,           // string to draw
       int x, int y,            // where to draw.
       int* xmax, int* ymax,    // where to store bottom right coords of bounds
       int maxw,                // maximum width for drawing
-      const GFXfont* const fonts[] // fonts to pick from
+      const FONT_T* const fonts[] // fonts to pick from
       );
-void DrawStringAt(
-    std::string s,           // string to draw
-    int x, int y,            // where to draw.
-    int* xmax, int* ymax     // where to store bottom right coords of bounds
-    );
+  void DrawStringAt(
+      std::string s,           // string to draw
+      int x, int y,            // where to draw.
+      int* xmax, int* ymax     // where to store bottom right coords of bounds
+      );
 };
 
 #endif // UI_EPAPER_H

@@ -17,7 +17,7 @@ public:
   UINative();
   Command nextCommand();
   void clear();
-  void drawText(const std::string& text, const int& size, const int& x, const int& y);
+  void drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation);
   void drawShape(const std::vector<std::pair<int, int>>& points);
   void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y);
   void partialUpdate();

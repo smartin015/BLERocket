@@ -6,9 +6,10 @@
 // Define a font type.
 #ifdef UI_EPAPER
 
+#include <Arduino.h>
 #include "gfxfont.h"
 
-typedef GFXfont FONT_T;
+typedef const GFXfont FONT_T;
 
 #include "fonts/PoppinsExtraBold18pt7b.h"
 #include "fonts/PoppinsExtraBold16pt7b.h"
@@ -34,7 +35,6 @@ typedef GFXfont FONT_T;
 
 
 #ifdef UI_NATIVE
-
 #include <SFML/Graphics.hpp>
 
 // This is a hack. The idea is that we statically initialize the structs here,
@@ -42,12 +42,59 @@ typedef GFXfont FONT_T;
 typedef struct {
   sf::Font* ttf; // NULL untill runtime
   const char* filename;
-  int height;
+  int size; // in pixels
 } FONT_T;
 
-FONT_T 
+FONT_T FONT_POPPINS_18 {
+  NULL,
+  "lib/ui/fonts/PoppinsExtraBold.ttf",
+  24
+};
 
+FONT_T FONT_POPPINS_16 {
+  NULL,
+  "lib/ui/fonts/PoppinsExtraBold.ttf",
+  22
+};
+
+FONT_T FONT_POPPINS_12 {
+  NULL,
+  "lib/ui/fonts/PoppinsExtraBold.ttf",
+  16
+};
+
+FONT_T FONT_POPPINS_8 {
+  NULL,
+  "lib/ui/fonts/PoppinsExtraBold.ttf",
+  11
+};
+
+FONT_ROBOTO_14 {
+  NULL,
+  "lib/ui/fonts/RobotoMonoBold.ttf",
+  19
+};
+
+FONT_ROBOTO_12 {
+  NULL,
+  "lib/ui/fonts/RobotoMonoBold.ttf",
+  16
+};
+
+FONT_ROBOTO_6 {
+  NULL,
+  "lib/ui/fonts/RobotoMonoBold.ttf",
+  8
+};
 #endif // UI_NATIVE
+
+static const FONT_T* const KNOWN_FONTS_DISPLAY[] = {
+  FONT_POPPINS_18,
+  FONT_POPPINS_16,
+  FONT_POPPINS_12,
+  FONT_POPPINS_8,
+  NULL,
+};
 
 
 #endif //_FONTS_H_

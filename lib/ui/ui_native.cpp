@@ -70,7 +70,7 @@ bool UINative::isOpen() {
   return window->isOpen();
 }
 
-void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y) {
+void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
   sf::Text t;
   t.setFont(font);
   t.setString(text);

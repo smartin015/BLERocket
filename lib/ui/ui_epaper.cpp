@@ -7,40 +7,6 @@
 
 #include "fonts.h"
 
-
-static std::string first_name = "";
-static std::string last_name = "";
-
-static const FONT_T* const KNOWN_FONTS_DISPLAY[] = {
-  FONT_POPPINS_18,
-  FONT_POPPINS_16,
-  FONT_POPPINS_12,
-  FONT_POPPINS_8,
-  NULL,
-};
-
-const GFXfont* UIEPaper::PickBestFontForString(
-    std::string s,                // the string to size
-    int maxwidth,                 // the largest allowable width
-    const GFXfont* const fonts[]  // the list of fonts to pick from
-    ) {
-  int max_width_found = -1;
-  const GFXfont* font_fount = NULL;
-
-  for (int i = 0; KNOWN_FONTS_DISPLAY[i] != NULL; i++) {
-    int16_t xmin, ymin;
-    uint16_t w, h;
-    display.setFont(fonts[i]);
-    display.getTextBounds(s.c_str(), 0, 0, &xmin, &ymin, &w, &h);
-    int totalw = w - xmin;
-    if (totalw - xmin > max_width_found  && totalw <= maxwidth) {
-      max_width_found = w - xmin;
-      font_fount = fonts[i];
-    }
-  }
-  return font_fount;
-}
-
 // draw text at a given location (x,y of top left corner) in the current font
 void UIEPaper::DrawStringAt(
     std::string s,           // string to draw
@@ -70,11 +36,11 @@ void UIEPaper::DrawStringWithin(
     int x, int y,            // where to draw.
     int* xmax, int* ymax,    // where to store bottom right coords of bounds
     int maxw,                // maximum width for drawing
-    const GFXfont* const fonts[] // fonts to pick from
+    const FONT_T* const fonts[] // fonts to pick from
     ) {
 
-  const GFXfont* f = PickBestFontForString(s, maxw, fonts);
-  display.setFont(f);
+  const FONT_T* f = PickBestFontForString(s, maxw, fonts);
+  setFont(f);
   DrawStringAt(s, x, y, xmax, ymax);
 }
 
@@ -115,14 +81,14 @@ void UIEPaper::DrawNametagScreen(
       );
   y_offset +=  2*LINESPACING;
 
-  display.setFont(&RobotoMonoBold6pt7b);
+  setFont(&RobotoMonoBold6pt7b);
   DrawStringAt(
       username,
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;
 
-  display.setFont(&RobotoMonoBold6pt7b);
+  setFont(&RobotoMonoBold6pt7b);
   DrawStringAt(
       site,
       x_offset, y_offset,
@@ -138,7 +104,7 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
   } else {
     display.setRotation(ROTATION_GAME_RIGHTSIDE);
   }
-  display.setFont(&Org_01);
+  setFont(&Org_01);
   display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
   display.setTextColor(GxEPD_WHITE);
   display.setCursor(9, 9);
@@ -211,6 +177,21 @@ void UIEPaper::partialUpdate() {
 void UIEPaper::fullUpdate() {
   display.display(false);
 }
+
+void UIEPaper::setFont(FONT_T* f) {
+  display.setFont(f);
+}
+
+void UIEPaper::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) {
+  int16_t xx, yy;
+  uint16_t ww, hh;
+  display.getTextBounds(s.c_str(), 0, 0, &xx, &yy, &ww, &hh);
+  *xmin = xx;
+  *ymin = yy;
+  *w = ww;
+  *h = hh;
+}
+
 
 void UIEPaper::loop() {};
 bool UIEPaper::isOpen() { return true; };
