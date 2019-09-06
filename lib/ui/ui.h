@@ -24,6 +24,13 @@
 
 #define SELECTOR_NUM_ITEMS 5
 
+#define ROTATION_GAME 3
+#define ROTATION_NAMETAG 1
+#define ROTATION_GAME_LEFTSIDE 0
+#define ROTATION_GAME_RIGHTSIDE 2
+#define ROTATION_NAMETAG_RIGHTSIDE 0
+#define ROTATION_NAMETAG_LEFTSIDE 2
+
 class UI {
 public:
   UI() : fleetTop(0), fleetSelect(0) {}
@@ -47,11 +54,22 @@ public:
   virtual bool isOpen() = 0;
 
 protected:
-  virtual void drawText(const std::string& text, const int& size, const int& x, const int& y) = 0;
+  // draw text at a given location on the screen, with a given orientation.
+  // pixels are given relative to specified orientation
+  virtual void drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) = 0;
+
+  // TODO
   virtual void drawShape(const std::vector<std::pair<int, int>>& points) = 0;
+
+  // TODO
   virtual void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) = 0;
 
+  // set the working font
+
 private:
+  // TODO - temporary while I refactor UI code
+  void drawText(const std::string& text, const int& size, const int& x, const int& y);
+
   std::string notification;
   time_t notify_start;
   void handleNotification(const message::MessageT& msg);

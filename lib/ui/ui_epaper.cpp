@@ -5,25 +5,17 @@
 #include <Fonts/Org_01.h>
 #include <gfxfont.h>
 
-
-#include "fonts/PoppinsExtraBold18pt7b.h"
-#include "fonts/PoppinsExtraBold16pt7b.h"
-#include "fonts/PoppinsExtraBold12pt7b.h"
-#include "fonts/PoppinsExtraBold8pt7b.h"
-
-#include "fonts/RobotoMonoBold6pt7b.h"
-#include "fonts/RobotoMonoBold12pt7b.h"
-#include "fonts/RobotoMonoBold14pt7b.h"
+#include "fonts.h"
 
 
 static std::string first_name = "";
 static std::string last_name = "";
 
-static const GFXfont* const KNOWN_FONTS_DISPLAY[] = {
-  &PoppinsExtraBold18pt7b,
-  &PoppinsExtraBold16pt7b,
-  &PoppinsExtraBold12pt7b,
-  &PoppinsExtraBold8pt7b,
+static const FONT_T* const KNOWN_FONTS_DISPLAY[] = {
+  FONT_POPPINS_18,
+  FONT_POPPINS_16,
+  FONT_POPPINS_12,
+  FONT_POPPINS_8,
   NULL,
 };
 
@@ -223,11 +215,10 @@ void UIEPaper::fullUpdate() {
 void UIEPaper::loop() {};
 bool UIEPaper::isOpen() { return true; };
 
-void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y) {
+void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
   // dont' use windowed updates. we don't need to.
   display.setCursor(x, y); // set the postition to start printing text
   display.print(text.c_str()); // print some text
-  display.display(true);
 }
 
 void UIEPaper::drawShape(const std::vector<std::pair<int, int>>& points) {

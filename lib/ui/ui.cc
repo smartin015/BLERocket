@@ -115,3 +115,7 @@ void UI::render(Engine* engine) {
       break;
   }
 }
+void UI::drawText(const std::string& text, const int& size, const int& x, const int& y) {
+  drawText(text, size, x, y, 0);
+}
+
