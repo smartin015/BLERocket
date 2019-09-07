@@ -24,6 +24,7 @@
 #define EPAPER_LONG_DIMENSION 250
 #define EPAPER_SHORT_DIMENSION 122
 
+// User input pins
 #define NUM_COMMANDS nav::Command_MAX-nav::Command_MIN
 #define PIN_BUTTON_L 15
 #define PIN_BUTTON_R 2
@@ -31,6 +32,13 @@
 #define PIN_BUTTON_D 13
 #define PIN_BUTTON_E 0
 
+// EPD display pins
+#define PIN_CS 14
+#define PIN_DC 27
+#define PIN_RST 33
+#define PIN_BUSY 34 // Not actually hooked up, just included to fool the library
+
+// Buzzer output
 #define BUZZ_MILLIS 100
 #define PIN_BUZZER 25
 

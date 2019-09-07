@@ -44,10 +44,7 @@ bool loop() {
    engine->handleInput(cmd, comms);
    cmd = ui->nextCommand();
   }
-  ui->clear();
   ui->render(engine);
-  ui->fullUpdate();
-
   return ui->isOpen();
 }
 

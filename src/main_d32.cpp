@@ -64,9 +64,7 @@ void loop() {
     engine->handleInput(cmd, comms);
     cmd = ui->nextCommand();
   }
-  //ui->clear();
-  //ui->render(engine);
-  //ui->partialUpdate();
+  ui->render(engine);
 }
 
 # endif // ARDUINO_LOLIN_D32_PRO

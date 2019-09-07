@@ -117,7 +117,7 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
 
 
 // magic values are SPI pin numbers for d32 pro shield
-UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
+UIEPaper::UIEPaper() : display(GxEPD2_213_B72(PIN_CS, PIN_DC, PIN_RST, PIN_BUSY)) {
   // set up the display
 	display.init(115200);
   display.setTextColor(GxEPD_BLACK);
@@ -142,6 +142,11 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   pinMode(PIN_BUTTON_E, INPUT_PULLUP);
   pinMode(PIN_BUZZER, OUTPUT);
   digitalWrite(PIN_BUZZER, LOW);
+
+  // Always non-busy, so as not to block
+  pinMode(PIN_BUSY, OUTPUT);
+  digitalWrite(PIN_BUSY, HIGH);
+
   buzzStart = 0;
 }
 

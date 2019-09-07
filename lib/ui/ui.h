@@ -82,7 +82,7 @@ protected:
       );
 
 private:
-
+  nav::Page lastRenderedPage;
   std::string notification;
   time_t notify_start;
   void handleNotification(const message::MessageT& msg);

@@ -36,6 +36,7 @@ void aRandomFunction(Engine* engine) {
 }
 
 void UI::render(Engine* engine) {
+  clear();
   const auto p = engine->getPage();
   drawControls(150, 5,
     engine->suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
@@ -113,6 +114,14 @@ void UI::render(Engine* engine) {
     default:
       // TODO show error page
       break;
+  }
+
+  // Page changed; trigger full update
+  if (lastRenderedPage != p) {
+    fullUpdate();
+    lastRenderedPage = p;
+  } else {
+    // TODO ui->partialUpdate();
   }
 }
 void UI::drawText(const std::string& text, const int& size, const int& x, const int& y) {
