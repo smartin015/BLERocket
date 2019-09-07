@@ -49,6 +49,7 @@ void setup() {
 void loop() {
   engine->loop(comms);
   comms->loop();
+  ui->loop();
 
   // Handle any inbound messages before handling user input
   message::MessageT msg = comms->receiveMessage();

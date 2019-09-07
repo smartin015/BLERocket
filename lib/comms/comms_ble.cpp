@@ -144,6 +144,7 @@ void CommsBLE::loop() {
     //pBLEScan->stop();
     pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
     pBLEScan->start(SCAN_TIME_SECONDS, NULL, false);
+    scan_start = millis();
   }
 }
 

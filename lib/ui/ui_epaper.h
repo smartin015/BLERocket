@@ -24,6 +24,16 @@
 #define EPAPER_LONG_DIMENSION 250
 #define EPAPER_SHORT_DIMENSION 122
 
+#define NUM_COMMANDS nav::Command_MAX-nav::Command_MIN
+#define PIN_BUTTON_L 15
+#define PIN_BUTTON_R 2
+#define PIN_BUTTON_U 26
+#define PIN_BUTTON_D 13
+#define PIN_BUTTON_E 0
+
+#define BUZZ_MILLIS 100
+#define PIN_BUZZER 25
+
 class UIEPaper : public UI {
 public:
   UIEPaper();
@@ -60,6 +70,9 @@ private:
       int x, int y,            // where to draw.
       int* xmax, int* ymax     // where to store bottom right coords of bounds
       );
+  // Debounce button presses
+  bool prevStates[nav::Command_MAX-nav::Command_MIN];
+  uint64_t buzzStart;
 };
 
 #endif // UI_EPAPER_H

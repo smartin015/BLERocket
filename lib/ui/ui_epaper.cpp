@@ -30,7 +30,7 @@ void UIEPaper::DrawStringAt(
 }
 
 // draw text as large as possible given a top-left corner (x,y) and a maximum
-// width maxw. 
+// width maxw.
 void UIEPaper::DrawStringWithin(
     std::string s,           // string to draw
     int x, int y,            // where to draw.
@@ -131,9 +131,18 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(14, 27, 33, -1)) {
   DrawNametagScreen(
       "Jeff",
       "Cooper",
-      "jeffcooper@", 
+      "jeffcooper@",
       "US-PIT");
   display.display(false); // do a full update
+
+  pinMode(PIN_BUTTON_L, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_R, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_U, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_D, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_E, INPUT_PULLUP);
+  pinMode(PIN_BUZZER, OUTPUT);
+  digitalWrite(PIN_BUZZER, LOW);
+  buzzStart = 0;
 }
 
 Command UIEPaper::nextCommand() {
@@ -162,8 +171,31 @@ Command UIEPaper::nextCommand() {
     }
   }
 
-  // TODO handle button commands
-  return nav::Command_unknown;
+  // Handle button commands
+  // States are in order of enum defined in nav.fbs
+  // Note that enum 0 is "Command_unknown" so indexes are offset by 1
+  bool states[NUM_COMMANDS] = {
+    !digitalRead(PIN_BUTTON_D),
+    !digitalRead(PIN_BUTTON_U),
+    !digitalRead(PIN_BUTTON_L),
+    !digitalRead(PIN_BUTTON_R),
+    !digitalRead(PIN_BUTTON_E)
+  };
+  auto result = nav::Command_unknown;
+  for (int i = 0; i < NUM_COMMANDS; i++) {
+    if (!prevStates[i] && states[i]) { // On rising edge
+      result = (nav::Command) (i+1);
+      break;
+    }
+  }
+  memcpy(prevStates, states, NUM_COMMANDS);
+
+  if (result != nav::Command_unknown) {
+    buzzStart = millis();
+    digitalWrite(PIN_BUZZER, HIGH);
+  }
+
+  return result;
 }
 
 void UIEPaper::clear() {
@@ -193,7 +225,18 @@ void UIEPaper::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h
 }
 
 
-void UIEPaper::loop() {};
+void UIEPaper::loop() {
+  if (buzzStart == 0) {
+    return;
+  }
+
+  const auto now = millis();
+  if (now > buzzStart + BUZZ_MILLIS) {
+    buzzStart = 0;
+    digitalWrite(PIN_BUZZER, LOW);
+  }
+
+};
 bool UIEPaper::isOpen() { return true; };
 
 void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
