@@ -7,9 +7,12 @@
 Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   if (gameState != NULL) {
     gameState->UnPackTo(&state, NULL);
-  } else {
-    state.status.reset();
   }
+
+  if (state.status == NULL) {
+    state.status.reset(new game::StatusT());
+  }
+
   if (metadata != NULL) {
     metadata->UnPackTo(&data, NULL);
   }
@@ -36,6 +39,52 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   }
   return false;
 }
+
+
+game::ShipPartT Engine::getUserPart() const {
+  game::ShipPartT part;
+  part.creator = state.status->user;
+
+  // We increase the user's part quality
+  // based on their closeness to the Phase 1 max score
+  float quality = (float(PART_MAX_QUALITY) / float(MAX_SCORE)) * (state.status->score);
+  part.quality = std::max(PART_MIN_QUALITY, std::min(PART_MAX_QUALITY, (uint8_t) std::round(quality)));
+
+  // We use a modulo of the user's ID to determine
+  // what part they're able to make.
+  // This ensures roughly equal distribution
+  // of parts.
+  part.type = (game::ShipPartType) (part.creator % (game::ShipPartType_MAX - game::ShipPartType_MIN + 1));
+
+  return part;
+}
+
+std::vector<nav::Command> getUserButtonSequence(uint8_t user_id) {
+  // We essentially convert username to quaternary, reserving the "left"
+  // command as a back button.
+  std::vector<nav::Command> result;
+  while (user_id > 0) {
+    switch ((user_id % 4)) {
+      case 0:
+        result.push_back(nav::Command_down);
+        break;
+      case 1:
+        result.push_back(nav::Command_up);
+        break;
+      case 2:
+        result.push_back(nav::Command_right);
+        break;
+      case 3:
+        result.push_back(nav::Command_enter);
+        break;
+    }
+    user_id /= 4;
+  }
+  while (result.size() < 3) { // Flat structure for 64 possible ID combinations
+    result.push_back(nav::Command_down);
+  }
+  return result;
+};
 
 void sendTestStatus(CommsBase* comms) {
   // Send example status message

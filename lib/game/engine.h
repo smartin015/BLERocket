@@ -5,6 +5,7 @@
 #include "comms_base.h"
 #include <stdint.h>
 #include <vector>
+#include <limits>
 #include "nav_generated.h"
 #include "game_generated.h"
 #include "message_generated.h"
@@ -20,6 +21,16 @@
 #define STATUS_INTERVAL_SECS 60
 #define TRADE_ANNOUNCE_SECS 60
 #define LOCAL_PART_TIMEOUT_SECS 120
+
+// We should ensure users can't surpass a certain score for the first
+// half of the game.
+#define MAX_SCORE std::numeric_limits<uint16_t>::max()
+#define MAX_REPUTATION std::numeric_limits<uint16_t>::max()
+#define PART_MAX_QUALITY std::numeric_limits<uint8_t>::max()
+#define PART_MIN_QUALITY ((uint8_t) 1)
+
+// Get a sequence of button presses used to identify a particular user
+std::vector<nav::Command> getUserButtonSequence(uint8_t user_id);
 
 class Engine {
 public:
@@ -37,6 +48,7 @@ public:
   void ackNotification();
   const message::MessageT* peekMessage() const;
   void ackMessage();
+  game::ShipPartT getUserPart() const;
 private:
   // Persisted game state
   game::StateT state;
