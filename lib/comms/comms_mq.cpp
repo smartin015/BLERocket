@@ -27,6 +27,9 @@ CommsMQ::~CommsMQ() {
 void CommsMQ::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
   if (mq_send(mq, p.data(), MAX_PACKET_SIZE, 0) == -1) {
     std::cerr << "Send message: " << errno << " " << strerror(errno) << std::endl;
+    // Call mq_receive to pop the identical message off the stack so
+    // we aren't reading our own messages. We intentionally throw this message away.
+    mq_receive(mq, buffer.data(), MAX_PACKET_SIZE, NULL);
   }
 }
 

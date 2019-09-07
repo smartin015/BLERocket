@@ -26,16 +26,18 @@ struct State;
 struct StateT;
 
 enum ShipPartType {
-  ShipPartType_hull = 0,
-  ShipPartType_thruster = 1,
-  ShipPartType_cargo = 2,
-  ShipPartType_sensors = 3,
-  ShipPartType_MIN = ShipPartType_hull,
+  ShipPartType_unknown = 0,
+  ShipPartType_hull = 1,
+  ShipPartType_thruster = 2,
+  ShipPartType_cargo = 3,
+  ShipPartType_sensors = 4,
+  ShipPartType_MIN = ShipPartType_unknown,
   ShipPartType_MAX = ShipPartType_sensors
 };
 
-inline const ShipPartType (&EnumValuesShipPartType())[4] {
+inline const ShipPartType (&EnumValuesShipPartType())[5] {
   static const ShipPartType values[] = {
+    ShipPartType_unknown,
     ShipPartType_hull,
     ShipPartType_thruster,
     ShipPartType_cargo,
@@ -46,6 +48,7 @@ inline const ShipPartType (&EnumValuesShipPartType())[4] {
 
 inline const char * const *EnumNamesShipPartType() {
   static const char * const names[] = {
+    "unknown",
     "hull",
     "thruster",
     "cargo",
@@ -56,7 +59,7 @@ inline const char * const *EnumNamesShipPartType() {
 }
 
 inline const char *EnumNameShipPartType(ShipPartType e) {
-  if (e < ShipPartType_hull || e > ShipPartType_sensors) return "";
+  if (e < ShipPartType_unknown || e > ShipPartType_sensors) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesShipPartType()[index];
 }
@@ -67,7 +70,7 @@ struct ShipPartT : public flatbuffers::NativeTable {
   uint8_t quality;
   uint8_t creator;
   ShipPartT()
-      : type(ShipPartType_hull),
+      : type(ShipPartType_unknown),
         quality(0),
         creator(0) {
   }
@@ -127,7 +130,7 @@ struct ShipPartBuilder {
 
 inline flatbuffers::Offset<ShipPart> CreateShipPart(
     flatbuffers::FlatBufferBuilder &_fbb,
-    ShipPartType type = ShipPartType_hull,
+    ShipPartType type = ShipPartType_unknown,
     uint8_t quality = 0,
     uint8_t creator = 0) {
   ShipPartBuilder builder_(_fbb);

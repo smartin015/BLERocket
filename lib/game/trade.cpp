@@ -1,42 +1,66 @@
 #include "engine.h"
 
+void broadcastMadePart(CommsBase* comms, const game::ShipPartT& part) {
+  ESP_LOGI(ENGINE_TAG, "Announcing trade");
+  message::MessageT msg;
+  msg.oneof.Set<message::PartT>(message::PartT());
+  auto* s = msg.oneof.Aspart();
+  s->action = message::Type_make;
+  s->dest_user = 0; // 0 reaches all users
+  s->part.reset(new game::ShipPartT(part)); // part generated based on current state
+  comms->sendMessage(msg, false);
+}
+
 void Engine::tradeLoop(CommsBase* comms) {
   // Periodically announce trades
   time_t now = time(NULL);
   if (state.page == nav::Page_tradeEntry) {
     if (lastTradeAnnounce + TRADE_ANNOUNCE_SECS < now) {
-      ESP_LOGI(ENGINE_TAG, "Announcing trade");
-      message::MessageT msg;
-      msg.oneof.Set<message::PartT>(message::PartT());
-      auto* s = msg.oneof.Aspart();
-      s->action = message::Type_make;
-      s->dest_user = 0; // 0 reaches all users
-      s->part.reset(new game::ShipPartT());
+      broadcastMadePart(comms, getUserPart());
 
-      // TODO calculate part type and quality
-      s->part->type = game::ShipPartType_hull;
-      s->part->quality = 5;
+      // TODO REMOVE
+      // Cheat, broadcasting other important parts
+      game::ShipPartT p;
+      p.quality = 2;
+      p.creator = 1;
+      p.type = game::ShipPartType_thruster;
+      broadcastMadePart(comms, p);
+      p.creator = 15;
+      p.type = game::ShipPartType_cargo;
+      broadcastMadePart(comms, p);
+      p.creator = 23;
+      p.type = game::ShipPartType_sensors;
+      broadcastMadePart(comms, p);
 
-      comms->sendMessage(msg, false);
       lastTradeAnnounce = now;
     }
-  } else if (lastTradeAnnounce != 0) {
+  } else if (lastTradeAnnounce != 0) { // on-exit cleanup tasks
     lastTradeAnnounce = 0;
+    while (!codeBuffer.empty()) {
+      codeBuffer.pop_front();
+    }
   }
 }
 void Engine::tradeInput(const nav::Command& cmd, CommsBase* comms) {
-  if (cmd == nav::Command_up) {
-    // Test user action to "receive" a part (really just increment)
-    // TODO: based on a button code, receive a part listed in .
-    ESP_LOGI(ENGINE_TAG, "Receiving all parts (testing)");
-    if (state.parts.size() == 0) {
-      for (int i = game::ShipPartType_MIN; i <= game::ShipPartType_MAX; i++) {
-        auto part = std::unique_ptr<game::ShipPartT>(new game::ShipPartT());
-        part->type = (game::ShipPartType) i;
-        part->quality = 1;
-        part->creator = 2; // TODO
-        state.parts.emplace_back(std::move(part));
+  // Keep a rolling buffer of the last 3 buttons pressed
+  codeBuffer.push_back(cmd);
+  if (codeBuffer.size() > USER_CODE_LEN) {
+    codeBuffer.pop_front();
+  }
+
+  time_t now = time(NULL);
+  for (auto it = localParts.begin(); it != localParts.end();) {
+    // Clear out old local parts
+    if (now > it->first + LOCAL_PART_TIMEOUT_SECS) {
+      it = localParts.erase(it);
+      ESP_LOGI(ENGINE_TAG, "Removed expired local part %s (user %d)", game::EnumNameShipPartType(it->second.type), it->second.creator);
+    } else {
+      const auto seq = getUserButtonSequence(it->second.creator);
+      if (codeBuffer.size() == seq.size() && std::equal(codeBuffer.begin(), codeBuffer.end(), seq.begin())) {
+        ESP_LOGI(ENGINE_TAG, "Trade sequence matches part %s from user %d", game::EnumNameShipPartType(it->second.type), it->second.creator);
+        state.parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(it->second)));
       }
+      it++;
     }
   }
 }
@@ -48,10 +72,10 @@ void Engine::tradeMakePart(const game::ShipPartT& part) {
   for (int i = 0; i < localParts.size(); i++) {
     if (localParts[i].second.creator == part.creator) {
       localParts[i] = std::make_pair(time(NULL),game::ShipPartT(part));
-      ESP_LOGI(ENGINE_TAG, "Replaced existing part");
+      ESP_LOGI(ENGINE_TAG, "Replaced existing part, seq %s", userButtonSequenceStr(getUserButtonSequence(part.creator)).c_str());
+      return;
     }
-    return;
   }
   localParts.push_back(std::make_pair(time(NULL),game::ShipPartT(part)));
-  ESP_LOGI(ENGINE_TAG, "Appended part");
+  ESP_LOGI(ENGINE_TAG, "Appended part, seq %s", userButtonSequenceStr(getUserButtonSequence(part.creator)).c_str());
 }

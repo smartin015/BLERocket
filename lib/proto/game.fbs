@@ -3,10 +3,11 @@ include "nav.fbs";
 namespace game;
 
 enum ShipPartType:byte {
-  hull = 0,
-  thruster = 1,
-  cargo = 2,
-  sensors = 3,
+  unknown = 0,
+  hull = 1,
+  thruster = 2,
+  cargo = 3,
+  sensors = 4,
 }
 
 table ShipPart {

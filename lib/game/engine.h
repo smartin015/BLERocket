@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <vector>
 #include <limits>
+#include <deque>
 #include "nav_generated.h"
 #include "game_generated.h"
 #include "message_generated.h"
@@ -30,7 +31,9 @@
 #define PART_MIN_QUALITY ((uint8_t) 1)
 
 // Get a sequence of button presses used to identify a particular user
+#define USER_CODE_LEN 3
 std::vector<nav::Command> getUserButtonSequence(uint8_t user_id);
+std::string userButtonSequenceStr(const std::vector<nav::Command>& seq);
 
 class Engine {
 public:
@@ -57,6 +60,7 @@ private:
   meta::DataT data;
 
   // Ephemeral state for trades
+  std::deque<nav::Command> codeBuffer;
   std::vector<std::pair<time_t, game::ShipPartT>> localParts;
   time_t lastTradeAnnounce;
   void tradeLoop(CommsBase* comms);

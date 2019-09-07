@@ -26,6 +26,7 @@ void CommsBase::packMessage(const message::MessageT& msg, adv_packet_t& p) {
         p[2] = s->dest_user;
         p[3] = s->part->type;
         p[4] = s->part->quality;
+        p[5] = s->part->creator;
       }
       break;
     default:
@@ -63,6 +64,7 @@ const message::MessageT CommsBase::unpackMessage(const adv_packet_t& p) {
         s->part.reset(new game::ShipPartT());
         s->part->type = (game::ShipPartType) p[3];
         s->part->quality = p[4];
+        s->part->creator = p[5];
       }
       break;
     default:

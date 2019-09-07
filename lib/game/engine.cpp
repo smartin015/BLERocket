@@ -18,6 +18,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   }
   notifyAcked = true;
   lastTradeAnnounce = 0;
+  codeBuffer.clear();
 }
 
 const game::StateT* Engine::getState() const {
@@ -31,10 +32,8 @@ nav::Page Engine::getPage() const {
 bool Engine::suppressNav(const nav::Command& cmd) const {
   // Suppress non-back action on launch page if not enough parts.
   if (state.page == nav::Page_launchEntry && cmd != nav::Command_left) {
-    for (const auto& p : state.parts) {
-      if (p->quality == 0) {
-        return true;
-      }
+    if (state.parts.size() < game::ShipPartType_MAX) {
+      return true;
     }
   }
   return false;
@@ -54,7 +53,7 @@ game::ShipPartT Engine::getUserPart() const {
   // what part they're able to make.
   // This ensures roughly equal distribution
   // of parts.
-  part.type = (game::ShipPartType) (part.creator % (game::ShipPartType_MAX - game::ShipPartType_MIN + 1));
+  part.type = (game::ShipPartType) (part.creator % (game::ShipPartType_MAX - game::ShipPartType_MIN) + 1);
 
   return part;
 }
@@ -80,11 +79,32 @@ std::vector<nav::Command> getUserButtonSequence(uint8_t user_id) {
     }
     user_id /= 4;
   }
-  while (result.size() < 3) { // Flat structure for 64 possible ID combinations
+  while (result.size() < USER_CODE_LEN) { // Flat structure for 64 possible ID combinations
     result.push_back(nav::Command_down);
   }
   return result;
 };
+
+std::string userButtonSequenceStr(const std::vector<nav::Command>& seq) {
+  std::string result;
+  for (int i = 0; i < seq.size(); i++) {
+    switch (seq[i]) {
+      case nav::Command_down:
+        result += "v";
+        break;
+      case nav::Command_up:
+        result += "^";
+        break;
+      case nav::Command_right:
+        result += ">";
+        break;
+      case nav::Command_enter:
+        result += "X";
+        break;
+    }
+  }
+  return result;
+}
 
 void sendTestStatus(CommsBase* comms) {
   // Send example status message
@@ -208,11 +228,12 @@ void Engine::handleMessage(const message::MessageT& msg) {
     case message::UMessage_part:
       {
         auto m = msg.oneof.Aspart();
-        ESP_LOGI(ENGINE_TAG, "Part: Action %s Part %s Quality %d Dest %d",
+        ESP_LOGI(ENGINE_TAG, "Part: Action %s Part %s Quality %d Dest %d Creator %d",
           message::EnumNameType(m->action),
           game::EnumNameShipPartType(m->part->type),
           uint16_t(m->part->quality),
-          uint16_t(m->dest_user));
+          uint16_t(m->dest_user),
+          uint16_t(m->part->creator));
         if (m->action == message::Type_make) {
           tradeMakePart(*(m->part));
         }
