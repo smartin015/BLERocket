@@ -1,14 +1,13 @@
 namespace meta;
 
 table User {
-  id:ubyte;
   name:string;
   username: string;
   mac:string;
+  site:ubyte;
 }
 
 table Site {
-  id:ubyte;
   name:string;
   shortname:string;
 }

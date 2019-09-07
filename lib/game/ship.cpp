@@ -10,7 +10,6 @@ int getShipLaunchScore(const game::ShipT& ship) {
 }
 
 #define NUM_SHIP_NAMES 20
-#define MAX_SHIP_NAME_LEN 8
 // Much of these names come with thanks from https://www.fantasynamegenerators.com/spaceship-names.php
 // Some are commented out to preserve heap space
 // TODO: save as text file to SPIFFS, dynamically load a couple names on init

@@ -1,17 +1,54 @@
 {
-  users: [
+  "users": [
     {
-      id:0,
-      name: "Scott Martin",
-      username: "semartin",
-      mac: "11:22:33:44"
+      "site": 1,
+      "name": "Scott Martin",
+      "username": "semartin",
+      "mac": "11:22:33:44"
+    },
+    {
+      "site": 0,
+      "name": "Jeff Cooper",
+      "username": "jeffcooper",
+      "mac": "11:22:33:44"
+    },
+    {
+      "site": 2,
+      "name": "Aaron Cunningham",
+      "username": "aacunningham",
+      "mac": "11:22:33:44"
+    },
+    {
+      "site": 0,
+      "name": "User 0",
+      "username": "user0",
+      "mac": "11:22:33:44"
+    },
+    {
+      "site": 1,
+      "name": "User 1",
+      "username": "user1",
+      "mac": "11:22:33:44"
+    },
+    {
+      "site": 2,
+      "name": "User 2",
+      "username": "user2",
+      "mac": "11:22:33:44"
     }
   ],
-  sites: [
+  "sites": [
     {
-      id: 0,
-      name: "Pittsburgh",
-      shortname: "PIT"
+      "name": "Pittsburgh",
+      "shortname": "PIT"
+    },
+    {
+      "name": "Zurich",
+      "shortname": "ZRH"
+    },
+    {
+      "name": "Ann Arbor",
+      "shortname": "ARB"
     }
   ]
 }

@@ -19,6 +19,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   notifyAcked = true;
   lastTradeAnnounce = 0;
   selectedShip = 0;
+  charIdx = 0;
   codeBuffer.clear();
 }
 
@@ -118,6 +119,10 @@ int Engine::getSelectedShipIdx() const {
   return selectedShip;
 }
 
+int Engine::getCharIdx() const {
+  return charIdx;
+}
+
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   switch (state.page) {
     case nav::Page_tradeEntry:
@@ -128,6 +133,36 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         selectedShip = (selectedShip - 1 + state.ships.size()) % state.ships.size();
       } else if (cmd == nav::Command_down) {
         selectedShip = (selectedShip + 1) % state.ships.size();
+      }
+      break;
+    case nav::Page_shipRename:
+      switch (cmd) {
+        case nav::Command_up:
+          state.ships[selectedShip]->name[charIdx]++;
+          break;
+        case nav::Command_down:
+          state.ships[selectedShip]->name[charIdx]--;
+          break;
+        case nav::Command_left:
+          charIdx = std::max(0, charIdx-1);
+          break;
+        case nav::Command_right:
+          charIdx = std::min(MAX_SHIP_NAME_LEN-1, charIdx+1);
+          break;
+        default:
+          break;
+      }
+      break;
+    case nav::Page_settingsSelectUser:
+      switch (cmd) {
+        case nav::Command_up:
+          state.status->user = (state.status->user-1 + data.users.size()) % data.users.size();
+          break;
+        case nav::Command_down:
+          state.status->user = (state.status->user+1) % data.users.size();
+          break;
+        default:
+          break;
       }
       break;
     case nav::Page_launchEntry:

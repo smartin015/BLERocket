@@ -19,26 +19,23 @@ struct DataT;
 
 struct UserT : public flatbuffers::NativeTable {
   typedef User TableType;
-  uint8_t id;
   std::string name;
   std::string username;
   std::string mac;
+  uint8_t site;
   UserT()
-      : id(0) {
+      : site(0) {
   }
 };
 
 struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef UserT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ID = 4,
-    VT_NAME = 6,
-    VT_USERNAME = 8,
-    VT_MAC = 10
+    VT_NAME = 4,
+    VT_USERNAME = 6,
+    VT_MAC = 8,
+    VT_SITE = 10
   };
-  uint8_t id() const {
-    return GetField<uint8_t>(VT_ID, 0);
-  }
   const flatbuffers::String *name() const {
     return GetPointer<const flatbuffers::String *>(VT_NAME);
   }
@@ -48,15 +45,18 @@ struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *mac() const {
     return GetPointer<const flatbuffers::String *>(VT_MAC);
   }
+  uint8_t site() const {
+    return GetField<uint8_t>(VT_SITE, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_ID) &&
            VerifyOffset(verifier, VT_NAME) &&
            verifier.VerifyString(name()) &&
            VerifyOffset(verifier, VT_USERNAME) &&
            verifier.VerifyString(username()) &&
            VerifyOffset(verifier, VT_MAC) &&
            verifier.VerifyString(mac()) &&
+           VerifyField<uint8_t>(verifier, VT_SITE) &&
            verifier.EndTable();
   }
   UserT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -67,9 +67,6 @@ struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct UserBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_id(uint8_t id) {
-    fbb_.AddElement<uint8_t>(User::VT_ID, id, 0);
-  }
   void add_name(flatbuffers::Offset<flatbuffers::String> name) {
     fbb_.AddOffset(User::VT_NAME, name);
   }
@@ -78,6 +75,9 @@ struct UserBuilder {
   }
   void add_mac(flatbuffers::Offset<flatbuffers::String> mac) {
     fbb_.AddOffset(User::VT_MAC, mac);
+  }
+  void add_site(uint8_t site) {
+    fbb_.AddElement<uint8_t>(User::VT_SITE, site, 0);
   }
   explicit UserBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -93,57 +93,51 @@ struct UserBuilder {
 
 inline flatbuffers::Offset<User> CreateUser(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t id = 0,
     flatbuffers::Offset<flatbuffers::String> name = 0,
     flatbuffers::Offset<flatbuffers::String> username = 0,
-    flatbuffers::Offset<flatbuffers::String> mac = 0) {
+    flatbuffers::Offset<flatbuffers::String> mac = 0,
+    uint8_t site = 0) {
   UserBuilder builder_(_fbb);
   builder_.add_mac(mac);
   builder_.add_username(username);
   builder_.add_name(name);
-  builder_.add_id(id);
+  builder_.add_site(site);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<User> CreateUserDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t id = 0,
     const char *name = nullptr,
     const char *username = nullptr,
-    const char *mac = nullptr) {
+    const char *mac = nullptr,
+    uint8_t site = 0) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
   auto username__ = username ? _fbb.CreateString(username) : 0;
   auto mac__ = mac ? _fbb.CreateString(mac) : 0;
   return meta::CreateUser(
       _fbb,
-      id,
       name__,
       username__,
-      mac__);
+      mac__,
+      site);
 }
 
 flatbuffers::Offset<User> CreateUser(flatbuffers::FlatBufferBuilder &_fbb, const UserT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct SiteT : public flatbuffers::NativeTable {
   typedef Site TableType;
-  uint8_t id;
   std::string name;
   std::string shortname;
-  SiteT()
-      : id(0) {
+  SiteT() {
   }
 };
 
 struct Site FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef SiteT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ID = 4,
-    VT_NAME = 6,
-    VT_SHORTNAME = 8
+    VT_NAME = 4,
+    VT_SHORTNAME = 6
   };
-  uint8_t id() const {
-    return GetField<uint8_t>(VT_ID, 0);
-  }
   const flatbuffers::String *name() const {
     return GetPointer<const flatbuffers::String *>(VT_NAME);
   }
@@ -152,7 +146,6 @@ struct Site FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_ID) &&
            VerifyOffset(verifier, VT_NAME) &&
            verifier.VerifyString(name()) &&
            VerifyOffset(verifier, VT_SHORTNAME) &&
@@ -167,9 +160,6 @@ struct Site FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct SiteBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_id(uint8_t id) {
-    fbb_.AddElement<uint8_t>(Site::VT_ID, id, 0);
-  }
   void add_name(flatbuffers::Offset<flatbuffers::String> name) {
     fbb_.AddOffset(Site::VT_NAME, name);
   }
@@ -190,26 +180,22 @@ struct SiteBuilder {
 
 inline flatbuffers::Offset<Site> CreateSite(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t id = 0,
     flatbuffers::Offset<flatbuffers::String> name = 0,
     flatbuffers::Offset<flatbuffers::String> shortname = 0) {
   SiteBuilder builder_(_fbb);
   builder_.add_shortname(shortname);
   builder_.add_name(name);
-  builder_.add_id(id);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<Site> CreateSiteDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t id = 0,
     const char *name = nullptr,
     const char *shortname = nullptr) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
   auto shortname__ = shortname ? _fbb.CreateString(shortname) : 0;
   return meta::CreateSite(
       _fbb,
-      id,
       name__,
       shortname__);
 }
@@ -305,10 +291,10 @@ inline UserT *User::UnPack(const flatbuffers::resolver_function_t *_resolver) co
 inline void User::UnPackTo(UserT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = id(); _o->id = _e; };
   { auto _e = name(); if (_e) _o->name = _e->str(); };
   { auto _e = username(); if (_e) _o->username = _e->str(); };
   { auto _e = mac(); if (_e) _o->mac = _e->str(); };
+  { auto _e = site(); _o->site = _e; };
 }
 
 inline flatbuffers::Offset<User> User::Pack(flatbuffers::FlatBufferBuilder &_fbb, const UserT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -319,16 +305,16 @@ inline flatbuffers::Offset<User> CreateUser(flatbuffers::FlatBufferBuilder &_fbb
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const UserT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _id = _o->id;
   auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
   auto _username = _o->username.empty() ? 0 : _fbb.CreateString(_o->username);
   auto _mac = _o->mac.empty() ? 0 : _fbb.CreateString(_o->mac);
+  auto _site = _o->site;
   return meta::CreateUser(
       _fbb,
-      _id,
       _name,
       _username,
-      _mac);
+      _mac,
+      _site);
 }
 
 inline SiteT *Site::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -340,7 +326,6 @@ inline SiteT *Site::UnPack(const flatbuffers::resolver_function_t *_resolver) co
 inline void Site::UnPackTo(SiteT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = id(); _o->id = _e; };
   { auto _e = name(); if (_e) _o->name = _e->str(); };
   { auto _e = shortname(); if (_e) _o->shortname = _e->str(); };
 }
@@ -353,12 +338,10 @@ inline flatbuffers::Offset<Site> CreateSite(flatbuffers::FlatBufferBuilder &_fbb
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const SiteT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _id = _o->id;
   auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
   auto _shortname = _o->shortname.empty() ? 0 : _fbb.CreateString(_o->shortname);
   return meta::CreateSite(
       _fbb,
-      _id,
       _name,
       _shortname);
 }

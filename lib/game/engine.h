@@ -30,6 +30,8 @@
 #define PART_MAX_QUALITY std::numeric_limits<uint8_t>::max()
 #define PART_MIN_QUALITY ((uint8_t) 1)
 
+#define MAX_SHIP_NAME_LEN 8
+
 // Get a sequence of button presses used to identify a particular user
 #define USER_CODE_LEN 3
 std::vector<nav::Command> getUserButtonSequence(uint8_t user_id);
@@ -57,6 +59,7 @@ public:
   void ackMessage();
   game::ShipPartT getUserPart() const;
   int getSelectedShipIdx() const;
+  int getCharIdx() const;
 private:
   // Persisted game state
   game::StateT state;
@@ -74,6 +77,7 @@ private:
 
   // Ephemeral state for selectors
   int selectedShip;
+  int charIdx;
 
   // Ephemeral state for notifications/alerts
   std::vector<message::MessageT> messages;

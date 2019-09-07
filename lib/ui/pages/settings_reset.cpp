@@ -4,6 +4,5 @@
 // Player wants to reset the device
 void UI::drawSettingsReset(const Engine* engine) {
   drawText("SettingsReset", TITLE_SZ, TITLE_X, TITLE_Y);
-
-  // TODO Display Y/N? confirm prompt
+  drawText("Reset Y/N?", TITLE_SZ, BODY_X, BODY_Y);
 }

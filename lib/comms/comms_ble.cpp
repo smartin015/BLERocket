@@ -116,6 +116,8 @@ void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
   oScanResponseData = BLEAdvertisementData();
   pAdvertising->setScanResponseData(oScanResponseData);
 
+  // Make the same messages visible locally (parity with MQ behavior)
+  stored_packets.push(p);
 
   advertise_start = millis();
   ESP_LOGI(BLE_TAG, "Starting advertisement");

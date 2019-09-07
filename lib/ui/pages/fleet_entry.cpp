@@ -1,11 +1,10 @@
 #include "ui.h"
 #include <iostream>
 
-// Page for this player's fleet of ship's
+// Page for this player's fleet of ships
 void UI::drawFleetEntry(const Engine* engine) {
   drawText("Fleet", TITLE_SZ, TITLE_X, TITLE_Y);
 
-  // TODO: Include a selectable list of ship names
   const game::StateT* state = engine->getState();
   if (state->ships.size() == 0) {
     drawText("You have no ships.", SZ_M, BODY_X, BODY_Y);
