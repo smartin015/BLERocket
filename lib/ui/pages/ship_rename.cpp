@@ -3,7 +3,7 @@
 
 // Player wants to rename ship
 void UI::drawShipRename(const Engine* engine) {
-  drawText("ShipRename", TITLE_SZ, TITLE_X, TITLE_Y);
+  drawText("Rename", TITLE_SZ, TITLE_X, TITLE_Y);
 
   const auto& ship = engine->getState()->ships[engine->getSelectedShipIdx()];
   const int idx = engine->getCharIdx();

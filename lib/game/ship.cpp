@@ -6,7 +6,7 @@ int getShipLaunchScore(const game::ShipT& ship) {
   for (int i = 0; i < ship.parts.size(); i++) {
     acc += ship.parts[i]->quality;
   }
-  return acc * 2;
+  return acc * SHIP_LAUNCH_SCORE_MULT;
 }
 
 #define NUM_SHIP_NAMES 20

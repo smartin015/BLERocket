@@ -65,6 +65,9 @@ void loop() {
     cmd = ui->nextCommand();
   }
   ui->render(engine);
+
+  // Appease the watchdog timer
+  vTaskDelay(10);
 }
 
 # endif // ARDUINO_LOLIN_D32_PRO

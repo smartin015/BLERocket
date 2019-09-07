@@ -17,7 +17,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
     metadata->UnPackTo(&data, NULL);
   }
   notifyAcked = true;
-  lastTradeAnnounce = 0;
+  lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
   selectedShip = 0;
   charIdx = 0;
   codeBuffer.clear();
@@ -98,19 +98,6 @@ void sendTestShip(CommsBase* comms) {
   comms->sendMessage(msg, false);
 }
 
-void sendTestPart(CommsBase* comms) {
-  // Send example part message
-  message::MessageT msg;
-  msg.oneof.Set<message::PartT>(message::PartT());
-  auto* s = msg.oneof.Aspart();
-  s->action = message::Type_give;
-  s->dest_user = 1;
-  s->part.reset(new game::ShipPartT());
-  s->part->type = game::ShipPartType_hull;
-  s->part->quality = 5;
-  comms->sendMessage(msg, false);
-}
-
 void Engine::loop(CommsBase* comms) {
   tradeLoop(comms);
 }
@@ -124,6 +111,12 @@ int Engine::getCharIdx() const {
 }
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
+  // Nav is handled *before* potentially state-modifying actions
+  if (suppressNav(cmd)) {
+    return;
+  }
+  auto next = nextPage(state.page, cmd);
+
   switch (state.page) {
     case nav::Page_tradeEntry:
       tradeInput(cmd, comms);
@@ -153,6 +146,18 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
           break;
       }
       break;
+    case nav::Page_settingsReset:
+      if (cmd == nav::Command_enter) {
+        // Clear persistent and ephemeral state
+        state = game::StateT();
+        state.status.reset(new game::StatusT());
+        notifyAcked = true;
+        lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
+        selectedShip = 0;
+        charIdx = 0;
+        codeBuffer.clear();
+      }
+      break;
     case nav::Page_settingsSelectUser:
       switch (cmd) {
         case nav::Command_up:
@@ -180,6 +185,9 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
 
         ESP_LOGI(ENGINE_TAG, "New ship created! Score +%d (total %d)", score, state.status->score);
 
+        // Select the new ship in future menus
+        selectedShip = state.ships.size()-1;
+
         // Get rid of built up parts
         state.parts.clear();
       }
@@ -188,19 +196,12 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         sendTestStatus(comms);
       } else if (cmd == nav::Command_right) {
         sendTestShip(comms);
-      } else if (cmd == nav::Command_left) {
-        sendTestPart(comms);
       }
       break;
     default:
       break;
   }
 
-  if (suppressNav(cmd)) {
-    return;
-  }
-
-  auto next = nextPage(state.page, cmd);
   if (next != nav::Page_noOp) {
     ESP_LOGI(ENGINE_TAG, "Nav to page %s", nav::EnumNamePage(next));
     state.page = next;

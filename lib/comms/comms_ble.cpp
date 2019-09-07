@@ -68,6 +68,7 @@ CommsBLE::~CommsBLE() {
 }
 
 void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
+  ESP_LOGI(BLE_TAG, "Sending bytes");
   oAdvertisementData = BLEAdvertisementData();
   oAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED 0x04
 

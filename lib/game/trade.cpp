@@ -65,7 +65,8 @@ void Engine::tradeLoop(CommsBase* comms) {
   // Periodically announce trades
   time_t now = time(NULL);
   if (state.page == nav::Page_tradeEntry) {
-    if (lastTradeAnnounce + TRADE_ANNOUNCE_SECS < now) {
+    if (lastTradeAnnounce == TRADE_ANNOUNCE_OFF || lastTradeAnnounce + TRADE_ANNOUNCE_SECS < now) {
+      ESP_LOGI(ENGINE_TAG, "Advertising trade");
       broadcastMadePart(comms, getUserPart());
 
       // TODO REMOVE
@@ -75,17 +76,17 @@ void Engine::tradeLoop(CommsBase* comms) {
       p.creator = 1;
       p.type = game::ShipPartType_thruster;
       broadcastMadePart(comms, p);
-      p.creator = 15;
+      p.creator = 7;
       p.type = game::ShipPartType_cargo;
       broadcastMadePart(comms, p);
-      p.creator = 23;
+      p.creator = 9;
       p.type = game::ShipPartType_sensors;
       broadcastMadePart(comms, p);
 
       lastTradeAnnounce = now;
     }
   } else if (lastTradeAnnounce != 0) { // on-exit cleanup tasks
-    lastTradeAnnounce = 0;
+    lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
     while (!codeBuffer.empty()) {
       codeBuffer.pop_front();
     }
