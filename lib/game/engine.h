@@ -35,6 +35,10 @@
 std::vector<nav::Command> getUserButtonSequence(uint8_t user_id);
 std::string userButtonSequenceStr(const std::vector<nav::Command>& seq);
 
+// Various ship helper methods
+int getShipLaunchScore(const game::ShipT& ship);
+std::string generateShipName(const game::ShipT& ship);
+
 class Engine {
 public:
   Engine(const game::State* gameState, const meta::Data* metadata);
@@ -52,6 +56,7 @@ public:
   const message::MessageT* peekMessage() const;
   void ackMessage();
   game::ShipPartT getUserPart() const;
+  int getSelectedShipIdx() const;
 private:
   // Persisted game state
   game::StateT state;
@@ -66,6 +71,9 @@ private:
   void tradeLoop(CommsBase* comms);
   void tradeInput(const nav::Command& cmd, CommsBase* comms);
   void tradeMakePart(const game::ShipPartT& part);
+
+  // Ephemeral state for selectors
+  int selectedShip;
 
   // Ephemeral state for notifications/alerts
   std::vector<message::MessageT> messages;

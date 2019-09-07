@@ -1,5 +1,53 @@
 #include "engine.h"
 
+std::vector<nav::Command> getUserButtonSequence(uint8_t user_id) {
+  // We essentially convert username to quaternary, reserving the "left"
+  // command as a back button.
+  std::vector<nav::Command> result;
+  while (user_id > 0) {
+    switch ((user_id % 4)) {
+      case 0:
+        result.push_back(nav::Command_down);
+        break;
+      case 1:
+        result.push_back(nav::Command_up);
+        break;
+      case 2:
+        result.push_back(nav::Command_right);
+        break;
+      case 3:
+        result.push_back(nav::Command_enter);
+        break;
+    }
+    user_id /= 4;
+  }
+  while (result.size() < USER_CODE_LEN) { // Flat structure for 64 possible ID combinations
+    result.push_back(nav::Command_down);
+  }
+  return result;
+};
+
+std::string userButtonSequenceStr(const std::vector<nav::Command>& seq) {
+  std::string result;
+  for (int i = 0; i < seq.size(); i++) {
+    switch (seq[i]) {
+      case nav::Command_down:
+        result += "v";
+        break;
+      case nav::Command_up:
+        result += "^";
+        break;
+      case nav::Command_right:
+        result += ">";
+        break;
+      case nav::Command_enter:
+        result += "X";
+        break;
+    }
+  }
+  return result;
+}
+
 void broadcastMadePart(CommsBase* comms, const game::ShipPartT& part) {
   ESP_LOGI(ENGINE_TAG, "Announcing trade");
   message::MessageT msg;
@@ -59,6 +107,7 @@ void Engine::tradeInput(const nav::Command& cmd, CommsBase* comms) {
       if (codeBuffer.size() == seq.size() && std::equal(codeBuffer.begin(), codeBuffer.end(), seq.begin())) {
         ESP_LOGI(ENGINE_TAG, "Trade sequence matches part %s from user %d", game::EnumNameShipPartType(it->second.type), it->second.creator);
         state.parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(it->second)));
+        codeBuffer.clear();
       }
       it++;
     }

@@ -10,6 +10,10 @@ void testUserPartGenerator() {
   // - test part quality cannot go below 1
 }
 
+void testSuppressNav() {
+  // Should ensure that nav suppression is WAI
+}
+
 int main( int argc, char **argv) {
     UNITY_BEGIN();
 

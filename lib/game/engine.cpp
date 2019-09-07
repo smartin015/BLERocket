@@ -18,6 +18,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   }
   notifyAcked = true;
   lastTradeAnnounce = 0;
+  selectedShip = 0;
   codeBuffer.clear();
 }
 
@@ -33,6 +34,20 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   // Suppress non-back action on launch page if not enough parts.
   if (state.page == nav::Page_launchEntry && cmd != nav::Command_left) {
     if (state.parts.size() < game::ShipPartType_MAX) {
+      return true;
+    }
+  }
+
+  // Don't allow viewing details on invalid selection state (e.g. no ships, bad index)
+  if (nextPage(state.page, cmd) == nav::Page_shipDetails) {
+    if (state.ships.size() == 0 || selectedShip < 0 || selectedShip >= state.ships.size()) {
+      return true;
+    }
+  }
+
+  // Suppress phase-2 actions if in phase 1
+  if (state.status->phase_id != 2) {
+    if (nextPage(state.page, cmd) == nav::Page_shipMissionSelect) {
       return true;
     }
   }
@@ -56,54 +71,6 @@ game::ShipPartT Engine::getUserPart() const {
   part.type = (game::ShipPartType) (part.creator % (game::ShipPartType_MAX - game::ShipPartType_MIN) + 1);
 
   return part;
-}
-
-std::vector<nav::Command> getUserButtonSequence(uint8_t user_id) {
-  // We essentially convert username to quaternary, reserving the "left"
-  // command as a back button.
-  std::vector<nav::Command> result;
-  while (user_id > 0) {
-    switch ((user_id % 4)) {
-      case 0:
-        result.push_back(nav::Command_down);
-        break;
-      case 1:
-        result.push_back(nav::Command_up);
-        break;
-      case 2:
-        result.push_back(nav::Command_right);
-        break;
-      case 3:
-        result.push_back(nav::Command_enter);
-        break;
-    }
-    user_id /= 4;
-  }
-  while (result.size() < USER_CODE_LEN) { // Flat structure for 64 possible ID combinations
-    result.push_back(nav::Command_down);
-  }
-  return result;
-};
-
-std::string userButtonSequenceStr(const std::vector<nav::Command>& seq) {
-  std::string result;
-  for (int i = 0; i < seq.size(); i++) {
-    switch (seq[i]) {
-      case nav::Command_down:
-        result += "v";
-        break;
-      case nav::Command_up:
-        result += "^";
-        break;
-      case nav::Command_right:
-        result += ">";
-        break;
-      case nav::Command_enter:
-        result += "X";
-        break;
-    }
-  }
-  return result;
 }
 
 void sendTestStatus(CommsBase* comms) {
@@ -147,22 +114,36 @@ void Engine::loop(CommsBase* comms) {
   tradeLoop(comms);
 }
 
+int Engine::getSelectedShipIdx() const {
+  return selectedShip;
+}
+
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   switch (state.page) {
     case nav::Page_tradeEntry:
       tradeInput(cmd, comms);
       break;
+    case nav::Page_fleetEntry:
+      if (cmd == nav::Command_up) {
+        selectedShip = (selectedShip - 1 + state.ships.size()) % state.ships.size();
+      } else if (cmd == nav::Command_down) {
+        selectedShip = (selectedShip + 1) % state.ships.size();
+      }
+      break;
     case nav::Page_launchEntry:
       if (cmd != nav::Command_left && !suppressNav(cmd)) {
         // Launching a new rocket - add it to the list of ships
         auto ship = std::unique_ptr<game::ShipT>(new game::ShipT());
-        ship->name = "aship";
         for (const auto& p : state.parts) {
           ship->parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(*p)));
         }
         ship->owner = 2; // TODO
+        ship->name = generateShipName(*ship);
+        int score = getShipLaunchScore(*ship);
+        state.status->score += score;
         state.ships.emplace_back(std::move(ship));
-        ESP_LOGI(ENGINE_TAG, "New ship created");
+
+        ESP_LOGI(ENGINE_TAG, "New ship created! Score +%d (total %d)", score, state.status->score);
 
         // Get rid of built up parts
         state.parts.clear();

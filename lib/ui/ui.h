@@ -35,7 +35,7 @@
 
 class UI {
 public:
-  UI() : fleetTop(0), fleetSelect(0) {}
+  UI() {}
 
   void render(Engine* engine);
   virtual Command nextCommand() = 0;
@@ -94,9 +94,6 @@ private:
   void drawMain(const Engine* engine);
   void drawSettingsEntry(const Engine* engine);
   void drawTradeEntry(const Engine* engine);
-
-  int fleetTop;
-  int fleetSelect;
   void drawFleetEntry(const Engine* engine);
   void drawLaunchEntry(const Engine* engine);
   void drawSettingsChangeName(const Engine* engine);
