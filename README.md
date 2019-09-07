@@ -18,3 +18,11 @@
 
 https://github.com/nkolban/esp32-snippets/issues/797
 Requires commenting out start() in `.platformio/packages/framework-arduinoespressif32/libraries/BLE/src/BLEAdvertising.cpp`
+
+
+Debug ELF file size:
+
+`xtensa-esp32-elf-size -A firmware.elf`
+
+
+Lots of griping about unneccessary locale & wchar bundling: https://esp32.com/viewtopic.php?t=3741

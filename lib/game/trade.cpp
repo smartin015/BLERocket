@@ -43,6 +43,8 @@ std::string userButtonSequenceStr(const std::vector<nav::Command>& seq) {
       case nav::Command_enter:
         result += "X";
         break;
+      default:
+        break;
     }
   }
   return result;

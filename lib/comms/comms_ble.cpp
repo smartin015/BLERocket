@@ -27,13 +27,10 @@ void CommsBLE::onResult(BLEAdvertisedDevice d) {
 
     ad_type = ((*(payload+1)) << 8) | (*(payload) & 0xFF);
     msg_type = *(payload+2);
-    // I (109010) comms_ble: packet id 2c6 type 02 len 29
     if (ad_type == PACKET_ID
       && msg_type >= message::UMessage_MIN
       && msg_type <= message::UMessage_MAX) {
       ESP_LOGI(BLE_TAG, "packet id %x type %02x len %d", ad_type, msg_type, len);
-      // Msg 1d|c6|6c|02|00|01|02|f0|00|fd|3f|f0|00|fd|3f|03|00|00|00|c0|1a|0d|80|40|04|fd|3f|00|b3|fd|3f|88|
-      // Rcv    c6|6c|02|ba|20|00|84|be|fd|3f|00|10|2a|00|01|00|00|00|04|3e|28|02|01|02|01|70|e7|b3|a9|
       Serial.print("Recv ");
       for (int i = 0; i < std::min((int)len, MAX_PACKET_SIZE); i++) {
         Serial.printf("%02x|", payload[i]);
@@ -42,7 +39,6 @@ void CommsBLE::onResult(BLEAdvertisedDevice d) {
       memcpy(p.data(), payload+2, std::min((int)len, MAX_PACKET_SIZE));
       stored_packets.push(p);
     } else {
-      // Serial.printf("Skipping unknown advertisement, type %02x\n", ad_type);
       payload += len;
     }
 
@@ -124,12 +120,6 @@ void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
   advertise_start = millis();
   ESP_LOGI(BLE_TAG, "Starting advertisement");
   pAdvertising->start();
-  // TODO RM
-  delay(100);
-  pAdvertising->stop();
-  advertise_start = 0;
-
-  ESP_LOGI(BLE_TAG, "stopped");
 }
 
 void CommsBLE::loop() {
@@ -141,7 +131,6 @@ void CommsBLE::loop() {
   }
 
   if (advertise_start == 0 && millis() - scan_start > SCAN_INTERVAL_MILLIS) {
-    //pBLEScan->stop();
     pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
     pBLEScan->start(SCAN_TIME_SECONDS, NULL, false);
     scan_start = millis();
