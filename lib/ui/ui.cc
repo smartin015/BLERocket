@@ -115,3 +115,28 @@ void UI::render(Engine* engine) {
       break;
   }
 }
+void UI::drawText(const std::string& text, const int& size, const int& x, const int& y) {
+  drawText(text, size, x, y, 0);
+}
+
+const FONT_T* UI::PickBestFontForString(
+    std::string s,                // the string to size
+    int maxwidth,                 // the largest allowable width
+    const FONT_T* const fonts[]   // the list of fonts to pick from
+    ) {
+  int max_width_found = -1;
+  const FONT_T* font_found = NULL;
+
+  for (int i = 0; fonts[i] != NULL; i++) {
+    int xmin, ymin, w, h;
+    setFont(fonts[i]);
+    getTextBounds(s, &xmin, &ymin, &w, &h);
+    int totalw = w - xmin;
+    if (totalw - xmin > max_width_found  && totalw <= maxwidth) {
+      max_width_found = w - xmin;
+      font_found = fonts[i];
+    }
+  }
+  return font_found;
+}
+

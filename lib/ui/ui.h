@@ -6,6 +6,8 @@
 #include <vector>
 #include <time.h>
 
+#include "fonts.h"
+
 #define SZ_S 10
 #define SZ_M 20
 #define SZ_L 30
@@ -24,21 +26,63 @@
 
 #define SELECTOR_NUM_ITEMS 5
 
+#define ROTATION_GAME 3
+#define ROTATION_NAMETAG 1
+#define ROTATION_GAME_LEFTSIDE 0
+#define ROTATION_GAME_RIGHTSIDE 2
+#define ROTATION_NAMETAG_RIGHTSIDE 0
+#define ROTATION_NAMETAG_LEFTSIDE 2
+
 class UI {
 public:
   UI() : fleetTop(0), fleetSelect(0) {}
 
   void render(Engine* engine);
   virtual Command nextCommand() = 0;
+
+  // blank the buffer
   virtual void clear() = 0;
-  virtual bool flush() = 0;
+
+  // do any maintenance required for the output (eg redraw on native)
+  virtual void loop() = 0;
+
+  // do a full update of the screen
+  virtual void fullUpdate() = 0;
+
+  // do a partial update of the screen
+  virtual void partialUpdate() = 0;
+
+  // whether the UI has been closed
+  virtual bool isOpen() = 0;
+
+  // TODO - temporary while I refactor UI code
+  void drawText(const std::string& text, const int& size, const int& x, const int& y);
 
 protected:
-  virtual void drawText(const std::string& text, const int& size, const int& x, const int& y) = 0;
+  // draw text at a given location on the screen, with a given orientation.
+  // pixels are given relative to specified orientation
+  virtual void drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) = 0;
+
+  // TODO
   virtual void drawShape(const std::vector<std::pair<int, int>>& points) = 0;
+
+  // TODO
   virtual void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) = 0;
 
+  // set the working font
+  virtual void setFont(const FONT_T* f) = 0;
+
+  // get the bounds of a text using the currently set font
+  virtual void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) = 0;
+
+  const FONT_T* PickBestFontForString(
+      std::string s,                // the string to size
+      int maxwidth,                 // the largest allowable width
+      const FONT_T* const fonts[]   // the list of fonts to pick from
+      );
+
 private:
+
   std::string notification;
   time_t notify_start;
   void handleNotification(const message::MessageT& msg);

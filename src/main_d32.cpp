@@ -5,7 +5,9 @@
 #include <Arduino.h>
 
 #include "engine.h"
+#ifdef COMMS_BLE
 #include "comms_ble.h"
+#endif
 #include "comms_dummy.h"
 #include "ui_epaper.h"
 #include "state_spiffs.h"
@@ -15,7 +17,11 @@
 
 UIEPaper *ui;
 Engine *engine;
+#ifdef COMMS_BLE
 CommsBLE *comms;
+#else
+CommsDummy *comms;
+#endif
 StateSPIFFS *state;
 
 void setup() {
@@ -24,7 +30,12 @@ void setup() {
   state = new StateSPIFFS();
   engine = new Engine();
   ui = new UIEPaper();
+
+#ifdef COMMS_BLE
   comms = new CommsBLE();
+#else
+  comms = new CommsDummy();
+#endif
 
   state->init("/game.save", "/metadata.bin");
   comms->init();
@@ -54,7 +65,7 @@ void loop() {
   }
   //ui->clear();
   //ui->render(engine);
-  //ui->flush();
+  //ui->partialUpdate();
 }
 
 # endif // ARDUINO_LOLIN_D32_PRO

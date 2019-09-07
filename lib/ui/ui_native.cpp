@@ -1,5 +1,6 @@
 #ifdef UI_NATIVE
 #include "ui_native.h"
+#include "fonts.h"
 
 #include <iostream>
 
@@ -52,15 +53,31 @@ void UINative::clear() {
   window->clear();
 }
 
-bool UINative::flush() {
-  if (!window->isOpen()) {
-    return false;
-  }
+void UINative::partialUpdate() {
   window->display();
-  return true;
 }
 
-void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y) {
+void UINative::fullUpdate() {
+  window->display();
+}
+
+void UINative::loop() {
+  if (window->isOpen()) {
+    window->display();
+  }
+}
+
+bool UINative::isOpen() {
+  return window->isOpen();
+}
+
+void UINative::setFont(const FONT_T* f) {
+  //TODO
+}
+
+void UINative::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) {}
+
+void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
   sf::Text t;
   t.setFont(font);
   t.setString(text);
@@ -82,9 +99,9 @@ void UINative::drawShape(const std::vector<std::pair<int, int>>& points) {
 
 void UINative::drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) {
   for (int i = 0; i < items.size(); i++) {
-    drawText(items[i], SZ_M, x + SZ_S, y-(i*SZ_M));
+    drawText(items[i], SZ_M, x + SZ_S, y-(i*SZ_M), 0);
   }
-  drawText(">", SZ_M, x, y-(selected*SZ_M));
+  drawText(">", SZ_M, x, y-(selected*SZ_M), 0);
 }
 
 #endif // UI_NATIVE
