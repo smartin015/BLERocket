@@ -15,7 +15,6 @@ void CommsBase::packMessage(const message::MessageT& msg, adv_packet_t& p) {
         p[2] = s->dest_user;
         p[3] = s->ship->owner;
         // *(&p[4]) = s->ship->name.c_str();
-        // TODO creators
         // TODO parts:[ShipPart];
       }
       break;

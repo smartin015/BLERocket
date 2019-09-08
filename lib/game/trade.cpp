@@ -69,19 +69,18 @@ void Engine::tradeLoop(CommsBase* comms) {
       ESP_LOGI(ENGINE_TAG, "Advertising trade");
       broadcastMadePart(comms, getUserPart());
 
-      // TODO REMOVE
       // Cheat, broadcasting other important parts
-      game::ShipPartT p;
-      p.quality = 2;
-      p.creator = 1;
-      p.type = game::ShipPartType_thruster;
-      broadcastMadePart(comms, p);
-      p.creator = 7;
-      p.type = game::ShipPartType_cargo;
-      broadcastMadePart(comms, p);
-      p.creator = 9;
-      p.type = game::ShipPartType_sensors;
-      broadcastMadePart(comms, p);
+      // game::ShipPartT p;
+      // p.quality = 2;
+      // p.creator = 1;
+      // p.type = game::ShipPartType_thruster;
+      // broadcastMadePart(comms, p);
+      // p.creator = 7;
+      // p.type = game::ShipPartType_cargo;
+      // broadcastMadePart(comms, p);
+      // p.creator = 9;
+      // p.type = game::ShipPartType_sensors;
+      // broadcastMadePart(comms, p);
 
       lastTradeAnnounce = now;
     }

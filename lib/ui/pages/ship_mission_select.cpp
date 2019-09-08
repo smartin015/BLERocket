@@ -1,11 +1,29 @@
 #include "ui.h"
 #include <iostream>
 
+#define NUM_MISSIONS 3
+const message::Type MISSIONS[NUM_MISSIONS] = {
+  message::Type_race,
+  message::Type_trade,
+  message::Type_explore,
+};
+
 // Player selecting a mission for a particular ship
 void UI::drawShipMissionSelect(const Engine* engine) {
-  drawText("Select Mission", TITLE_SZ, TITLE_X, TITLE_Y);
+  const game::StateT* state = engine->getState();
+  char buf[32];
+  const int shipIdx = engine->getSelectedShipIdx();
+  snprintf(buf, sizeof(buf), "%s mission", state->ships[shipIdx]->name.c_str());
+  drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
 
-  // TODO:
-  // - selectable list of possible missions
-  // - name of selected ship
+  const message::Type m = engine->getMission();
+  std::vector<std::string> items;
+  int idx = 0;
+  for (int i = 0; i < NUM_MISSIONS; i++) {
+    items.emplace_back(message::EnumNameType(MISSIONS[i]));
+    if (m == MISSIONS[i]) {
+      idx = i;
+    }
+  }
+  drawSelector(items, idx, BODY_X, BODY_Y);
 }

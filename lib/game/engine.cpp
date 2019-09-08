@@ -18,9 +18,18 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   }
   notifyAcked = true;
   lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
+  lastStatus = 0;
   selectedShip = 0;
+  mission = message::Type_race;
   charIdx = 0;
   codeBuffer.clear();
+
+  // TODO remove
+  if (state.status->score < PHASE2_SCORE_THRESHOLD) {
+    ESP_LOGI(ENGINE_TAG, "Cheating to phase 2");
+    state.status->score = PHASE2_SCORE_THRESHOLD;
+    state.status->phase_id = 2;
+  }
 }
 
 const game::StateT* Engine::getState() const {
@@ -29,6 +38,10 @@ const game::StateT* Engine::getState() const {
 
 nav::Page Engine::getPage() const {
   return state.page;
+}
+
+const std::vector<std::pair<time_t, game::StatusT>>* Engine::getNearbyClientStatuses() const {
+  return &localStatus;
 }
 
 bool Engine::suppressNav(const nav::Command& cmd) const {
@@ -100,6 +113,7 @@ void sendTestShip(CommsBase* comms) {
 
 void Engine::loop(CommsBase* comms) {
   tradeLoop(comms);
+  statusLoop(comms);
 }
 
 int Engine::getSelectedShipIdx() const {
@@ -108,6 +122,10 @@ int Engine::getSelectedShipIdx() const {
 
 int Engine::getCharIdx() const {
   return charIdx;
+}
+
+message::Type Engine::getMission() const {
+  return mission;
 }
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
@@ -126,6 +144,18 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         selectedShip = (selectedShip - 1 + state.ships.size()) % state.ships.size();
       } else if (cmd == nav::Command_down) {
         selectedShip = (selectedShip + 1) % state.ships.size();
+      }
+      break;
+    case nav::Page_shipMissionSelect:
+      switch (cmd) {
+        case nav::Command_up:
+          mission = (message::Type) std::max(mission - 1, (int) message::Type_race);
+          break;
+        case nav::Command_down:
+          mission = (message::Type) std::min(mission + 1, (int) message::Type_explore);
+          break;
+        default:
+          break;
       }
       break;
     case nav::Page_shipRename:
@@ -190,6 +220,13 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
 
         // Get rid of built up parts
         state.parts.clear();
+
+        // If we're above a certain point threshold, enable phase 2
+        if (state.status->phase_id < 2 && state.status->score >= PHASE2_SCORE_THRESHOLD) {
+          state.status->phase_id = 2;
+          state.status->phase_txn++;
+        }
+
       }
     case nav::Page_settingsEntry:
       if (cmd == nav::Command_down) {
@@ -211,17 +248,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
 void Engine::handleMessage(const message::MessageT& msg) {
   switch (msg.oneof.type) {
     case message::UMessage_status:
-      {
-        auto m = msg.oneof.Asstatus();
-        ESP_LOGI(ENGINE_TAG, "Status: FirmwareVersion %d Site %d Score %d Rep %d User %d Phase %d (tx %d)",
-         uint16_t(m->firmwareVersion),
-         uint16_t(m->site),
-         m->score,
-         m->reputation,
-         uint16_t(m->user),
-         uint16_t(m->phase_id),
-         uint16_t(m->phase_txn));
-      }
+      handleStatus(*(msg.oneof.Asstatus()));
       break;
     case message::UMessage_ship:
       {
