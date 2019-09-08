@@ -54,7 +54,7 @@ void UIEPaper::DrawNametagScreen(
 
   display.setFullWindow();
   display.fillScreen(GxEPD_WHITE);
-  display.setRotation(ROTATION_NAMETAG);
+  setRotation(ROTATION_NAMETAG);
 
   DrawSidebarText("press any key to play", true);
 
@@ -97,12 +97,16 @@ void UIEPaper::DrawNametagScreen(
 
 }
 
+void UIEPaper::setRotation(int r) {
+  display.setRotation(r);
+}
+
 void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
   int16_t rotation = display.getRotation();
   if (leftside) {
-    display.setRotation(ROTATION_GAME_LEFTSIDE);
+    setRotation(ROTATION_GAME_LEFTSIDE);
   } else {
-    display.setRotation(ROTATION_GAME_RIGHTSIDE);
+    setRotation(ROTATION_GAME_RIGHTSIDE);
   }
   setFont(&Org_01);
   display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
@@ -112,7 +116,7 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
 
   // clean up
   display.setTextColor(GxEPD_BLACK);
-  display.setRotation(rotation);
+  setRotation(rotation);
 }
 
 

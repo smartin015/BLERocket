@@ -10,7 +10,7 @@ enum Command:byte {
 }
 
 enum Page:byte {
-  // Default page for user (including the ever-important nametag)
+  // Default page for gameplay
   main = 0,
 
   // Entry points for user-triggered flows
@@ -41,5 +41,8 @@ enum Page:byte {
   launchSplash = 16,
 
   noOp = 17,
+
+  // Nametag mode!
+  nametag = 18,
 }
 

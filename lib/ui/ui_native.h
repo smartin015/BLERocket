@@ -28,6 +28,7 @@ public:
   bool isOpen();
   void setFont(const FONT_T* f);
   void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
+  void setRotation(int r);
 private:
   std::unique_ptr<sf::RenderWindow> window;
   sf::Font font;

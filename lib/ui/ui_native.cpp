@@ -75,6 +75,10 @@ void UINative::setFont(const FONT_T* f) {
   //TODO
 }
 
+// don't do anything here; this is for flipping the screen over for
+// nametag/gameplay
+void UINative::setRotation(int r) {};
+
 void UINative::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) {}
 
 void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {

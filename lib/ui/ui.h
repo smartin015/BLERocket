@@ -26,8 +26,12 @@
 
 #define SELECTOR_NUM_ITEMS 5
 
+// these are used for setting the "game mode" (flip screen over for nametag vs
+// play. Numbers correspond to gxepd rotations.
 #define ROTATION_GAME 3
 #define ROTATION_NAMETAG 1
+
+// these are used internally.
 #define ROTATION_GAME_LEFTSIDE 0
 #define ROTATION_GAME_RIGHTSIDE 2
 #define ROTATION_NAMETAG_RIGHTSIDE 0
@@ -54,6 +58,9 @@ public:
 
   // whether the UI has been closed
   virtual bool isOpen() = 0;
+
+  // set screen rotation
+  virtual void setRotation(int r) = 0;
 
   // TODO - temporary while I refactor UI code
   void drawText(const std::string& text, const int& size, const int& x, const int& y);
