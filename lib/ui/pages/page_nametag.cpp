@@ -1,9 +1,6 @@
 #include "ui.h"
 #include <iostream>
 
-#define NAMETAG_TOP_MARGIN 15
-#define LINESPACING 5
-
 // Nametag page
 void UI::drawNametag(const Engine* engine) {
   // TODO user name, location, username

@@ -2,7 +2,6 @@
 
 #include "ui_epaper.h"
 #include "GxEPD2_BW.h"
-#include <Fonts/Org_01.h>
 #include <gfxfont.h>
 
 #include "fonts.h"
@@ -35,6 +34,10 @@ void UIEPaper::setRotation(int r) {
 
 void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
   int16_t rotation = display.getRotation();
+  if (rotation == ROTATION_GAME) {
+    leftside = !leftside;
+  }
+
   if (leftside) {
     setRotation(ROTATION_GAME_LEFTSIDE);
   } else {

@@ -3,11 +3,17 @@
 #include "nav.h"
 
 void UI::drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center) {
-  drawText("^ " + top, SZ_S, cx, cy);
-  drawText("V " + bottom, SZ_S, cx, cy + SZ_M);
-  drawText("< " + left, SZ_S, cx, cy + 2*SZ_M);
-  drawText("> " + right, SZ_S, cx, cy + 3*SZ_M);
-  drawText("X " + center, SZ_S, cx, cy + 4*SZ_M);
+  //drawText("^ " + top, SZ_S, cx, cy);
+  //drawText("V " + bottom, SZ_S, cx, cy + SZ_M);
+  //drawText("< " + left, SZ_S, cx, cy + 2*SZ_M);
+  //drawText("> " + right, SZ_S, cx, cy + 3*SZ_M);
+  //drawText("X " + center, SZ_S, cx, cy + 4*SZ_M);
+
+  std::cout << "^ " + top << std::endl;
+  std::cout << "v " + bottom << std::endl;
+  std::cout << "< " + left << std::endl;
+  std::cout << "> " + right << std::endl;
+  std::cout << "x " + center << std::endl;
 }
 
 void UI::handleNotification(const std::string& text) {
@@ -51,20 +57,6 @@ void UI::DrawStringWithin(
 void UI::render(Engine* engine) {
   clear();
   const auto p = engine->getPage();
-  drawControls(150, 5,
-    engine->suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
-    engine->suppressNav(nav::Command_left) ? "" : EnumNamePage(nextPage(p, nav::Command_left)),
-    engine->suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
-    engine->suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
-    engine->suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
-
-  const auto* n = engine->getEvent();
-  if (n->lastMessage > notify_start) {
-    ESP_LOGI("UI", "Handling new message");
-    handleNotification("Incoming transmission");
-  }
-  persistNotification();
-  aRandomFunction(engine);
 
   switch (p) {
     case nav::Page_nametag:
@@ -126,10 +118,28 @@ void UI::render(Engine* engine) {
       break;
   }
 
+
+  const auto* n = engine->getEvent();
+  if (n->lastMessage > notify_start) {
+    ESP_LOGI("UI", "Handling new message");
+    handleNotification("Incoming transmission");
+  }
+  persistNotification();
+  aRandomFunction(engine);
+
   // Page changed; trigger full update
   if (lastRenderedPage != p) {
     fullUpdate();
     lastRenderedPage = p;
+    std::cout << "changed to page " << EnumNamePage(p) << std::endl;
+
+    drawControls(150, 5,
+      engine->suppressNav(nav::Command_up) ? "" : EnumNamePage(nextPage(p, nav::Command_up)),
+      engine->suppressNav(nav::Command_left) ? "" : EnumNamePage(nextPage(p, nav::Command_left)),
+      engine->suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
+      engine->suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
+      engine->suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
+
   } else {
     // TODO ui->partialUpdate();
   }

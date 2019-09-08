@@ -8,6 +8,7 @@
 
 #include <Arduino.h>
 #include "gfxfont.h"
+#include <Fonts/Org_01.h>
 
 typedef const GFXfont FONT_T;
 
@@ -17,6 +18,7 @@ typedef const GFXfont FONT_T;
 #include "fonts/PoppinsExtraBold8pt7b.h"
 
 #include "fonts/RobotoMonoBold6pt7b.h"
+#include "fonts/RobotoMonoBold8pt7b.h"
 #include "fonts/RobotoMonoBold12pt7b.h"
 #include "fonts/RobotoMonoBold14pt7b.h"
 
@@ -28,7 +30,10 @@ typedef const GFXfont FONT_T;
 
 #define FONT_ROBOTO_14  RobotoMonoBold14pt7b
 #define FONT_ROBOTO_12  RobotoMonoBold12pt7b
+#define FONT_ROBOTO_8   RobotoMonoBold8pt7b
 #define FONT_ROBOTO_6   RobotoMonoBold6pt7b
+
+#define FONT_TINY Org_01
 
 #endif // UI_EPAPER
 
@@ -79,6 +84,12 @@ static FONT_T FONT_ROBOTO_12 = {
   NULL,
   "lib/ui/fonts/RobotoMonoBold.ttf",
   16
+};
+
+static FONT_T FONT_ROBOTO_8 = {
+  NULL,
+  "lib/ui/fonts/RobotoMonoBold.ttf",
+  11
 };
 
 static FONT_T FONT_ROBOTO_6 = {
