@@ -96,7 +96,6 @@ private:
   void drawTradeEntry(const Engine* engine);
   void drawFleetEntry(const Engine* engine);
   void drawLaunchEntry(const Engine* engine);
-  void drawSettingsChangeName(const Engine* engine);
   void drawSettingsSelectUser(const Engine* engine);
   void drawSettingsReset(const Engine* engine);
   void drawShipDetails(const Engine* engine);
@@ -105,8 +104,7 @@ private:
   void drawShipConfirm(const Engine* engine);
   void drawShipSplash(const Engine* engine);
   void drawShipRename(const Engine* engine);
-  void drawEventShipVisit(const Engine* engine);
-  void drawEventPlayerLaunch(const Engine* engine);
+  void drawShipVisitEntry(const Engine* engine);
   void drawShipVisitDecision(const Engine* engine);
   void drawShipVisitOutcome(const Engine* engine);
   void drawLaunchSplash(const Engine* engine);

@@ -69,9 +69,6 @@ void UI::render(Engine* engine) {
     case nav::Page_launchEntry:
       drawLaunchEntry(engine);
       break;
-    case nav::Page_settingsChangeName:
-      drawSettingsChangeName(engine);
-      break;
     case nav::Page_settingsSelectUser:
       drawSettingsSelectUser(engine);
       break;
@@ -96,11 +93,8 @@ void UI::render(Engine* engine) {
     case nav::Page_shipRename:
       drawShipRename(engine);
       break;
-    case nav::Page_eventShipVisit:
-      drawEventShipVisit(engine);
-      break;
-    case nav::Page_eventPlayerLaunch:
-      drawEventPlayerLaunch(engine);
+    case nav::Page_shipVisitEntry:
+      drawShipVisitEntry(engine);
       break;
     case nav::Page_shipVisitDecision:
       drawShipVisitDecision(engine);

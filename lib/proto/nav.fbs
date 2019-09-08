@@ -20,31 +20,26 @@ enum Page:byte {
   launchEntry = 4,
 
   // Different game settings pages
-  settingsChangeName = 5,
-  settingsSelectUser = 6,
-  settingsReset = 7,
+  settingsSelectUser = 5,
+  settingsReset = 6,
 
   // UI for acting on a single ship
-  shipDetails = 8,
-  shipMissionSelect = 9,
-  shipDestSelect = 10,
-  shipConfirm = 11,
-  shipSplash = 12,
-  shipRename = 13,
-
-  // Events are arrive async from other users.
-  // They are handled synchronously by the dest user.
-  eventShipVisit = 14,
-  eventPlayerLaunch = 15,
+  shipDetails = 7,
+  shipMissionSelect = 8,
+  shipDestSelect = 9,
+  shipConfirm = 10,
+  shipSplash = 11,
+  shipRename = 12,
 
   // When user ships visit; the dest user is presented
   // with a random decision to make; and an outcome
   // following that decision.
-  shipVisitDecision = 16,
-  shipVisitOutcome = 17,
+  shipVisitEntry = 13,
+  shipVisitDecision = 14,
+  shipVisitOutcome = 15,
 
-  launchSplash = 18,
+  launchSplash = 16,
 
-  noOp = 19,
+  noOp = 17,
 }
 

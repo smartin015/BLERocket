@@ -6,9 +6,8 @@
 // Player selecting a mission destination
 void UI::drawShipDestSelect(const Engine* engine) {
   const game::StateT* state = engine->getState();
-  const auto* m = engine->getMission();
   char buf[32];
-  snprintf(buf, sizeof(buf), "%s %s", state->ships[state->selectedShip]->name.c_str(), message::EnumNameType(m->type));
+  snprintf(buf, sizeof(buf), "%s mission", state->ships[state->selectedShip]->name.c_str());
   drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
 
   // TODO maybe order by RSSI?

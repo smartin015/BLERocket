@@ -12,5 +12,4 @@ void UI::drawShipRename(const Engine* engine) {
     char buf[2] = {ship->name[i], 0};
     drawText(buf, SZ_S, BODY_X + (i*SZ_S), BODY_Y);
   }
-  // TODO text input with "Name:"
 }
