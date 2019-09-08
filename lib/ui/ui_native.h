@@ -37,8 +37,8 @@ private:
       int* xmax, int* ymax     // where to store bottom right coords of bounds
       );
   std::unique_ptr<sf::RenderWindow> window;
-  sf::Font font;
-  sf::Color color;
+  std::vector<sf::Font> fonts;
+  const FONT_T* font;
 };
 
 #endif // UI_NATIVE_H

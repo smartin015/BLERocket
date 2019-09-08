@@ -139,7 +139,6 @@ void UI::render(Engine* engine) {
       engine->suppressNav(nav::Command_down) ? "" : EnumNamePage(nextPage(p, nav::Command_down)),
       engine->suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
       engine->suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
-
   } else {
     partialUpdate();
   }
@@ -165,6 +164,11 @@ const FONT_T* UI::PickBestFontForString(
       max_width_found = w - xmin;
       font_found = fonts[i];
     }
+  }
+
+  // Pick the smallest font
+  if (font_found == NULL) {
+    font_found = &FONT_TINY;
   }
   return font_found;
 }

@@ -45,64 +45,26 @@ typedef const GFXfont FONT_T;
 // This is a hack. The idea is that we statically initialize the structs here,
 // then actually load the files at runtime.
 typedef struct {
-  sf::Font* ttf; // NULL untill runtime
-  const char* filename;
+  int idx; // index into fonts[]
   int size; // in pixels
 } FONT_T;
 
-static FONT_T FONT_POPPINS_18 = {
-  NULL,
+#define NUM_FONT_PATHS 2
+static const char* font_paths[NUM_FONT_PATHS] = {
   "lib/ui/fonts/PoppinsExtraBold.ttf",
-  24
-};
-
-static FONT_T FONT_POPPINS_16 = {
-  NULL,
-  "lib/ui/fonts/PoppinsExtraBold.ttf",
-  22
-};
-
-static FONT_T FONT_POPPINS_12 = {
-  NULL,
-  "lib/ui/fonts/PoppinsExtraBold.ttf",
-  16
-};
-
-static FONT_T FONT_POPPINS_8 = {
-  NULL,
-  "lib/ui/fonts/PoppinsExtraBold.ttf",
-  11
-};
-
-static FONT_T FONT_ROBOTO_14 = {
-  NULL,
   "lib/ui/fonts/RobotoMonoBold.ttf",
-  19
 };
 
-static FONT_T FONT_ROBOTO_12 = {
-  NULL,
-  "lib/ui/fonts/RobotoMonoBold.ttf",
-  16
-};
+static FONT_T FONT_POPPINS_18 = {0, 24};
+static FONT_T FONT_POPPINS_16 = {0, 22};
+static FONT_T FONT_POPPINS_12 = {0, 16};
+static FONT_T FONT_POPPINS_8 = {0, 11};
+static FONT_T FONT_ROBOTO_14 = {1, 19};
+static FONT_T FONT_ROBOTO_12 = {1, 16};
+static FONT_T FONT_ROBOTO_8 = {1, 11};
+static FONT_T FONT_ROBOTO_6 = {1, 8};
+static FONT_T FONT_TINY = {1, 8};
 
-static FONT_T FONT_ROBOTO_8 = {
-  NULL,
-  "lib/ui/fonts/RobotoMonoBold.ttf",
-  11
-};
-
-static FONT_T FONT_ROBOTO_6 = {
-  NULL,
-  "lib/ui/fonts/RobotoMonoBold.ttf",
-  8
-};
-
-static FONT_T FONT_TINY = {
-  NULL,
-  "lib/ui/fonts/RobotoMonoBold.ttf",
-  8
-};
 #endif // UI_NATIVE
 
 static const FONT_T* const KNOWN_FONTS_DISPLAY[] = {
