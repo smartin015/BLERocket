@@ -48,14 +48,19 @@ typedef struct trade_state_t {
 
 typedef struct mission_state_t {
   std::vector<std::pair<time_t, game::StatusT>> localStatus;
+  std::vector<std::pair<time_t, std::string>> activeShips;
   time_t lastStatus;
   message::Type type;
 } mission_state_t;
 
 typedef struct event_state_t {
-  std::vector<message::MessageT> messages;
-  message::MessageT notification;
-  bool notifyAcked;
+  message::MessageT message;
+  time_t lastMessage;
+  bool acked;
+  // For ship responses
+  const meta::ScenarioT* scenario;
+  int selectedChoice;
+  uint8_t d20;
 } event_state_t;
 
 class Engine {
@@ -66,8 +71,7 @@ public:
   // Input handling functions
   void handleInput(const nav::Command& cmd, CommsBase* comms);
   void handleMessage(const message::MessageT& msg);
-  void ackNotification();
-  void ackMessage();
+  void ackEvent();
 
   // Loop calls several sub-loops to handle non-input updates
   void loop(CommsBase* comms);
@@ -77,26 +81,23 @@ public:
   nav::Page getPage() const;
   const game::StateT* getState() const;
   const meta::DataT* getData() const;
-  const message::MessageT* getNotification() const;
-  const message::MessageT* peekMessage() const;
+  const event_state_t* getEvent() const;
   const mission_state_t* getMission() const;
-  const std::vector<std::pair<time_t, game::StatusT>>* getNearbyClientStatuses() const;
-
 private:
   game::StateT state; // Persisted game state
   meta::DataT data; // Immutable (environment) state
 
-  // Ephemeral state for e.g. user targeted actions
+  void clearVolatileState();
   void tradeLoop(CommsBase* comms);
   void tradeInput(const nav::Command& cmd, CommsBase* comms);
   void tradeMakePart(const game::ShipPartT& part);
+  void tradePartBroadcast(CommsBase* comms, const game::ShipPartT& part);
   trade_state_t trade;
   void missionLoop(CommsBase* comms);
   void missionHandleStatus(const game::StatusT& status);
+  void missionUpdateScoreAndRep();
   mission_state_t mission;
   event_state_t event;
-
-  // Selectors
 
 };
 

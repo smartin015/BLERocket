@@ -11,21 +11,17 @@ void UI::drawMissionDestSelect(const Engine* engine) {
   drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
 
   // TODO maybe order by RSSI?
-  const std::vector<std::pair<time_t, game::StatusT>>* ss = engine->getNearbyClientStatuses();
-  if (ss->size() == 0) {
+  const mission_state_t* m = engine->getMission();
+  if (m->localStatus.size() == 0) {
     drawText("No targets nearby.\nFind some friends!", SZ_S, BODY_X, BODY_Y);
     return;
   }
 
   std::vector<std::string> items;
-  int idx = 0;
-  for (int i = 0; i < ss->size() && i < MAX_DESTINATIONS; i++) {
-    // items.emplace_back(message::EnumNameType(MISSIONS[i]));
-    // if (m == MISSIONS[i]) {
-    //   idx = i;
-    // }
+  const meta::DataT* data = engine->getData();
+  for (int i = 0; i < m->localStatus.size() && i < MAX_DESTINATIONS; i++) {
+    items.emplace_back(data->users[m->localStatus[i].second.user]->username);
   }
 
-
-  drawSelector(items, idx, BODY_X, BODY_Y);
+  drawSelector(items, state->selectedUser, BODY_X, BODY_Y);
 }

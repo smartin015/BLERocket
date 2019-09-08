@@ -4,6 +4,15 @@
 #include <string.h>
 #include <stdlib.h>
 
+void Engine::clearVolatileState() {
+  event.acked = true;
+  event.lastMessage = 0;
+  trade.lastAnnounce = TRADE_ANNOUNCE_OFF;
+  trade.codeBuffer.clear();
+  mission.lastStatus = 0;
+  mission.type = message::Type_race;
+}
+
 Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   if (gameState != NULL) {
     gameState->UnPackTo(&state, NULL);
@@ -16,13 +25,23 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   if (metadata != NULL) {
     metadata->UnPackTo(&data, NULL);
   }
-  event.notifyAcked = true;
-  trade.lastAnnounce = TRADE_ANNOUNCE_OFF;
-  mission.lastStatus = 0;
-  mission.type = message::Type_race;
-  trade.codeBuffer.clear();
 
-  // TODO remove
+  clearVolatileState();
+
+  // If we're in any of the ship visit pages, drop back to main
+  // as they rely on volatile event state.
+  if (state.page == nav::Page_shipVisitEntry ||
+      state.page == nav::Page_shipVisitDecision ||
+      state.page == nav::Page_shipVisitOutcome) {
+    state.page = nav::Page_main;
+  }
+
+  // If the user is not set, start in the user select page
+  if (state.status->user == 0) {
+    state.page = nav::Page_settingsSelectUser;
+  }
+
+  // Cheat to phase 2
   if (state.status->score < PHASE2_SCORE_THRESHOLD) {
     ESP_LOGI(ENGINE_TAG, "Cheating to phase 2");
     state.status->score = PHASE2_SCORE_THRESHOLD;
@@ -38,10 +57,6 @@ nav::Page Engine::getPage() const {
   return state.page;
 }
 
-const std::vector<std::pair<time_t, game::StatusT>>* Engine::getNearbyClientStatuses() const {
-  return &mission.localStatus;
-}
-
 bool Engine::suppressNav(const nav::Command& cmd) const {
   // Suppress non-back action on launch page if not enough parts.
   if (state.page == nav::Page_launchEntry && cmd != nav::Command_left) {
@@ -53,6 +68,13 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   // Suppress non-back action on missionDestSelect page if no destinations
   if (state.page == nav::Page_missionDestSelect && cmd != nav::Command_left) {
     if (mission.localStatus.size() == 0) {
+      return true;
+    }
+  }
+
+  // Suppress ship visit entry code if no ship is visiting
+  if (nextPage(state.page, cmd) == nav::Page_shipVisitEntry) {
+    if (event.acked) {
       return true;
     }
   }
@@ -85,6 +107,14 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   }
   auto next = nextPage(state.page, cmd);
 
+  if (next == nav::Page_shipVisitEntry) {
+    // Reset scenario and ack the event
+    ackEvent();
+    event.scenario = data.scenarios[std::rand() % (data.scenarios.size())].get();
+    event.selectedChoice = 0;
+    event.d20 = 1 + (std::rand() % 20);
+  }
+
   switch (state.page) {
     case nav::Page_tradeEntry:
       tradeInput(cmd, comms);
@@ -104,6 +134,33 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         case nav::Command_down:
           mission.type = (message::Type) std::min(mission.type + 1, (int) message::Type_explore);
           break;
+        default:
+          break;
+      }
+      break;
+    case nav::Page_missionDestSelect:
+      switch (cmd) {
+        case nav::Command_up:
+          state.selectedUser = (state.selectedUser-1 + mission.localStatus.size()) % mission.localStatus.size();
+          break;
+        case nav::Command_down:
+          state.selectedUser = (state.selectedUser+1) % mission.localStatus.size();
+          break;
+        default:
+          break;
+      }
+      break;
+    case nav::Page_shipVisitDecision:
+      switch (cmd) {
+        case nav::Command_up:
+          event.selectedChoice = (event.selectedChoice-1 + event.scenario->choices.size()) % event.scenario->choices.size();
+          break;
+        case nav::Command_down:
+          event.selectedChoice = (event.selectedChoice+1) % event.scenario->choices.size();
+          break;
+        case nav::Command_enter:
+        case nav::Command_right:
+          missionUpdateScoreAndRep();
         default:
           break;
       }
@@ -128,23 +185,27 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
       break;
     case nav::Page_settingsReset:
       if (cmd == nav::Command_enter) {
-        // Clear persistent and ephemeral state
+        // Clear persistent and volatile state
         state = game::StateT();
         state.status.reset(new game::StatusT());
-        event.notifyAcked = true;
-        trade.lastAnnounce = TRADE_ANNOUNCE_OFF;
-        state.selectedShip = 0;
-        state.charIdx = 0;
-        trade.codeBuffer.clear();
+        clearVolatileState();
       }
       break;
     case nav::Page_settingsSelectUser:
       switch (cmd) {
         case nav::Command_up:
-          state.status->user = (state.status->user-1 + data.users.size()) % data.users.size();
+          if (state.status->user <= 1) {
+            state.status->user = data.users.size()-1;
+          } else {
+           state.status->user = state.status->user-1;
+          }
           break;
         case nav::Command_down:
-          state.status->user = (state.status->user+1) % data.users.size();
+          if (state.status->user >= data.users.size()-1) {
+            state.status->user = 1;
+          } else {
+            state.status->user = state.status->user+1;
+          }
           break;
         default:
           break;
@@ -180,15 +241,23 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
       break;
     case nav::Page_missionConfirm:
       {
-        // Send example ship message
-        // TODO actually send ship on mission
+        // Add the ship to the mission roster
+        mission.activeShips.push_back(std::make_pair(time(NULL), state.ships[state.selectedShip]->name));
+
+        // Notify destination of ship on mission
         message::MessageT msg;
+        msg.source_user = state.status->user;
         msg.oneof.Set<message::ShipT>(message::ShipT());
         auto* s = msg.oneof.Asship();
-        s->action = message::Type_give;
-        s->dest_user = 1;
+        s->action = mission.type;
+        s->dest_user = state.selectedUser;
         s->ship.reset(new game::ShipT());
-        s->ship->owner = 2;
+        s->ship->name = state.ships[state.selectedShip]->name;
+        s->ship->owner = state.ships[state.selectedShip]->owner;
+        for (int i = 0; i < state.ships[state.selectedShip]->parts.size(); i++) {
+          game::ShipPartT p = *(state.ships[state.selectedShip]->parts[i].get());
+          s->ship->parts.emplace_back(new game::ShipPartT(p));
+        }
         comms->sendMessage(msg, false);
       }
       break;
@@ -197,7 +266,10 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   }
 
   if (next != nav::Page_noOp) {
-    ESP_LOGI(ENGINE_TAG, "Nav to page %s", nav::EnumNamePage(next));
+    ESP_LOGI(ENGINE_TAG, "(%s, %s) -> %s",
+      nav::EnumNamePage(state.page),
+      nav::EnumNameCommand(cmd),
+      nav::EnumNamePage(next));
     state.page = next;
   }
 }
@@ -216,13 +288,20 @@ void Engine::handleMessage(const message::MessageT& msg) {
           uint16_t(m->ship->owner),
           uint16_t(m->dest_user));
 
-        event.notification.oneof.Set<message::ShipT>(message::ShipT());
-        auto s = event.notification.oneof.Asship();
-        s->action = message::Type_launch;
-        s->dest_user = 0;
+        if (!event.acked) {
+          ESP_LOGI(ENGINE_TAG, "Dropping message, prior notification already in place");
+        }
+
+        // Copy message details to event_state_t
+        event.message.source_user = msg.source_user;
+        event.message.oneof.Set<message::ShipT>(message::ShipT());
+        auto s = event.message.oneof.Asship();
+        s->action = m->action;
+        s->dest_user = m->dest_user;
         s->ship.reset(new game::ShipT());
-        s->ship->name = "aship";
-        event.notifyAcked = false;
+        s->ship->name = m->ship->name;
+        event.acked = false;
+        event.lastMessage = time(NULL);
         ESP_LOGI(ENGINE_TAG, "Set notification");
       }
       break;

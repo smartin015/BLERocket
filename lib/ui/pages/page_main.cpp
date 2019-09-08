@@ -13,6 +13,9 @@ void UI::drawMain(const Engine* engine) {
   char buf[16];
   snprintf(buf, sizeof(buf), "%d", engine->getState()->status->score);
   drawText(buf, SZ_S, BODY_X, BODY_Y + SZ_L);
+
+  snprintf(buf, sizeof(buf), "%d", engine->getState()->status->reputation);
+  drawText(buf, SZ_S, BODY_X, BODY_Y + SZ_L + SZ_S);
   // TODO active events
   // TODO visiting rockets
 }

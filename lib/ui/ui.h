@@ -35,7 +35,7 @@
 
 class UI {
 public:
-  UI() {}
+  UI() : notify_start(0) {}
 
   void render(Engine* engine);
   virtual Command nextCommand() = 0;
@@ -85,7 +85,7 @@ private:
   nav::Page lastRenderedPage;
   std::string notification;
   time_t notify_start;
-  void handleNotification(const message::MessageT& msg);
+  void handleNotification(const std::string& text);
   void persistNotification();
 
   void drawControls(const int& cx, const int& cy, const std::string& top, const std::string& left, const std::string& bottom, const std::string& right, const std::string& center);

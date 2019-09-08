@@ -3,7 +3,6 @@ namespace meta;
 table User {
   name:string;
   username: string;
-  mac:string;
   site:ubyte;
 }
 
@@ -12,9 +11,29 @@ table Site {
   shortname:string;
 }
 
+table Scenario {
+  desc:string;
+  choices:[Choice];
+}
+
+enum Alignment:byte {
+  neutral = 0,
+  good = 1,
+  evil = 2
+}
+
+table Choice {
+  action:string;
+  alignment:Alignment;
+  risk:ubyte;
+  success:string;
+  failure:string;
+}
+
 table Data {
   users:[User];
   sites:[Site];
+  scenarios:[Scenario];
 }
 
 root_type Data;

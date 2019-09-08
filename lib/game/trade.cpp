@@ -50,9 +50,10 @@ std::string userButtonSequenceStr(const std::vector<nav::Command>& seq) {
   return result;
 }
 
-void broadcastMadePart(CommsBase* comms, const game::ShipPartT& part) {
+void Engine::tradePartBroadcast(CommsBase* comms, const game::ShipPartT& part) {
   ESP_LOGI(ENGINE_TAG, "Announcing trade");
   message::MessageT msg;
+  msg.source_user = state.status->user;
   msg.oneof.Set<message::PartT>(message::PartT());
   auto* s = msg.oneof.Aspart();
   s->action = message::Type_make;
@@ -67,20 +68,23 @@ void Engine::tradeLoop(CommsBase* comms) {
   if (state.page == nav::Page_tradeEntry) {
     if (trade.lastAnnounce == TRADE_ANNOUNCE_OFF || trade.lastAnnounce + TRADE_ANNOUNCE_SECS < now) {
       ESP_LOGI(ENGINE_TAG, "Advertising trade");
-      broadcastMadePart(comms, generatePart(state.status->user, state.status->score));
+      tradePartBroadcast(comms, generatePart(state.status->user, state.status->score));
 
       // Cheat, broadcasting other important parts
-      // game::ShipPartT p;
-      // p.quality = 2;
-      // p.creator = 1;
-      // p.type = game::ShipPartType_thruster;
-      // broadcastMadePart(comms, p);
-      // p.creator = 7;
-      // p.type = game::ShipPartType_cargo;
-      // broadcastMadePart(comms, p);
-      // p.creator = 9;
-      // p.type = game::ShipPartType_sensors;
-      // broadcastMadePart(comms, p);
+      game::ShipPartT p;
+      p.quality = 2;
+      p.creator = 3;
+      p.type = game::ShipPartType_hull;
+      tradePartBroadcast(comms, p);
+      p.creator = 1;
+      p.type = game::ShipPartType_thruster;
+      tradePartBroadcast(comms, p);
+      p.creator = 7;
+      p.type = game::ShipPartType_cargo;
+      tradePartBroadcast(comms, p);
+      p.creator = 9;
+      p.type = game::ShipPartType_sensors;
+      tradePartBroadcast(comms, p);
 
       trade.lastAnnounce = now;
     }

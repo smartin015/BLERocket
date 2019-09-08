@@ -14,14 +14,52 @@ struct UserT;
 struct Site;
 struct SiteT;
 
+struct Scenario;
+struct ScenarioT;
+
+struct Choice;
+struct ChoiceT;
+
 struct Data;
 struct DataT;
+
+enum Alignment {
+  Alignment_neutral = 0,
+  Alignment_good = 1,
+  Alignment_evil = 2,
+  Alignment_MIN = Alignment_neutral,
+  Alignment_MAX = Alignment_evil
+};
+
+inline const Alignment (&EnumValuesAlignment())[3] {
+  static const Alignment values[] = {
+    Alignment_neutral,
+    Alignment_good,
+    Alignment_evil
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesAlignment() {
+  static const char * const names[] = {
+    "neutral",
+    "good",
+    "evil",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameAlignment(Alignment e) {
+  if (e < Alignment_neutral || e > Alignment_evil) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesAlignment()[index];
+}
 
 struct UserT : public flatbuffers::NativeTable {
   typedef User TableType;
   std::string name;
   std::string username;
-  std::string mac;
   uint8_t site;
   UserT()
       : site(0) {
@@ -33,17 +71,13 @@ struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
     VT_USERNAME = 6,
-    VT_MAC = 8,
-    VT_SITE = 10
+    VT_SITE = 8
   };
   const flatbuffers::String *name() const {
     return GetPointer<const flatbuffers::String *>(VT_NAME);
   }
   const flatbuffers::String *username() const {
     return GetPointer<const flatbuffers::String *>(VT_USERNAME);
-  }
-  const flatbuffers::String *mac() const {
-    return GetPointer<const flatbuffers::String *>(VT_MAC);
   }
   uint8_t site() const {
     return GetField<uint8_t>(VT_SITE, 0);
@@ -54,8 +88,6 @@ struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(name()) &&
            VerifyOffset(verifier, VT_USERNAME) &&
            verifier.VerifyString(username()) &&
-           VerifyOffset(verifier, VT_MAC) &&
-           verifier.VerifyString(mac()) &&
            VerifyField<uint8_t>(verifier, VT_SITE) &&
            verifier.EndTable();
   }
@@ -72,9 +104,6 @@ struct UserBuilder {
   }
   void add_username(flatbuffers::Offset<flatbuffers::String> username) {
     fbb_.AddOffset(User::VT_USERNAME, username);
-  }
-  void add_mac(flatbuffers::Offset<flatbuffers::String> mac) {
-    fbb_.AddOffset(User::VT_MAC, mac);
   }
   void add_site(uint8_t site) {
     fbb_.AddElement<uint8_t>(User::VT_SITE, site, 0);
@@ -95,10 +124,8 @@ inline flatbuffers::Offset<User> CreateUser(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> name = 0,
     flatbuffers::Offset<flatbuffers::String> username = 0,
-    flatbuffers::Offset<flatbuffers::String> mac = 0,
     uint8_t site = 0) {
   UserBuilder builder_(_fbb);
-  builder_.add_mac(mac);
   builder_.add_username(username);
   builder_.add_name(name);
   builder_.add_site(site);
@@ -109,16 +136,13 @@ inline flatbuffers::Offset<User> CreateUserDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
     const char *username = nullptr,
-    const char *mac = nullptr,
     uint8_t site = 0) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
   auto username__ = username ? _fbb.CreateString(username) : 0;
-  auto mac__ = mac ? _fbb.CreateString(mac) : 0;
   return meta::CreateUser(
       _fbb,
       name__,
       username__,
-      mac__,
       site);
 }
 
@@ -202,10 +226,211 @@ inline flatbuffers::Offset<Site> CreateSiteDirect(
 
 flatbuffers::Offset<Site> CreateSite(flatbuffers::FlatBufferBuilder &_fbb, const SiteT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
+struct ScenarioT : public flatbuffers::NativeTable {
+  typedef Scenario TableType;
+  std::string desc;
+  std::vector<std::unique_ptr<ChoiceT>> choices;
+  ScenarioT() {
+  }
+};
+
+struct Scenario FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef ScenarioT NativeTableType;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_DESC = 4,
+    VT_CHOICES = 6
+  };
+  const flatbuffers::String *desc() const {
+    return GetPointer<const flatbuffers::String *>(VT_DESC);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Choice>> *choices() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Choice>> *>(VT_CHOICES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_DESC) &&
+           verifier.VerifyString(desc()) &&
+           VerifyOffset(verifier, VT_CHOICES) &&
+           verifier.VerifyVector(choices()) &&
+           verifier.VerifyVectorOfTables(choices()) &&
+           verifier.EndTable();
+  }
+  ScenarioT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(ScenarioT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<Scenario> Pack(flatbuffers::FlatBufferBuilder &_fbb, const ScenarioT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct ScenarioBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_desc(flatbuffers::Offset<flatbuffers::String> desc) {
+    fbb_.AddOffset(Scenario::VT_DESC, desc);
+  }
+  void add_choices(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Choice>>> choices) {
+    fbb_.AddOffset(Scenario::VT_CHOICES, choices);
+  }
+  explicit ScenarioBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ScenarioBuilder &operator=(const ScenarioBuilder &);
+  flatbuffers::Offset<Scenario> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Scenario>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Scenario> CreateScenario(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> desc = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Choice>>> choices = 0) {
+  ScenarioBuilder builder_(_fbb);
+  builder_.add_choices(choices);
+  builder_.add_desc(desc);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Scenario> CreateScenarioDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *desc = nullptr,
+    const std::vector<flatbuffers::Offset<Choice>> *choices = nullptr) {
+  auto desc__ = desc ? _fbb.CreateString(desc) : 0;
+  auto choices__ = choices ? _fbb.CreateVector<flatbuffers::Offset<Choice>>(*choices) : 0;
+  return meta::CreateScenario(
+      _fbb,
+      desc__,
+      choices__);
+}
+
+flatbuffers::Offset<Scenario> CreateScenario(flatbuffers::FlatBufferBuilder &_fbb, const ScenarioT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct ChoiceT : public flatbuffers::NativeTable {
+  typedef Choice TableType;
+  std::string action;
+  Alignment alignment;
+  uint8_t risk;
+  std::string success;
+  std::string failure;
+  ChoiceT()
+      : alignment(Alignment_neutral),
+        risk(0) {
+  }
+};
+
+struct Choice FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef ChoiceT NativeTableType;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ACTION = 4,
+    VT_ALIGNMENT = 6,
+    VT_RISK = 8,
+    VT_SUCCESS = 10,
+    VT_FAILURE = 12
+  };
+  const flatbuffers::String *action() const {
+    return GetPointer<const flatbuffers::String *>(VT_ACTION);
+  }
+  Alignment alignment() const {
+    return static_cast<Alignment>(GetField<int8_t>(VT_ALIGNMENT, 0));
+  }
+  uint8_t risk() const {
+    return GetField<uint8_t>(VT_RISK, 0);
+  }
+  const flatbuffers::String *success() const {
+    return GetPointer<const flatbuffers::String *>(VT_SUCCESS);
+  }
+  const flatbuffers::String *failure() const {
+    return GetPointer<const flatbuffers::String *>(VT_FAILURE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_ACTION) &&
+           verifier.VerifyString(action()) &&
+           VerifyField<int8_t>(verifier, VT_ALIGNMENT) &&
+           VerifyField<uint8_t>(verifier, VT_RISK) &&
+           VerifyOffset(verifier, VT_SUCCESS) &&
+           verifier.VerifyString(success()) &&
+           VerifyOffset(verifier, VT_FAILURE) &&
+           verifier.VerifyString(failure()) &&
+           verifier.EndTable();
+  }
+  ChoiceT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(ChoiceT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<Choice> Pack(flatbuffers::FlatBufferBuilder &_fbb, const ChoiceT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct ChoiceBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_action(flatbuffers::Offset<flatbuffers::String> action) {
+    fbb_.AddOffset(Choice::VT_ACTION, action);
+  }
+  void add_alignment(Alignment alignment) {
+    fbb_.AddElement<int8_t>(Choice::VT_ALIGNMENT, static_cast<int8_t>(alignment), 0);
+  }
+  void add_risk(uint8_t risk) {
+    fbb_.AddElement<uint8_t>(Choice::VT_RISK, risk, 0);
+  }
+  void add_success(flatbuffers::Offset<flatbuffers::String> success) {
+    fbb_.AddOffset(Choice::VT_SUCCESS, success);
+  }
+  void add_failure(flatbuffers::Offset<flatbuffers::String> failure) {
+    fbb_.AddOffset(Choice::VT_FAILURE, failure);
+  }
+  explicit ChoiceBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ChoiceBuilder &operator=(const ChoiceBuilder &);
+  flatbuffers::Offset<Choice> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Choice>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Choice> CreateChoice(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> action = 0,
+    Alignment alignment = Alignment_neutral,
+    uint8_t risk = 0,
+    flatbuffers::Offset<flatbuffers::String> success = 0,
+    flatbuffers::Offset<flatbuffers::String> failure = 0) {
+  ChoiceBuilder builder_(_fbb);
+  builder_.add_failure(failure);
+  builder_.add_success(success);
+  builder_.add_action(action);
+  builder_.add_risk(risk);
+  builder_.add_alignment(alignment);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Choice> CreateChoiceDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *action = nullptr,
+    Alignment alignment = Alignment_neutral,
+    uint8_t risk = 0,
+    const char *success = nullptr,
+    const char *failure = nullptr) {
+  auto action__ = action ? _fbb.CreateString(action) : 0;
+  auto success__ = success ? _fbb.CreateString(success) : 0;
+  auto failure__ = failure ? _fbb.CreateString(failure) : 0;
+  return meta::CreateChoice(
+      _fbb,
+      action__,
+      alignment,
+      risk,
+      success__,
+      failure__);
+}
+
+flatbuffers::Offset<Choice> CreateChoice(flatbuffers::FlatBufferBuilder &_fbb, const ChoiceT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
 struct DataT : public flatbuffers::NativeTable {
   typedef Data TableType;
   std::vector<std::unique_ptr<UserT>> users;
   std::vector<std::unique_ptr<SiteT>> sites;
+  std::vector<std::unique_ptr<ScenarioT>> scenarios;
   DataT() {
   }
 };
@@ -214,13 +439,17 @@ struct Data FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DataT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_USERS = 4,
-    VT_SITES = 6
+    VT_SITES = 6,
+    VT_SCENARIOS = 8
   };
   const flatbuffers::Vector<flatbuffers::Offset<User>> *users() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<User>> *>(VT_USERS);
   }
   const flatbuffers::Vector<flatbuffers::Offset<Site>> *sites() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Site>> *>(VT_SITES);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Scenario>> *scenarios() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Scenario>> *>(VT_SCENARIOS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -230,6 +459,9 @@ struct Data FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyOffset(verifier, VT_SITES) &&
            verifier.VerifyVector(sites()) &&
            verifier.VerifyVectorOfTables(sites()) &&
+           VerifyOffset(verifier, VT_SCENARIOS) &&
+           verifier.VerifyVector(scenarios()) &&
+           verifier.VerifyVectorOfTables(scenarios()) &&
            verifier.EndTable();
   }
   DataT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -246,6 +478,9 @@ struct DataBuilder {
   void add_sites(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Site>>> sites) {
     fbb_.AddOffset(Data::VT_SITES, sites);
   }
+  void add_scenarios(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Scenario>>> scenarios) {
+    fbb_.AddOffset(Data::VT_SCENARIOS, scenarios);
+  }
   explicit DataBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -261,8 +496,10 @@ struct DataBuilder {
 inline flatbuffers::Offset<Data> CreateData(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<User>>> users = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Site>>> sites = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Site>>> sites = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Scenario>>> scenarios = 0) {
   DataBuilder builder_(_fbb);
+  builder_.add_scenarios(scenarios);
   builder_.add_sites(sites);
   builder_.add_users(users);
   return builder_.Finish();
@@ -271,13 +508,16 @@ inline flatbuffers::Offset<Data> CreateData(
 inline flatbuffers::Offset<Data> CreateDataDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<flatbuffers::Offset<User>> *users = nullptr,
-    const std::vector<flatbuffers::Offset<Site>> *sites = nullptr) {
+    const std::vector<flatbuffers::Offset<Site>> *sites = nullptr,
+    const std::vector<flatbuffers::Offset<Scenario>> *scenarios = nullptr) {
   auto users__ = users ? _fbb.CreateVector<flatbuffers::Offset<User>>(*users) : 0;
   auto sites__ = sites ? _fbb.CreateVector<flatbuffers::Offset<Site>>(*sites) : 0;
+  auto scenarios__ = scenarios ? _fbb.CreateVector<flatbuffers::Offset<Scenario>>(*scenarios) : 0;
   return meta::CreateData(
       _fbb,
       users__,
-      sites__);
+      sites__,
+      scenarios__);
 }
 
 flatbuffers::Offset<Data> CreateData(flatbuffers::FlatBufferBuilder &_fbb, const DataT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
@@ -293,7 +533,6 @@ inline void User::UnPackTo(UserT *_o, const flatbuffers::resolver_function_t *_r
   (void)_resolver;
   { auto _e = name(); if (_e) _o->name = _e->str(); };
   { auto _e = username(); if (_e) _o->username = _e->str(); };
-  { auto _e = mac(); if (_e) _o->mac = _e->str(); };
   { auto _e = site(); _o->site = _e; };
 }
 
@@ -307,13 +546,11 @@ inline flatbuffers::Offset<User> CreateUser(flatbuffers::FlatBufferBuilder &_fbb
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const UserT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
   auto _username = _o->username.empty() ? 0 : _fbb.CreateString(_o->username);
-  auto _mac = _o->mac.empty() ? 0 : _fbb.CreateString(_o->mac);
   auto _site = _o->site;
   return meta::CreateUser(
       _fbb,
       _name,
       _username,
-      _mac,
       _site);
 }
 
@@ -346,6 +583,73 @@ inline flatbuffers::Offset<Site> CreateSite(flatbuffers::FlatBufferBuilder &_fbb
       _shortname);
 }
 
+inline ScenarioT *Scenario::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = new ScenarioT();
+  UnPackTo(_o, _resolver);
+  return _o;
+}
+
+inline void Scenario::UnPackTo(ScenarioT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = desc(); if (_e) _o->desc = _e->str(); };
+  { auto _e = choices(); if (_e) { _o->choices.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->choices[_i] = std::unique_ptr<ChoiceT>(_e->Get(_i)->UnPack(_resolver)); } } };
+}
+
+inline flatbuffers::Offset<Scenario> Scenario::Pack(flatbuffers::FlatBufferBuilder &_fbb, const ScenarioT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateScenario(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<Scenario> CreateScenario(flatbuffers::FlatBufferBuilder &_fbb, const ScenarioT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const ScenarioT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _desc = _o->desc.empty() ? 0 : _fbb.CreateString(_o->desc);
+  auto _choices = _o->choices.size() ? _fbb.CreateVector<flatbuffers::Offset<Choice>> (_o->choices.size(), [](size_t i, _VectorArgs *__va) { return CreateChoice(*__va->__fbb, __va->__o->choices[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return meta::CreateScenario(
+      _fbb,
+      _desc,
+      _choices);
+}
+
+inline ChoiceT *Choice::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = new ChoiceT();
+  UnPackTo(_o, _resolver);
+  return _o;
+}
+
+inline void Choice::UnPackTo(ChoiceT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = action(); if (_e) _o->action = _e->str(); };
+  { auto _e = alignment(); _o->alignment = _e; };
+  { auto _e = risk(); _o->risk = _e; };
+  { auto _e = success(); if (_e) _o->success = _e->str(); };
+  { auto _e = failure(); if (_e) _o->failure = _e->str(); };
+}
+
+inline flatbuffers::Offset<Choice> Choice::Pack(flatbuffers::FlatBufferBuilder &_fbb, const ChoiceT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateChoice(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<Choice> CreateChoice(flatbuffers::FlatBufferBuilder &_fbb, const ChoiceT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const ChoiceT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _action = _o->action.empty() ? 0 : _fbb.CreateString(_o->action);
+  auto _alignment = _o->alignment;
+  auto _risk = _o->risk;
+  auto _success = _o->success.empty() ? 0 : _fbb.CreateString(_o->success);
+  auto _failure = _o->failure.empty() ? 0 : _fbb.CreateString(_o->failure);
+  return meta::CreateChoice(
+      _fbb,
+      _action,
+      _alignment,
+      _risk,
+      _success,
+      _failure);
+}
+
 inline DataT *Data::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
   auto _o = new DataT();
   UnPackTo(_o, _resolver);
@@ -357,6 +661,7 @@ inline void Data::UnPackTo(DataT *_o, const flatbuffers::resolver_function_t *_r
   (void)_resolver;
   { auto _e = users(); if (_e) { _o->users.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->users[_i] = std::unique_ptr<UserT>(_e->Get(_i)->UnPack(_resolver)); } } };
   { auto _e = sites(); if (_e) { _o->sites.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->sites[_i] = std::unique_ptr<SiteT>(_e->Get(_i)->UnPack(_resolver)); } } };
+  { auto _e = scenarios(); if (_e) { _o->scenarios.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->scenarios[_i] = std::unique_ptr<ScenarioT>(_e->Get(_i)->UnPack(_resolver)); } } };
 }
 
 inline flatbuffers::Offset<Data> Data::Pack(flatbuffers::FlatBufferBuilder &_fbb, const DataT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -369,10 +674,12 @@ inline flatbuffers::Offset<Data> CreateData(flatbuffers::FlatBufferBuilder &_fbb
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const DataT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _users = _o->users.size() ? _fbb.CreateVector<flatbuffers::Offset<User>> (_o->users.size(), [](size_t i, _VectorArgs *__va) { return CreateUser(*__va->__fbb, __va->__o->users[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _sites = _o->sites.size() ? _fbb.CreateVector<flatbuffers::Offset<Site>> (_o->sites.size(), [](size_t i, _VectorArgs *__va) { return CreateSite(*__va->__fbb, __va->__o->sites[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _scenarios = _o->scenarios.size() ? _fbb.CreateVector<flatbuffers::Offset<Scenario>> (_o->scenarios.size(), [](size_t i, _VectorArgs *__va) { return CreateScenario(*__va->__fbb, __va->__o->scenarios[i].get(), __va->__rehasher); }, &_va ) : 0;
   return meta::CreateData(
       _fbb,
       _users,
-      _sites);
+      _sites,
+      _scenarios);
 }
 
 inline const meta::Data *GetData(const void *buf) {

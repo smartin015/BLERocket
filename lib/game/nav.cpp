@@ -7,7 +7,7 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
   { // Page_main,
     Page_fleetEntry, // Command_down
     Page_launchEntry, // Command_up
-    Page_noOp, // Command_left
+    Page_shipVisitEntry, // Command_left
     Page_tradeEntry, // Command_right
     Page_settingsEntry // Command_enter
   },
@@ -63,7 +63,7 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
   { // Page_missionTypeSelect,
     Page_noOp, // Command_down
     Page_noOp, // Command_up
-    Page_shipDetails, // Command_left
+    Page_missionDestSelect, // Command_left
     Page_missionConfirm, // Command_right
     Page_missionConfirm // Command_enter
   },
@@ -98,23 +98,23 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
   { // Page_shipVisitEntry
     Page_noOp, // Command_down
     Page_noOp, // Command_up
-    Page_noOp, // Command_left
-    Page_noOp, // Command_right
-    Page_noOp // Command_enter
+    Page_main, // Command_left
+    Page_shipVisitDecision, // Command_right
+    Page_shipVisitDecision // Command_enter
   },
   { // Page_shipVisitDecision,
     Page_noOp, // Command_down
     Page_noOp, // Command_up
-    Page_noOp, // Command_left
-    Page_noOp, // Command_right
-    Page_noOp // Command_enter
+    Page_shipVisitEntry, // Command_left
+    Page_shipVisitOutcome, // Command_right
+    Page_shipVisitOutcome // Command_enter
   },
   { // Page_shipVisitOutcome,
-    Page_noOp, // Command_down
-    Page_noOp, // Command_up
-    Page_noOp, // Command_left
-    Page_noOp, // Command_right
-    Page_noOp // Command_enter
+    Page_main, // Command_down
+    Page_main, // Command_up
+    Page_main, // Command_left
+    Page_main, // Command_right
+    Page_main // Command_enter
   },
   { // Page_launchSplash,
     Page_shipRename, // Command_down

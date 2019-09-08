@@ -31,13 +31,12 @@ table Status {
   // Metadata
   firmwareVersion:ubyte;
   user:ubyte;
-  site:ubyte;
 
   // Game state details
   phase_id:ubyte;
   phase_txn:ubyte;
-  score:ushort;
-  reputation:ushort;
+  score:ulong;
+  reputation:ulong;
 }
 
 table State {
@@ -45,6 +44,7 @@ table State {
   parts:[ShipPart];
   ships:[Ship];
   selectedShip:ubyte;
+  selectedUser:ubyte;
   charIdx:ubyte;
   status:Status;
 }

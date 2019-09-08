@@ -305,15 +305,13 @@ struct StatusT : public flatbuffers::NativeTable {
   typedef Status TableType;
   uint8_t firmwareVersion;
   uint8_t user;
-  uint8_t site;
   uint8_t phase_id;
   uint8_t phase_txn;
-  uint16_t score;
-  uint16_t reputation;
+  uint64_t score;
+  uint64_t reputation;
   StatusT()
       : firmwareVersion(0),
         user(0),
-        site(0),
         phase_id(0),
         phase_txn(0),
         score(0),
@@ -326,11 +324,10 @@ struct Status FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_FIRMWAREVERSION = 4,
     VT_USER = 6,
-    VT_SITE = 8,
-    VT_PHASE_ID = 10,
-    VT_PHASE_TXN = 12,
-    VT_SCORE = 14,
-    VT_REPUTATION = 16
+    VT_PHASE_ID = 8,
+    VT_PHASE_TXN = 10,
+    VT_SCORE = 12,
+    VT_REPUTATION = 14
   };
   uint8_t firmwareVersion() const {
     return GetField<uint8_t>(VT_FIRMWAREVERSION, 0);
@@ -338,30 +335,26 @@ struct Status FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   uint8_t user() const {
     return GetField<uint8_t>(VT_USER, 0);
   }
-  uint8_t site() const {
-    return GetField<uint8_t>(VT_SITE, 0);
-  }
   uint8_t phase_id() const {
     return GetField<uint8_t>(VT_PHASE_ID, 0);
   }
   uint8_t phase_txn() const {
     return GetField<uint8_t>(VT_PHASE_TXN, 0);
   }
-  uint16_t score() const {
-    return GetField<uint16_t>(VT_SCORE, 0);
+  uint64_t score() const {
+    return GetField<uint64_t>(VT_SCORE, 0);
   }
-  uint16_t reputation() const {
-    return GetField<uint16_t>(VT_REPUTATION, 0);
+  uint64_t reputation() const {
+    return GetField<uint64_t>(VT_REPUTATION, 0);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_FIRMWAREVERSION) &&
            VerifyField<uint8_t>(verifier, VT_USER) &&
-           VerifyField<uint8_t>(verifier, VT_SITE) &&
            VerifyField<uint8_t>(verifier, VT_PHASE_ID) &&
            VerifyField<uint8_t>(verifier, VT_PHASE_TXN) &&
-           VerifyField<uint16_t>(verifier, VT_SCORE) &&
-           VerifyField<uint16_t>(verifier, VT_REPUTATION) &&
+           VerifyField<uint64_t>(verifier, VT_SCORE) &&
+           VerifyField<uint64_t>(verifier, VT_REPUTATION) &&
            verifier.EndTable();
   }
   StatusT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -378,20 +371,17 @@ struct StatusBuilder {
   void add_user(uint8_t user) {
     fbb_.AddElement<uint8_t>(Status::VT_USER, user, 0);
   }
-  void add_site(uint8_t site) {
-    fbb_.AddElement<uint8_t>(Status::VT_SITE, site, 0);
-  }
   void add_phase_id(uint8_t phase_id) {
     fbb_.AddElement<uint8_t>(Status::VT_PHASE_ID, phase_id, 0);
   }
   void add_phase_txn(uint8_t phase_txn) {
     fbb_.AddElement<uint8_t>(Status::VT_PHASE_TXN, phase_txn, 0);
   }
-  void add_score(uint16_t score) {
-    fbb_.AddElement<uint16_t>(Status::VT_SCORE, score, 0);
+  void add_score(uint64_t score) {
+    fbb_.AddElement<uint64_t>(Status::VT_SCORE, score, 0);
   }
-  void add_reputation(uint16_t reputation) {
-    fbb_.AddElement<uint16_t>(Status::VT_REPUTATION, reputation, 0);
+  void add_reputation(uint64_t reputation) {
+    fbb_.AddElement<uint64_t>(Status::VT_REPUTATION, reputation, 0);
   }
   explicit StatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -409,17 +399,15 @@ inline flatbuffers::Offset<Status> CreateStatus(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint8_t firmwareVersion = 0,
     uint8_t user = 0,
-    uint8_t site = 0,
     uint8_t phase_id = 0,
     uint8_t phase_txn = 0,
-    uint16_t score = 0,
-    uint16_t reputation = 0) {
+    uint64_t score = 0,
+    uint64_t reputation = 0) {
   StatusBuilder builder_(_fbb);
   builder_.add_reputation(reputation);
   builder_.add_score(score);
   builder_.add_phase_txn(phase_txn);
   builder_.add_phase_id(phase_id);
-  builder_.add_site(site);
   builder_.add_user(user);
   builder_.add_firmwareVersion(firmwareVersion);
   return builder_.Finish();
@@ -433,11 +421,13 @@ struct StateT : public flatbuffers::NativeTable {
   std::vector<std::unique_ptr<ShipPartT>> parts;
   std::vector<std::unique_ptr<ShipT>> ships;
   uint8_t selectedShip;
+  uint8_t selectedUser;
   uint8_t charIdx;
   std::unique_ptr<StatusT> status;
   StateT()
       : page(nav::Page_main),
         selectedShip(0),
+        selectedUser(0),
         charIdx(0) {
   }
 };
@@ -449,8 +439,9 @@ struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_PARTS = 6,
     VT_SHIPS = 8,
     VT_SELECTEDSHIP = 10,
-    VT_CHARIDX = 12,
-    VT_STATUS = 14
+    VT_SELECTEDUSER = 12,
+    VT_CHARIDX = 14,
+    VT_STATUS = 16
   };
   nav::Page page() const {
     return static_cast<nav::Page>(GetField<int8_t>(VT_PAGE, 0));
@@ -463,6 +454,9 @@ struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   uint8_t selectedShip() const {
     return GetField<uint8_t>(VT_SELECTEDSHIP, 0);
+  }
+  uint8_t selectedUser() const {
+    return GetField<uint8_t>(VT_SELECTEDUSER, 0);
   }
   uint8_t charIdx() const {
     return GetField<uint8_t>(VT_CHARIDX, 0);
@@ -480,6 +474,7 @@ struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVector(ships()) &&
            verifier.VerifyVectorOfTables(ships()) &&
            VerifyField<uint8_t>(verifier, VT_SELECTEDSHIP) &&
+           VerifyField<uint8_t>(verifier, VT_SELECTEDUSER) &&
            VerifyField<uint8_t>(verifier, VT_CHARIDX) &&
            VerifyOffset(verifier, VT_STATUS) &&
            verifier.VerifyTable(status()) &&
@@ -505,6 +500,9 @@ struct StateBuilder {
   void add_selectedShip(uint8_t selectedShip) {
     fbb_.AddElement<uint8_t>(State::VT_SELECTEDSHIP, selectedShip, 0);
   }
+  void add_selectedUser(uint8_t selectedUser) {
+    fbb_.AddElement<uint8_t>(State::VT_SELECTEDUSER, selectedUser, 0);
+  }
   void add_charIdx(uint8_t charIdx) {
     fbb_.AddElement<uint8_t>(State::VT_CHARIDX, charIdx, 0);
   }
@@ -529,6 +527,7 @@ inline flatbuffers::Offset<State> CreateState(
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ShipPart>>> parts = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Ship>>> ships = 0,
     uint8_t selectedShip = 0,
+    uint8_t selectedUser = 0,
     uint8_t charIdx = 0,
     flatbuffers::Offset<Status> status = 0) {
   StateBuilder builder_(_fbb);
@@ -536,6 +535,7 @@ inline flatbuffers::Offset<State> CreateState(
   builder_.add_ships(ships);
   builder_.add_parts(parts);
   builder_.add_charIdx(charIdx);
+  builder_.add_selectedUser(selectedUser);
   builder_.add_selectedShip(selectedShip);
   builder_.add_page(page);
   return builder_.Finish();
@@ -547,6 +547,7 @@ inline flatbuffers::Offset<State> CreateStateDirect(
     const std::vector<flatbuffers::Offset<ShipPart>> *parts = nullptr,
     const std::vector<flatbuffers::Offset<Ship>> *ships = nullptr,
     uint8_t selectedShip = 0,
+    uint8_t selectedUser = 0,
     uint8_t charIdx = 0,
     flatbuffers::Offset<Status> status = 0) {
   auto parts__ = parts ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>>(*parts) : 0;
@@ -557,6 +558,7 @@ inline flatbuffers::Offset<State> CreateStateDirect(
       parts__,
       ships__,
       selectedShip,
+      selectedUser,
       charIdx,
       status);
 }
@@ -667,7 +669,6 @@ inline void Status::UnPackTo(StatusT *_o, const flatbuffers::resolver_function_t
   (void)_resolver;
   { auto _e = firmwareVersion(); _o->firmwareVersion = _e; };
   { auto _e = user(); _o->user = _e; };
-  { auto _e = site(); _o->site = _e; };
   { auto _e = phase_id(); _o->phase_id = _e; };
   { auto _e = phase_txn(); _o->phase_txn = _e; };
   { auto _e = score(); _o->score = _e; };
@@ -684,7 +685,6 @@ inline flatbuffers::Offset<Status> CreateStatus(flatbuffers::FlatBufferBuilder &
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const StatusT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _firmwareVersion = _o->firmwareVersion;
   auto _user = _o->user;
-  auto _site = _o->site;
   auto _phase_id = _o->phase_id;
   auto _phase_txn = _o->phase_txn;
   auto _score = _o->score;
@@ -693,7 +693,6 @@ inline flatbuffers::Offset<Status> CreateStatus(flatbuffers::FlatBufferBuilder &
       _fbb,
       _firmwareVersion,
       _user,
-      _site,
       _phase_id,
       _phase_txn,
       _score,
@@ -713,6 +712,7 @@ inline void State::UnPackTo(StateT *_o, const flatbuffers::resolver_function_t *
   { auto _e = parts(); if (_e) { _o->parts.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->parts[_i] = std::unique_ptr<ShipPartT>(_e->Get(_i)->UnPack(_resolver)); } } };
   { auto _e = ships(); if (_e) { _o->ships.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->ships[_i] = std::unique_ptr<ShipT>(_e->Get(_i)->UnPack(_resolver)); } } };
   { auto _e = selectedShip(); _o->selectedShip = _e; };
+  { auto _e = selectedUser(); _o->selectedUser = _e; };
   { auto _e = charIdx(); _o->charIdx = _e; };
   { auto _e = status(); if (_e) _o->status = std::unique_ptr<StatusT>(_e->UnPack(_resolver)); };
 }
@@ -729,6 +729,7 @@ inline flatbuffers::Offset<State> CreateState(flatbuffers::FlatBufferBuilder &_f
   auto _parts = _o->parts.size() ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>> (_o->parts.size(), [](size_t i, _VectorArgs *__va) { return CreateShipPart(*__va->__fbb, __va->__o->parts[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _ships = _o->ships.size() ? _fbb.CreateVector<flatbuffers::Offset<Ship>> (_o->ships.size(), [](size_t i, _VectorArgs *__va) { return CreateShip(*__va->__fbb, __va->__o->ships[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _selectedShip = _o->selectedShip;
+  auto _selectedUser = _o->selectedUser;
   auto _charIdx = _o->charIdx;
   auto _status = _o->status ? CreateStatus(_fbb, _o->status.get(), _rehasher) : 0;
   return game::CreateState(
@@ -737,6 +738,7 @@ inline flatbuffers::Offset<State> CreateState(flatbuffers::FlatBufferBuilder &_f
       _parts,
       _ships,
       _selectedShip,
+      _selectedUser,
       _charIdx,
       _status);
 }

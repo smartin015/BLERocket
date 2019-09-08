@@ -180,17 +180,23 @@ bool VerifyUMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Ve
 
 struct MessageT : public flatbuffers::NativeTable {
   typedef Message TableType;
+  uint8_t source_user;
   UMessageUnion oneof;
-  MessageT() {
+  MessageT()
+      : source_user(0) {
   }
 };
 
 struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MessageT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ONEOF_TYPE = 4,
-    VT_ONEOF = 6
+    VT_SOURCE_USER = 4,
+    VT_ONEOF_TYPE = 6,
+    VT_ONEOF = 8
   };
+  uint8_t source_user() const {
+    return GetField<uint8_t>(VT_SOURCE_USER, 0);
+  }
   UMessage oneof_type() const {
     return static_cast<UMessage>(GetField<uint8_t>(VT_ONEOF_TYPE, 0));
   }
@@ -209,6 +215,7 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_SOURCE_USER) &&
            VerifyField<uint8_t>(verifier, VT_ONEOF_TYPE) &&
            VerifyOffset(verifier, VT_ONEOF) &&
            VerifyUMessage(verifier, oneof(), oneof_type()) &&
@@ -234,6 +241,9 @@ template<> inline const Part *Message::oneof_as<Part>() const {
 struct MessageBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
+  void add_source_user(uint8_t source_user) {
+    fbb_.AddElement<uint8_t>(Message::VT_SOURCE_USER, source_user, 0);
+  }
   void add_oneof_type(UMessage oneof_type) {
     fbb_.AddElement<uint8_t>(Message::VT_ONEOF_TYPE, static_cast<uint8_t>(oneof_type), 0);
   }
@@ -254,11 +264,13 @@ struct MessageBuilder {
 
 inline flatbuffers::Offset<Message> CreateMessage(
     flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t source_user = 0,
     UMessage oneof_type = UMessage_NONE,
     flatbuffers::Offset<void> oneof = 0) {
   MessageBuilder builder_(_fbb);
   builder_.add_oneof(oneof);
   builder_.add_oneof_type(oneof_type);
+  builder_.add_source_user(source_user);
   return builder_.Finish();
 }
 
@@ -429,6 +441,7 @@ inline MessageT *Message::UnPack(const flatbuffers::resolver_function_t *_resolv
 inline void Message::UnPackTo(MessageT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
+  { auto _e = source_user(); _o->source_user = _e; };
   { auto _e = oneof_type(); _o->oneof.type = _e; };
   { auto _e = oneof(); if (_e) _o->oneof.value = UMessageUnion::UnPack(_e, oneof_type(), _resolver); };
 }
@@ -441,10 +454,12 @@ inline flatbuffers::Offset<Message> CreateMessage(flatbuffers::FlatBufferBuilder
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const MessageT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _source_user = _o->source_user;
   auto _oneof_type = _o->oneof.type;
   auto _oneof = _o->oneof.Pack(_fbb);
   return message::CreateMessage(
       _fbb,
+      _source_user,
       _oneof_type,
       _oneof);
 }

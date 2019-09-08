@@ -10,9 +10,8 @@ void UI::drawControls(const int& cx, const int& cy, const std::string& top, cons
   drawText("X " + center, SZ_S, cx, cy + 4*SZ_M);
 }
 
-void UI::handleNotification(const message::MessageT& msg) {
-  // TODO switch statement
-  notification = "TEST NOTIFICATION";
+void UI::handleNotification(const std::string& text) {
+  notification = text;
   time(&notify_start);
 }
 
@@ -24,7 +23,6 @@ void UI::persistNotification() {
   time_t now = time(NULL);
   if (now - notify_start > NOTIFY_DURATION_SECONDS) {
     notification = "";
-    notify_start = 0;
     return;
   }
 
@@ -45,10 +43,10 @@ void UI::render(Engine* engine) {
     engine->suppressNav(nav::Command_right) ? "" : EnumNamePage(nextPage(p, nav::Command_right)),
     engine->suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
 
-  auto* n = engine->getNotification();
-  if (n != NULL) {
-    handleNotification(*n);
-    engine->ackNotification();
+  const auto* n = engine->getEvent();
+  if (n->lastMessage > notify_start) {
+    ESP_LOGI("UI", "Handling new message");
+    handleNotification("Incoming transmission");
   }
   persistNotification();
   aRandomFunction(engine);

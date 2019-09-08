@@ -25,6 +25,7 @@ union UMessage {
 }
 
 table Message {
+  source_user:ubyte;
   oneof:UMessage;
 }
 
