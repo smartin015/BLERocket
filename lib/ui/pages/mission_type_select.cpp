@@ -9,7 +9,7 @@ const message::Type MISSIONS[NUM_MISSIONS] = {
 };
 
 // Player selecting a mission for a particular ship
-void UI::drawShipMissionSelect(const Engine* engine) {
+void UI::drawMissionTypeSelect(const Engine* engine) {
   const game::StateT* state = engine->getState();
   char buf[32];
   snprintf(buf, sizeof(buf), "%s mission", state->ships[state->selectedShip]->name.c_str());

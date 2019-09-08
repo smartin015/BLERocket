@@ -4,7 +4,7 @@
 #define MAX_DESTINATIONS 4
 
 // Player selecting a mission destination
-void UI::drawShipDestSelect(const Engine* engine) {
+void UI::drawMissionDestSelect(const Engine* engine) {
   const game::StateT* state = engine->getState();
   char buf[32];
   snprintf(buf, sizeof(buf), "%s mission", state->ships[state->selectedShip]->name.c_str());

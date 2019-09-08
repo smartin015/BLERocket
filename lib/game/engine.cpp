@@ -50,8 +50,8 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
     }
   }
 
-  // Suppress non-back action on shipDestSelect page if no destinations
-  if (state.page == nav::Page_shipDestSelect && cmd != nav::Command_left) {
+  // Suppress non-back action on missionDestSelect page if no destinations
+  if (state.page == nav::Page_missionDestSelect && cmd != nav::Command_left) {
     if (mission.localStatus.size() == 0) {
       return true;
     }
@@ -66,7 +66,7 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
 
   // Suppress phase-2 actions if in phase 1
   if (state.status->phase_id != 2) {
-    if (nextPage(state.page, cmd) == nav::Page_shipMissionSelect) {
+    if (nextPage(state.page, cmd) == nav::Page_missionTypeSelect) {
       return true;
     }
   }
@@ -96,7 +96,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         state.selectedShip = (state.selectedShip + 1) % state.ships.size();
       }
       break;
-    case nav::Page_shipMissionSelect:
+    case nav::Page_missionTypeSelect:
       switch (cmd) {
         case nav::Command_up:
           mission.type = (message::Type) std::max(mission.type - 1, (int) message::Type_race);
@@ -178,7 +178,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         }
       }
       break;
-    case nav::Page_shipConfirm:
+    case nav::Page_missionConfirm:
       {
         // Send example ship message
         // TODO actually send ship on mission

@@ -99,10 +99,10 @@ private:
   void drawSettingsSelectUser(const Engine* engine);
   void drawSettingsReset(const Engine* engine);
   void drawShipDetails(const Engine* engine);
-  void drawShipMissionSelect(const Engine* engine);
-  void drawShipDestSelect(const Engine* engine);
-  void drawShipConfirm(const Engine* engine);
-  void drawShipSplash(const Engine* engine);
+  void drawMissionTypeSelect(const Engine* engine);
+  void drawMissionDestSelect(const Engine* engine);
+  void drawMissionConfirm(const Engine* engine);
+  void drawMissionSplash(const Engine* engine);
   void drawShipRename(const Engine* engine);
   void drawShipVisitEntry(const Engine* engine);
   void drawShipVisitDecision(const Engine* engine);

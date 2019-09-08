@@ -78,17 +78,17 @@ void UI::render(Engine* engine) {
     case nav::Page_shipDetails:
       drawShipDetails(engine);
       break;
-    case nav::Page_shipMissionSelect:
-      drawShipMissionSelect(engine);
+    case nav::Page_missionTypeSelect:
+      drawMissionTypeSelect(engine);
       break;
-    case nav::Page_shipDestSelect:
-      drawShipDestSelect(engine);
+    case nav::Page_missionDestSelect:
+      drawMissionDestSelect(engine);
       break;
-    case nav::Page_shipConfirm:
-      drawShipConfirm(engine);
+    case nav::Page_missionConfirm:
+      drawMissionConfirm(engine);
       break;
-    case nav::Page_shipSplash:
-      drawShipSplash(engine);
+    case nav::Page_missionSplash:
+      drawMissionSplash(engine);
       break;
     case nav::Page_shipRename:
       drawShipRename(engine);

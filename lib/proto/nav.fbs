@@ -23,12 +23,12 @@ enum Page:byte {
   settingsSelectUser = 5,
   settingsReset = 6,
 
-  // UI for acting on a single ship
+  // UI for missions and other single-ship actions
   shipDetails = 7,
-  shipMissionSelect = 8,
-  shipDestSelect = 9,
-  shipConfirm = 10,
-  shipSplash = 11,
+  missionTypeSelect = 8,
+  missionDestSelect = 9,
+  missionConfirm = 10,
+  missionSplash = 11,
   shipRename = 12,
 
   // When user ships visit; the dest user is presented
