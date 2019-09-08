@@ -49,10 +49,11 @@ typedef struct {
   int size; // in pixels
 } FONT_T;
 
-#define NUM_FONT_PATHS 2
+#define NUM_FONT_PATHS 3
 static const char* font_paths[NUM_FONT_PATHS] = {
   "lib/ui/fonts/PoppinsExtraBold.ttf",
   "lib/ui/fonts/RobotoMonoBold.ttf",
+  "lib/ui/fonts/org_01.ttf",
 };
 
 static FONT_T FONT_POPPINS_18 = {0, 24};
@@ -63,7 +64,7 @@ static FONT_T FONT_ROBOTO_14 = {1, 19};
 static FONT_T FONT_ROBOTO_12 = {1, 16};
 static FONT_T FONT_ROBOTO_8 = {1, 11};
 static FONT_T FONT_ROBOTO_6 = {1, 8};
-static FONT_T FONT_TINY = {1, 8};
+static FONT_T FONT_TINY = {2, 8};
 
 #endif // UI_NATIVE
 
