@@ -23,7 +23,7 @@ void UI::drawMain(const Engine* engine) {
 
   setFont(&FONT_TINY);
   DrawStringAt(
-      "by semartin@ and jeffcooper",
+      "by semartin@ and jeffcooper@",
       x_offset, y_offset,
       NULL, &y_offset);
   DrawStringAt(
@@ -40,6 +40,8 @@ void UI::drawMain(const Engine* engine) {
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;
+
+  // TODO - gate showing rep on phase 2?
   snprintf(buf, sizeof(buf), "reputation: %d", rep);
   DrawStringAt(
       buf,

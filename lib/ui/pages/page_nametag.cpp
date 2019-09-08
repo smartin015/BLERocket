@@ -49,14 +49,14 @@ void UI::drawNametag(const Engine* engine) {
       );
   y_offset +=  2*LINESPACING;
 
-  setFont(&RobotoMonoBold6pt7b);
+  setFont(&FONT_ROBOTO_6);
   DrawStringAt(
       username + "@",
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;
 
-  setFont(&RobotoMonoBold6pt7b);
+  setFont(&FONT_ROBOTO_6);
   DrawStringAt(
       site,
       x_offset, y_offset,

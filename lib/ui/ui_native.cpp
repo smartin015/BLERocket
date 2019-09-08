@@ -79,7 +79,14 @@ void UINative::setFont(const FONT_T* f) {
 // nametag/gameplay
 void UINative::setRotation(int r) {};
 
+// stubs
 void UINative::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h) {}
+void UINative::DrawSidebarText(std::string text, bool leftside) {};
+void UINative::DrawStringAt(
+    std::string s,           // string to draw
+    int x, int y,            // where to draw.
+    int* xmax, int* ymax     // where to store bottom right coords of bounds
+    ) {}
 
 void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
   sf::Text t;

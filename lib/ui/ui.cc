@@ -141,7 +141,7 @@ void UI::render(Engine* engine) {
       engine->suppressNav(nav::Command_enter) ? "" : EnumNamePage(nextPage(p, nav::Command_enter)));
 
   } else {
-    // TODO ui->partialUpdate();
+    partialUpdate();
   }
 }
 void UI::drawText(const std::string& text, const int& size, const int& x, const int& y) {

@@ -97,6 +97,12 @@ static FONT_T FONT_ROBOTO_6 = {
   "lib/ui/fonts/RobotoMonoBold.ttf",
   8
 };
+
+static FONT_T FONT_TINY = {
+  NULL,
+  "lib/ui/fonts/RobotoMonoBold.ttf",
+  8
+};
 #endif // UI_NATIVE
 
 static const FONT_T* const KNOWN_FONTS_DISPLAY[] = {

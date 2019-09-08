@@ -29,7 +29,13 @@ public:
   void setFont(const FONT_T* f);
   void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
   void setRotation(int r);
+  void DrawSidebarText(std::string text, bool leftside);
 private:
+  void DrawStringAt(
+      std::string s,           // string to draw
+      int x, int y,            // where to draw.
+      int* xmax, int* ymax     // where to store bottom right coords of bounds
+      );
   std::unique_ptr<sf::RenderWindow> window;
   sf::Font font;
   sf::Color color;
