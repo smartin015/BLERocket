@@ -26,3 +26,12 @@ Debug ELF file size:
 
 
 Lots of griping about unneccessary locale & wchar bundling: https://esp32.com/viewtopic.php?t=3741
+
+```
+/home/semartin/.platformio/packages/framework-espidf/components/esp_event/default_event_loop.c: In function 'esp_event_loop_create_default':
+/home/semartin/.platformio/packages/framework-espidf/components/esp_event/default_event_loop.c:67:28: error: 'ESP_TASKD_EVENT_STACK' undeclared (first use in this function)
+
+#define ESP_TASKD_EVENT_STACK   CONFIG_SYSTEM_EVENT_TASK_STACK_SIZE
+#define ESP_TASKD_EVENT_PRIO   20
+
+```

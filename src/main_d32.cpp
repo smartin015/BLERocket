@@ -1,5 +1,6 @@
 #ifdef ARDUINO_LOLIN_D32_PRO
 
+#define CONFIG_CXX_EXCEPTIONS 1
 #include "sdkconfig.h"
 
 #include <Arduino.h>
