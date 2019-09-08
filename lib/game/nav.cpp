@@ -122,6 +122,13 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
     Page_shipRename, // Command_left
     Page_shipRename, // Command_right
     Page_shipRename // Command_enter
+  },
+  { // Page_nametag
+    Page_main,
+    Page_main,
+    Page_main,
+    Page_main,
+    Page_main
   }
 };
 

@@ -29,74 +29,6 @@ void UIEPaper::DrawStringAt(
   }
 }
 
-// draw text as large as possible given a top-left corner (x,y) and a maximum
-// width maxw.
-void UIEPaper::DrawStringWithin(
-    std::string s,           // string to draw
-    int x, int y,            // where to draw.
-    int* xmax, int* ymax,    // where to store bottom right coords of bounds
-    int maxw,                // maximum width for drawing
-    const FONT_T* const fonts[] // fonts to pick from
-    ) {
-
-  const FONT_T* f = PickBestFontForString(s, maxw, fonts);
-  setFont(f);
-  DrawStringAt(s, x, y, xmax, ymax);
-}
-
-
-
-void UIEPaper::DrawNametagScreen(
-    std::string firstname,
-    std::string lastname,
-    std::string username,
-    std::string site) {
-
-  display.setFullWindow();
-  display.fillScreen(GxEPD_WHITE);
-  setRotation(ROTATION_NAMETAG);
-
-  DrawSidebarText("press any key to play", true);
-
-  int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;
-  int y_offset = NAMETAG_TOP_MARGIN;
-
-  DrawStringWithin(
-      firstname,
-      x_offset,
-      y_offset,
-      NULL, &y_offset,
-      EPAPER_LONG_DIMENSION - x_offset,
-      KNOWN_FONTS_DISPLAY
-      );
-  y_offset +=  LINESPACING;
-
-  DrawStringWithin(
-      lastname,
-      x_offset,
-      y_offset,
-      NULL, &y_offset,
-      EPAPER_LONG_DIMENSION - x_offset,
-      KNOWN_FONTS_DISPLAY
-      );
-  y_offset +=  2*LINESPACING;
-
-  setFont(&RobotoMonoBold6pt7b);
-  DrawStringAt(
-      username,
-      x_offset, y_offset,
-      NULL, &y_offset);
-  y_offset +=  LINESPACING;
-
-  setFont(&RobotoMonoBold6pt7b);
-  DrawStringAt(
-      site,
-      x_offset, y_offset,
-      NULL, &y_offset);
-  y_offset +=  LINESPACING;
-
-}
-
 void UIEPaper::setRotation(int r) {
   display.setRotation(r);
 }
@@ -132,12 +64,6 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(PIN_CS, PIN_DC, PIN_RST, PIN_BUSY)
   display.setFullWindow();
 
   display.fillScreen(GxEPD_WHITE);
-  DrawNametagScreen(
-      "Jeff",
-      "Cooper",
-      "jeffcooper@",
-      "US-PIT");
-  display.display(false); // do a full update
 
   pinMode(PIN_BUTTON_L, INPUT_PULLUP);
   pinMode(PIN_BUTTON_R, INPUT_PULLUP);
@@ -146,10 +72,6 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(PIN_CS, PIN_DC, PIN_RST, PIN_BUSY)
   pinMode(PIN_BUTTON_E, INPUT_PULLUP);
   pinMode(PIN_BUZZER, OUTPUT);
   digitalWrite(PIN_BUZZER, LOW);
-
-  // Always non-busy, so as not to block
-  pinMode(PIN_BUSY, OUTPUT);
-  digitalWrite(PIN_BUSY, HIGH);
 
   buzzStart = 0;
 }

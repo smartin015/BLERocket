@@ -33,6 +33,21 @@ void aRandomFunction(Engine* engine) {
   return;
 }
 
+// draw text as large as possible given a top-left corner (x,y) and a maximum
+// width maxw.
+void UI::DrawStringWithin(
+    std::string s,           // string to draw
+    int x, int y,            // where to draw.
+    int* xmax, int* ymax,    // where to store bottom right coords of bounds
+    int maxw,                // maximum width for drawing
+    const FONT_T* const fonts[] // fonts to pick from
+    ) {
+
+  const FONT_T* f = PickBestFontForString(s, maxw, fonts);
+  setFont(f);
+  DrawStringAt(s, x, y, xmax, ymax);
+}
+
 void UI::render(Engine* engine) {
   clear();
   const auto p = engine->getPage();
@@ -52,6 +67,9 @@ void UI::render(Engine* engine) {
   aRandomFunction(engine);
 
   switch (p) {
+    case nav::Page_nametag:
+      drawNametag(engine);
+      break;
     case nav::Page_main:
       drawMain(engine);
       break;

@@ -1,21 +1,71 @@
 #include "ui.h"
 #include <iostream>
 
+#define NAMETAG_TOP_MARGIN 15
+#define LINESPACING 5
+
 // Nametag page
-void UI::drawMain(const Engine* engine) {
+void UI::drawNametag(const Engine* engine) {
   // TODO user name, location, username
   int id = engine->getState()->status->user;
   const auto* data = engine->getData();
-  drawText(data->users[id]->name, SZ_M, TITLE_X, TITLE_Y);
-  drawText(data->users[id]->username, SZ_S, BODY_X + SZ_L, BODY_Y);
-  drawText(data->sites[data->users[id]->site]->shortname, SZ_S, BODY_X, BODY_Y);
 
-  char buf[16];
-  snprintf(buf, sizeof(buf), "%d", engine->getState()->status->score);
-  drawText(buf, SZ_S, BODY_X, BODY_Y + SZ_L);
+  std::string firstname = data->users[id]->firstname;
+  std::string lastname = data->users[id]->lastname;
+  std::string username = data->users[id]->username;
+  std::string site = data->users[id]->site;
 
-  snprintf(buf, sizeof(buf), "%d", engine->getState()->status->reputation);
-  drawText(buf, SZ_S, BODY_X, BODY_Y + SZ_L + SZ_S);
+  int score = engine->getState()->status->score;
+  int rep = engine->getState()->status->reputation;
+
+  
+  setRotation(ROTATION_NAMETAG);
+
+  if (score == 0) {
+    DrawSidebarText("press any key to play", true);
+  } else {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "score: %d", score);
+    DrawSidebarText(buf, true);
+  }
+
+  int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;
+  int y_offset = NAMETAG_TOP_MARGIN;
+
+  DrawStringWithin(
+      firstname,
+      x_offset,
+      y_offset,
+      NULL, &y_offset,
+      EPAPER_LONG_DIMENSION - x_offset,
+      KNOWN_FONTS_DISPLAY
+      );
+  y_offset +=  LINESPACING;
+
+  DrawStringWithin(
+      lastname,
+      x_offset,
+      y_offset,
+      NULL, &y_offset,
+      EPAPER_LONG_DIMENSION - x_offset,
+      KNOWN_FONTS_DISPLAY
+      );
+  y_offset +=  2*LINESPACING;
+
+  setFont(&RobotoMonoBold6pt7b);
+  DrawStringAt(
+      username + "@",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  LINESPACING;
+
+  setFont(&RobotoMonoBold6pt7b);
+  DrawStringAt(
+      site,
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  LINESPACING;
+
   // TODO active events
   // TODO visiting rockets
 }

@@ -1,14 +1,10 @@
 namespace meta;
 
 table User {
-  name:string;
-  username: string;
-  site:ubyte;
-}
-
-table Site {
-  name:string;
-  shortname:string;
+  firstname:string;
+  lastname:string;
+  username:string;
+  site:string;
 }
 
 table Scenario {
@@ -32,7 +28,6 @@ table Choice {
 
 table Data {
   users:[User];
-  sites:[Site];
   scenarios:[Scenario];
 }
 

@@ -38,7 +38,7 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
 
   // If the user is not set, start in the user select page
   if (state.status->user == 0) {
-    state.page = nav::Page_settingsSelectUser;
+    state.page = nav::Page_nametag;
   }
 
   // Cheat to phase 2

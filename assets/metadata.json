@@ -1,102 +1,87 @@
 {
   "users": [
     {
-      "site": 0,
-      "name": "Select User",
+      "site": "",
+      "firstname": "Select",
+      "lastname": "User",
       "username": "none",
     },
     {
-      "site": 1,
-      "name": "Scott Martin",
+      "site": "US-PIT",
+      "firstname": "Scott",
+      "lastname": "Martin",
       "username": "semartin",
     },
     {
-      "site": 0,
-      "name": "Jeff Cooper",
+      "site": "US-PIT",
+      "firstname": "Jeff",
+      "lastname": "Cooper",
       "username": "jeffcooper",
     },
     {
-      "site": 2,
-      "name": "Aaron Cunningham",
+      "site": "US-ARB",
+      "firstname": "Aaron Cunningham",
       "username": "aacunningham",
     },
     {
-      "site": 0,
-      "name": "User 0",
+      "site": "",
+      "firstname": "User 0",
       "username": "user0",
     },
     {
-      "site": 1,
-      "name": "User 1",
+      "site": "",
+      "firstname": "User 1",
       "username": "user1",
     },
     {
-      "site": 2,
-      "name": "User 2",
-      "username": "user2",
+      "site": "",
+      "firstname": "User",
+      "username": "user",
     },
     {
-      "site": 2,
-      "name": "User 3",
+      "site": "",
+      "firstname": "User 3",
       "username": "user3",
     },
     {
-      "site": 2,
-      "name": "User 4",
+      "site": "",
+      "firstname": "User 4",
       "username": "user4",
     },
     {
-      "site": 2,
-      "name": "User 5",
+      "site": "",
+      "firstname": "User 5",
       "username": "user5",
     },
     {
-      "site": 2,
-      "name": "User 6",
+      "site": "",
+      "firstname": "User 6",
       "username": "user6",
     },
     {
-      "site": 2,
-      "name": "User 7",
+      "site": "",
+      "firstname": "User 7",
       "username": "user7",
     },
     {
-      "site": 2,
-      "name": "User 8",
+      "site": "",
+      "firstname": "User 8",
       "username": "user8",
     },
     {
-      "site": 2,
-      "name": "User 9",
+      "site": "",
+      "firstname": "User 9",
       "username": "user9",
     },
     {
-      "site": 2,
-      "name": "User 10",
+      "site": "",
+      "firstname": "User 10",
       "username": "user10",
     },
     {
-      "site": 2,
-      "name": "User 11",
+      "site": "",
+      "firstname": "User 11",
       "username": "user11",
-    }
-  ],
-  "sites": [
-    {
-      "name": "unknown",
-      "shortname": "NONE"
-    },
-    {
-      "name": "Pittsburgh",
-      "shortname": "PIT"
-    },
-    {
-      "name": "Zurich",
-      "shortname": "ZRH"
-    },
-    {
-      "name": "Ann Arbor",
-      "shortname": "ARB"
     }
   ],
   "scenarios": [

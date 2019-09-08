@@ -11,9 +11,6 @@ namespace meta {
 struct User;
 struct UserT;
 
-struct Site;
-struct SiteT;
-
 struct Scenario;
 struct ScenarioT;
 
@@ -58,37 +55,44 @@ inline const char *EnumNameAlignment(Alignment e) {
 
 struct UserT : public flatbuffers::NativeTable {
   typedef User TableType;
-  std::string name;
+  std::string firstname;
+  std::string lastname;
   std::string username;
-  uint8_t site;
-  UserT()
-      : site(0) {
+  std::string site;
+  UserT() {
   }
 };
 
 struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef UserT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_NAME = 4,
-    VT_USERNAME = 6,
-    VT_SITE = 8
+    VT_FIRSTNAME = 4,
+    VT_LASTNAME = 6,
+    VT_USERNAME = 8,
+    VT_SITE = 10
   };
-  const flatbuffers::String *name() const {
-    return GetPointer<const flatbuffers::String *>(VT_NAME);
+  const flatbuffers::String *firstname() const {
+    return GetPointer<const flatbuffers::String *>(VT_FIRSTNAME);
+  }
+  const flatbuffers::String *lastname() const {
+    return GetPointer<const flatbuffers::String *>(VT_LASTNAME);
   }
   const flatbuffers::String *username() const {
     return GetPointer<const flatbuffers::String *>(VT_USERNAME);
   }
-  uint8_t site() const {
-    return GetField<uint8_t>(VT_SITE, 0);
+  const flatbuffers::String *site() const {
+    return GetPointer<const flatbuffers::String *>(VT_SITE);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_NAME) &&
-           verifier.VerifyString(name()) &&
+           VerifyOffset(verifier, VT_FIRSTNAME) &&
+           verifier.VerifyString(firstname()) &&
+           VerifyOffset(verifier, VT_LASTNAME) &&
+           verifier.VerifyString(lastname()) &&
            VerifyOffset(verifier, VT_USERNAME) &&
            verifier.VerifyString(username()) &&
-           VerifyField<uint8_t>(verifier, VT_SITE) &&
+           VerifyOffset(verifier, VT_SITE) &&
+           verifier.VerifyString(site()) &&
            verifier.EndTable();
   }
   UserT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -99,14 +103,17 @@ struct User FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct UserBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
-    fbb_.AddOffset(User::VT_NAME, name);
+  void add_firstname(flatbuffers::Offset<flatbuffers::String> firstname) {
+    fbb_.AddOffset(User::VT_FIRSTNAME, firstname);
+  }
+  void add_lastname(flatbuffers::Offset<flatbuffers::String> lastname) {
+    fbb_.AddOffset(User::VT_LASTNAME, lastname);
   }
   void add_username(flatbuffers::Offset<flatbuffers::String> username) {
     fbb_.AddOffset(User::VT_USERNAME, username);
   }
-  void add_site(uint8_t site) {
-    fbb_.AddElement<uint8_t>(User::VT_SITE, site, 0);
+  void add_site(flatbuffers::Offset<flatbuffers::String> site) {
+    fbb_.AddOffset(User::VT_SITE, site);
   }
   explicit UserBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -122,109 +129,37 @@ struct UserBuilder {
 
 inline flatbuffers::Offset<User> CreateUser(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> name = 0,
+    flatbuffers::Offset<flatbuffers::String> firstname = 0,
+    flatbuffers::Offset<flatbuffers::String> lastname = 0,
     flatbuffers::Offset<flatbuffers::String> username = 0,
-    uint8_t site = 0) {
+    flatbuffers::Offset<flatbuffers::String> site = 0) {
   UserBuilder builder_(_fbb);
-  builder_.add_username(username);
-  builder_.add_name(name);
   builder_.add_site(site);
+  builder_.add_username(username);
+  builder_.add_lastname(lastname);
+  builder_.add_firstname(firstname);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<User> CreateUserDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    const char *name = nullptr,
+    const char *firstname = nullptr,
+    const char *lastname = nullptr,
     const char *username = nullptr,
-    uint8_t site = 0) {
-  auto name__ = name ? _fbb.CreateString(name) : 0;
+    const char *site = nullptr) {
+  auto firstname__ = firstname ? _fbb.CreateString(firstname) : 0;
+  auto lastname__ = lastname ? _fbb.CreateString(lastname) : 0;
   auto username__ = username ? _fbb.CreateString(username) : 0;
+  auto site__ = site ? _fbb.CreateString(site) : 0;
   return meta::CreateUser(
       _fbb,
-      name__,
+      firstname__,
+      lastname__,
       username__,
-      site);
+      site__);
 }
 
 flatbuffers::Offset<User> CreateUser(flatbuffers::FlatBufferBuilder &_fbb, const UserT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
-
-struct SiteT : public flatbuffers::NativeTable {
-  typedef Site TableType;
-  std::string name;
-  std::string shortname;
-  SiteT() {
-  }
-};
-
-struct Site FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  typedef SiteT NativeTableType;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_NAME = 4,
-    VT_SHORTNAME = 6
-  };
-  const flatbuffers::String *name() const {
-    return GetPointer<const flatbuffers::String *>(VT_NAME);
-  }
-  const flatbuffers::String *shortname() const {
-    return GetPointer<const flatbuffers::String *>(VT_SHORTNAME);
-  }
-  bool Verify(flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_NAME) &&
-           verifier.VerifyString(name()) &&
-           VerifyOffset(verifier, VT_SHORTNAME) &&
-           verifier.VerifyString(shortname()) &&
-           verifier.EndTable();
-  }
-  SiteT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
-  void UnPackTo(SiteT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
-  static flatbuffers::Offset<Site> Pack(flatbuffers::FlatBufferBuilder &_fbb, const SiteT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
-};
-
-struct SiteBuilder {
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
-    fbb_.AddOffset(Site::VT_NAME, name);
-  }
-  void add_shortname(flatbuffers::Offset<flatbuffers::String> shortname) {
-    fbb_.AddOffset(Site::VT_SHORTNAME, shortname);
-  }
-  explicit SiteBuilder(flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  SiteBuilder &operator=(const SiteBuilder &);
-  flatbuffers::Offset<Site> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<Site>(end);
-    return o;
-  }
-};
-
-inline flatbuffers::Offset<Site> CreateSite(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> name = 0,
-    flatbuffers::Offset<flatbuffers::String> shortname = 0) {
-  SiteBuilder builder_(_fbb);
-  builder_.add_shortname(shortname);
-  builder_.add_name(name);
-  return builder_.Finish();
-}
-
-inline flatbuffers::Offset<Site> CreateSiteDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    const char *name = nullptr,
-    const char *shortname = nullptr) {
-  auto name__ = name ? _fbb.CreateString(name) : 0;
-  auto shortname__ = shortname ? _fbb.CreateString(shortname) : 0;
-  return meta::CreateSite(
-      _fbb,
-      name__,
-      shortname__);
-}
-
-flatbuffers::Offset<Site> CreateSite(flatbuffers::FlatBufferBuilder &_fbb, const SiteT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct ScenarioT : public flatbuffers::NativeTable {
   typedef Scenario TableType;
@@ -429,7 +364,6 @@ flatbuffers::Offset<Choice> CreateChoice(flatbuffers::FlatBufferBuilder &_fbb, c
 struct DataT : public flatbuffers::NativeTable {
   typedef Data TableType;
   std::vector<std::unique_ptr<UserT>> users;
-  std::vector<std::unique_ptr<SiteT>> sites;
   std::vector<std::unique_ptr<ScenarioT>> scenarios;
   DataT() {
   }
@@ -439,14 +373,10 @@ struct Data FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DataT NativeTableType;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_USERS = 4,
-    VT_SITES = 6,
-    VT_SCENARIOS = 8
+    VT_SCENARIOS = 6
   };
   const flatbuffers::Vector<flatbuffers::Offset<User>> *users() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<User>> *>(VT_USERS);
-  }
-  const flatbuffers::Vector<flatbuffers::Offset<Site>> *sites() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Site>> *>(VT_SITES);
   }
   const flatbuffers::Vector<flatbuffers::Offset<Scenario>> *scenarios() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Scenario>> *>(VT_SCENARIOS);
@@ -456,9 +386,6 @@ struct Data FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyOffset(verifier, VT_USERS) &&
            verifier.VerifyVector(users()) &&
            verifier.VerifyVectorOfTables(users()) &&
-           VerifyOffset(verifier, VT_SITES) &&
-           verifier.VerifyVector(sites()) &&
-           verifier.VerifyVectorOfTables(sites()) &&
            VerifyOffset(verifier, VT_SCENARIOS) &&
            verifier.VerifyVector(scenarios()) &&
            verifier.VerifyVectorOfTables(scenarios()) &&
@@ -474,9 +401,6 @@ struct DataBuilder {
   flatbuffers::uoffset_t start_;
   void add_users(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<User>>> users) {
     fbb_.AddOffset(Data::VT_USERS, users);
-  }
-  void add_sites(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Site>>> sites) {
-    fbb_.AddOffset(Data::VT_SITES, sites);
   }
   void add_scenarios(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Scenario>>> scenarios) {
     fbb_.AddOffset(Data::VT_SCENARIOS, scenarios);
@@ -496,11 +420,9 @@ struct DataBuilder {
 inline flatbuffers::Offset<Data> CreateData(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<User>>> users = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Site>>> sites = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Scenario>>> scenarios = 0) {
   DataBuilder builder_(_fbb);
   builder_.add_scenarios(scenarios);
-  builder_.add_sites(sites);
   builder_.add_users(users);
   return builder_.Finish();
 }
@@ -508,15 +430,12 @@ inline flatbuffers::Offset<Data> CreateData(
 inline flatbuffers::Offset<Data> CreateDataDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<flatbuffers::Offset<User>> *users = nullptr,
-    const std::vector<flatbuffers::Offset<Site>> *sites = nullptr,
     const std::vector<flatbuffers::Offset<Scenario>> *scenarios = nullptr) {
   auto users__ = users ? _fbb.CreateVector<flatbuffers::Offset<User>>(*users) : 0;
-  auto sites__ = sites ? _fbb.CreateVector<flatbuffers::Offset<Site>>(*sites) : 0;
   auto scenarios__ = scenarios ? _fbb.CreateVector<flatbuffers::Offset<Scenario>>(*scenarios) : 0;
   return meta::CreateData(
       _fbb,
       users__,
-      sites__,
       scenarios__);
 }
 
@@ -531,9 +450,10 @@ inline UserT *User::UnPack(const flatbuffers::resolver_function_t *_resolver) co
 inline void User::UnPackTo(UserT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = name(); if (_e) _o->name = _e->str(); };
+  { auto _e = firstname(); if (_e) _o->firstname = _e->str(); };
+  { auto _e = lastname(); if (_e) _o->lastname = _e->str(); };
   { auto _e = username(); if (_e) _o->username = _e->str(); };
-  { auto _e = site(); _o->site = _e; };
+  { auto _e = site(); if (_e) _o->site = _e->str(); };
 }
 
 inline flatbuffers::Offset<User> User::Pack(flatbuffers::FlatBufferBuilder &_fbb, const UserT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -544,43 +464,16 @@ inline flatbuffers::Offset<User> CreateUser(flatbuffers::FlatBufferBuilder &_fbb
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const UserT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _firstname = _o->firstname.empty() ? 0 : _fbb.CreateString(_o->firstname);
+  auto _lastname = _o->lastname.empty() ? 0 : _fbb.CreateString(_o->lastname);
   auto _username = _o->username.empty() ? 0 : _fbb.CreateString(_o->username);
-  auto _site = _o->site;
+  auto _site = _o->site.empty() ? 0 : _fbb.CreateString(_o->site);
   return meta::CreateUser(
       _fbb,
-      _name,
+      _firstname,
+      _lastname,
       _username,
       _site);
-}
-
-inline SiteT *Site::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new SiteT();
-  UnPackTo(_o, _resolver);
-  return _o;
-}
-
-inline void Site::UnPackTo(SiteT *_o, const flatbuffers::resolver_function_t *_resolver) const {
-  (void)_o;
-  (void)_resolver;
-  { auto _e = name(); if (_e) _o->name = _e->str(); };
-  { auto _e = shortname(); if (_e) _o->shortname = _e->str(); };
-}
-
-inline flatbuffers::Offset<Site> Site::Pack(flatbuffers::FlatBufferBuilder &_fbb, const SiteT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
-  return CreateSite(_fbb, _o, _rehasher);
-}
-
-inline flatbuffers::Offset<Site> CreateSite(flatbuffers::FlatBufferBuilder &_fbb, const SiteT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
-  (void)_rehasher;
-  (void)_o;
-  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const SiteT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
-  auto _shortname = _o->shortname.empty() ? 0 : _fbb.CreateString(_o->shortname);
-  return meta::CreateSite(
-      _fbb,
-      _name,
-      _shortname);
 }
 
 inline ScenarioT *Scenario::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -660,7 +553,6 @@ inline void Data::UnPackTo(DataT *_o, const flatbuffers::resolver_function_t *_r
   (void)_o;
   (void)_resolver;
   { auto _e = users(); if (_e) { _o->users.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->users[_i] = std::unique_ptr<UserT>(_e->Get(_i)->UnPack(_resolver)); } } };
-  { auto _e = sites(); if (_e) { _o->sites.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->sites[_i] = std::unique_ptr<SiteT>(_e->Get(_i)->UnPack(_resolver)); } } };
   { auto _e = scenarios(); if (_e) { _o->scenarios.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->scenarios[_i] = std::unique_ptr<ScenarioT>(_e->Get(_i)->UnPack(_resolver)); } } };
 }
 
@@ -673,12 +565,10 @@ inline flatbuffers::Offset<Data> CreateData(flatbuffers::FlatBufferBuilder &_fbb
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const DataT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _users = _o->users.size() ? _fbb.CreateVector<flatbuffers::Offset<User>> (_o->users.size(), [](size_t i, _VectorArgs *__va) { return CreateUser(*__va->__fbb, __va->__o->users[i].get(), __va->__rehasher); }, &_va ) : 0;
-  auto _sites = _o->sites.size() ? _fbb.CreateVector<flatbuffers::Offset<Site>> (_o->sites.size(), [](size_t i, _VectorArgs *__va) { return CreateSite(*__va->__fbb, __va->__o->sites[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _scenarios = _o->scenarios.size() ? _fbb.CreateVector<flatbuffers::Offset<Scenario>> (_o->scenarios.size(), [](size_t i, _VectorArgs *__va) { return CreateScenario(*__va->__fbb, __va->__o->scenarios[i].get(), __va->__rehasher); }, &_va ) : 0;
   return meta::CreateData(
       _fbb,
       _users,
-      _sites,
       _scenarios);
 }
 

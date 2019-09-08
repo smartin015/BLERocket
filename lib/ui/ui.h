@@ -12,6 +12,12 @@
 #define SZ_M 20
 #define SZ_L 30
 
+#define SIDEBAR_WIDTH 15
+#define SIDEBAR_MARGIN 15
+
+#define EPAPER_LONG_DIMENSION 250
+#define EPAPER_SHORT_DIMENSION 122
+
 #define BODY_X 10
 #define BODY_Y 40
 
@@ -88,6 +94,21 @@ protected:
       const FONT_T* const fonts[]   // the list of fonts to pick from
       );
 
+  virtual void DrawStringAt(
+      std::string s,           // string to draw
+      int x, int y,            // where to draw.
+      int* xmax, int* ymax     // where to store bottom right coords of bounds
+      ) = 0;
+
+  void DrawStringWithin(
+      std::string s,           // string to draw
+      int x, int y,            // where to draw.
+      int* xmax, int* ymax,    // where to store bottom right coords of bounds
+      int maxw,                // maximum width for drawing
+      const FONT_T* const fonts[] // fonts to pick from
+      );
+  virtual void DrawSidebarText(std::string s, bool leftside) = 0;
+
 private:
   nav::Page lastRenderedPage;
   std::string notification;
@@ -99,6 +120,7 @@ private:
 
   // Individual page render functions in ./ui/pages
   void drawMain(const Engine* engine);
+  void drawNametag(const Engine* engine);
   void drawSettingsEntry(const Engine* engine);
   void drawTradeEntry(const Engine* engine);
   void drawFleetEntry(const Engine* engine);

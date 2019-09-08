@@ -15,15 +15,6 @@
 #define EPAPER_W_PX  250
 #define EPAPER_H_PX  122
 
-#define SIDEBAR_WIDTH 15
-#define SIDEBAR_MARGIN 15
-
-#define NAMETAG_TOP_MARGIN 15
-#define LINESPACING 5
-
-#define EPAPER_LONG_DIMENSION 250
-#define EPAPER_SHORT_DIMENSION 122
-
 // User input pins
 #define NUM_COMMANDS nav::Command_MAX-nav::Command_MIN
 #define PIN_BUTTON_L 15
@@ -58,6 +49,7 @@ public:
   void setFont(const FONT_T* f);
   void setRotation(int r);
   void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
+  void DrawSidebarText(std::string text, bool leftside);
 
 private:
   GxEPD2_BW<GxEPD2_213_B72, GxEPD2_213_B72::HEIGHT> display;
@@ -66,14 +58,7 @@ private:
       std::string lastname,
       std::string username,
       std::string site);
-  void DrawSidebarText(std::string text, bool leftside);
-  void DrawStringWithin(
-      std::string s,           // string to draw
-      int x, int y,            // where to draw.
-      int* xmax, int* ymax,    // where to store bottom right coords of bounds
-      int maxw,                // maximum width for drawing
-      const FONT_T* const fonts[] // fonts to pick from
-      );
+
   void DrawStringAt(
       std::string s,           // string to draw
       int x, int y,            // where to draw.
