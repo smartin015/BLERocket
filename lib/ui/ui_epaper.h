@@ -78,6 +78,7 @@ private:
       int x, int y,            // where to draw.
       int* xmax, int* ymax     // where to store bottom right coords of bounds
       );
+  bool buzzerLoop();
   // Debounce button presses
   bool prevStates[nav::Command_MAX-nav::Command_MIN];
   uint64_t buzzStart;

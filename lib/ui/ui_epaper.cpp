@@ -212,6 +212,7 @@ void UIEPaper::partialUpdate() {
 }
 
 void UIEPaper::fullUpdate() {
+  while(!buzzerLoop()){};
   display.display(false);
 }
 
@@ -229,18 +230,24 @@ void UIEPaper::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h
   *h = hh;
 }
 
-
-void UIEPaper::loop() {
+// return true when the buzzer is done buzzing
+bool UIEPaper::buzzerLoop() {
   if (buzzStart == 0) {
-    return;
+    return true;
   }
 
   const auto now = millis();
   if (now > buzzStart + BUZZ_MILLIS) {
     buzzStart = 0;
     digitalWrite(PIN_BUZZER, LOW);
+    return true;
   }
 
+  return false;
+}
+
+void UIEPaper::loop() {
+  buzzerLoop();
 };
 bool UIEPaper::isOpen() { return true; };
 
