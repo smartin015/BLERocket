@@ -36,7 +36,7 @@
 #define PIN_CS 14
 #define PIN_DC 27
 #define PIN_RST 33
-#define PIN_BUSY 34 // Not actually hooked up, just included to fool the library
+#define PIN_BUSY -1 // no busy pin, and fooling the hardware is device-dependent
 
 // Buzzer output
 #define BUZZ_MILLIS 100

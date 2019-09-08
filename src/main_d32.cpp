@@ -65,7 +65,7 @@ void loop() {
     engine->handleInput(cmd, comms);
     cmd = ui->nextCommand();
   }
-  ui->render(engine);
+  //ui->render(engine);
 
   // Appease the watchdog timer
   vTaskDelay(10);
