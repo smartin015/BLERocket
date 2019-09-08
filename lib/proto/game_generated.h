@@ -432,9 +432,13 @@ struct StateT : public flatbuffers::NativeTable {
   nav::Page page;
   std::vector<std::unique_ptr<ShipPartT>> parts;
   std::vector<std::unique_ptr<ShipT>> ships;
+  uint8_t selectedShip;
+  uint8_t charIdx;
   std::unique_ptr<StatusT> status;
   StateT()
-      : page(nav::Page_main) {
+      : page(nav::Page_main),
+        selectedShip(0),
+        charIdx(0) {
   }
 };
 
@@ -444,7 +448,9 @@ struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_PAGE = 4,
     VT_PARTS = 6,
     VT_SHIPS = 8,
-    VT_STATUS = 10
+    VT_SELECTEDSHIP = 10,
+    VT_CHARIDX = 12,
+    VT_STATUS = 14
   };
   nav::Page page() const {
     return static_cast<nav::Page>(GetField<int8_t>(VT_PAGE, 0));
@@ -454,6 +460,12 @@ struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   const flatbuffers::Vector<flatbuffers::Offset<Ship>> *ships() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Ship>> *>(VT_SHIPS);
+  }
+  uint8_t selectedShip() const {
+    return GetField<uint8_t>(VT_SELECTEDSHIP, 0);
+  }
+  uint8_t charIdx() const {
+    return GetField<uint8_t>(VT_CHARIDX, 0);
   }
   const Status *status() const {
     return GetPointer<const Status *>(VT_STATUS);
@@ -467,6 +479,8 @@ struct State FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyOffset(verifier, VT_SHIPS) &&
            verifier.VerifyVector(ships()) &&
            verifier.VerifyVectorOfTables(ships()) &&
+           VerifyField<uint8_t>(verifier, VT_SELECTEDSHIP) &&
+           VerifyField<uint8_t>(verifier, VT_CHARIDX) &&
            VerifyOffset(verifier, VT_STATUS) &&
            verifier.VerifyTable(status()) &&
            verifier.EndTable();
@@ -488,6 +502,12 @@ struct StateBuilder {
   void add_ships(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Ship>>> ships) {
     fbb_.AddOffset(State::VT_SHIPS, ships);
   }
+  void add_selectedShip(uint8_t selectedShip) {
+    fbb_.AddElement<uint8_t>(State::VT_SELECTEDSHIP, selectedShip, 0);
+  }
+  void add_charIdx(uint8_t charIdx) {
+    fbb_.AddElement<uint8_t>(State::VT_CHARIDX, charIdx, 0);
+  }
   void add_status(flatbuffers::Offset<Status> status) {
     fbb_.AddOffset(State::VT_STATUS, status);
   }
@@ -508,11 +528,15 @@ inline flatbuffers::Offset<State> CreateState(
     nav::Page page = nav::Page_main,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<ShipPart>>> parts = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Ship>>> ships = 0,
+    uint8_t selectedShip = 0,
+    uint8_t charIdx = 0,
     flatbuffers::Offset<Status> status = 0) {
   StateBuilder builder_(_fbb);
   builder_.add_status(status);
   builder_.add_ships(ships);
   builder_.add_parts(parts);
+  builder_.add_charIdx(charIdx);
+  builder_.add_selectedShip(selectedShip);
   builder_.add_page(page);
   return builder_.Finish();
 }
@@ -522,6 +546,8 @@ inline flatbuffers::Offset<State> CreateStateDirect(
     nav::Page page = nav::Page_main,
     const std::vector<flatbuffers::Offset<ShipPart>> *parts = nullptr,
     const std::vector<flatbuffers::Offset<Ship>> *ships = nullptr,
+    uint8_t selectedShip = 0,
+    uint8_t charIdx = 0,
     flatbuffers::Offset<Status> status = 0) {
   auto parts__ = parts ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>>(*parts) : 0;
   auto ships__ = ships ? _fbb.CreateVector<flatbuffers::Offset<Ship>>(*ships) : 0;
@@ -530,6 +556,8 @@ inline flatbuffers::Offset<State> CreateStateDirect(
       page,
       parts__,
       ships__,
+      selectedShip,
+      charIdx,
       status);
 }
 
@@ -684,6 +712,8 @@ inline void State::UnPackTo(StateT *_o, const flatbuffers::resolver_function_t *
   { auto _e = page(); _o->page = _e; };
   { auto _e = parts(); if (_e) { _o->parts.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->parts[_i] = std::unique_ptr<ShipPartT>(_e->Get(_i)->UnPack(_resolver)); } } };
   { auto _e = ships(); if (_e) { _o->ships.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->ships[_i] = std::unique_ptr<ShipT>(_e->Get(_i)->UnPack(_resolver)); } } };
+  { auto _e = selectedShip(); _o->selectedShip = _e; };
+  { auto _e = charIdx(); _o->charIdx = _e; };
   { auto _e = status(); if (_e) _o->status = std::unique_ptr<StatusT>(_e->UnPack(_resolver)); };
 }
 
@@ -698,12 +728,16 @@ inline flatbuffers::Offset<State> CreateState(flatbuffers::FlatBufferBuilder &_f
   auto _page = _o->page;
   auto _parts = _o->parts.size() ? _fbb.CreateVector<flatbuffers::Offset<ShipPart>> (_o->parts.size(), [](size_t i, _VectorArgs *__va) { return CreateShipPart(*__va->__fbb, __va->__o->parts[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _ships = _o->ships.size() ? _fbb.CreateVector<flatbuffers::Offset<Ship>> (_o->ships.size(), [](size_t i, _VectorArgs *__va) { return CreateShip(*__va->__fbb, __va->__o->ships[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _selectedShip = _o->selectedShip;
+  auto _charIdx = _o->charIdx;
   auto _status = _o->status ? CreateStatus(_fbb, _o->status.get(), _rehasher) : 0;
   return game::CreateState(
       _fbb,
       _page,
       _parts,
       _ships,
+      _selectedShip,
+      _charIdx,
       _status);
 }
 

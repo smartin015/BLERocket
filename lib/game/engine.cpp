@@ -16,13 +16,11 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
   if (metadata != NULL) {
     metadata->UnPackTo(&data, NULL);
   }
-  notifyAcked = true;
-  lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
-  lastStatus = 0;
-  selectedShip = 0;
-  mission = message::Type_race;
-  charIdx = 0;
-  codeBuffer.clear();
+  event.notifyAcked = true;
+  trade.lastAnnounce = TRADE_ANNOUNCE_OFF;
+  mission.lastStatus = 0;
+  mission.type = message::Type_race;
+  trade.codeBuffer.clear();
 
   // TODO remove
   if (state.status->score < PHASE2_SCORE_THRESHOLD) {
@@ -41,7 +39,7 @@ nav::Page Engine::getPage() const {
 }
 
 const std::vector<std::pair<time_t, game::StatusT>>* Engine::getNearbyClientStatuses() const {
-  return &localStatus;
+  return &mission.localStatus;
 }
 
 bool Engine::suppressNav(const nav::Command& cmd) const {
@@ -54,7 +52,7 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
 
   // Don't allow viewing details on invalid selection state (e.g. no ships, bad index)
   if (nextPage(state.page, cmd) == nav::Page_shipDetails) {
-    if (state.ships.size() == 0 || selectedShip < 0 || selectedShip >= state.ships.size()) {
+    if (state.ships.size() == 0 || state.selectedShip < 0 || state.selectedShip >= state.ships.size()) {
       return true;
     }
   }
@@ -87,45 +85,17 @@ game::ShipPartT Engine::getUserPart() const {
   return part;
 }
 
-void sendTestStatus(CommsBase* comms) {
-  // Send example status message
-  message::MessageT msg;
-  msg.oneof.Set<game::StatusT>(game::StatusT());
-  auto* stat = msg.oneof.Asstatus();
-  stat->firmwareVersion = 5;
-  stat->user = 123;
-  stat->phase_id = 1;
-  stat->phase_txn = 3;
-  comms->sendMessage(msg, false);
-}
-
-void sendTestShip(CommsBase* comms) {
-  // Send example ship message
-  message::MessageT msg;
-  msg.oneof.Set<message::ShipT>(message::ShipT());
-  auto* s = msg.oneof.Asship();
-  s->action = message::Type_give;
-  s->dest_user = 1;
-  s->ship.reset(new game::ShipT());
-  s->ship->owner = 2;
-  comms->sendMessage(msg, false);
-}
-
 void Engine::loop(CommsBase* comms) {
   tradeLoop(comms);
-  statusLoop(comms);
+  missionLoop(comms);
 }
 
 int Engine::getSelectedShipIdx() const {
-  return selectedShip;
+  return state.selectedShip;
 }
 
 int Engine::getCharIdx() const {
-  return charIdx;
-}
-
-message::Type Engine::getMission() const {
-  return mission;
+  return state.charIdx;
 }
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
@@ -141,18 +111,18 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
       break;
     case nav::Page_fleetEntry:
       if (cmd == nav::Command_up) {
-        selectedShip = (selectedShip - 1 + state.ships.size()) % state.ships.size();
+        state.selectedShip = (state.selectedShip - 1 + state.ships.size()) % state.ships.size();
       } else if (cmd == nav::Command_down) {
-        selectedShip = (selectedShip + 1) % state.ships.size();
+        state.selectedShip = (state.selectedShip + 1) % state.ships.size();
       }
       break;
     case nav::Page_shipMissionSelect:
       switch (cmd) {
         case nav::Command_up:
-          mission = (message::Type) std::max(mission - 1, (int) message::Type_race);
+          mission.type = (message::Type) std::max(mission.type - 1, (int) message::Type_race);
           break;
         case nav::Command_down:
-          mission = (message::Type) std::min(mission + 1, (int) message::Type_explore);
+          mission.type = (message::Type) std::min(mission.type + 1, (int) message::Type_explore);
           break;
         default:
           break;
@@ -161,16 +131,16 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
     case nav::Page_shipRename:
       switch (cmd) {
         case nav::Command_up:
-          state.ships[selectedShip]->name[charIdx]++;
+          state.ships[state.selectedShip]->name[state.charIdx]++;
           break;
         case nav::Command_down:
-          state.ships[selectedShip]->name[charIdx]--;
+          state.ships[state.selectedShip]->name[state.charIdx]--;
           break;
         case nav::Command_left:
-          charIdx = std::max(0, charIdx-1);
+          state.charIdx = std::max(0, state.charIdx-1);
           break;
         case nav::Command_right:
-          charIdx = std::min(MAX_SHIP_NAME_LEN-1, charIdx+1);
+          state.charIdx = std::min(MAX_SHIP_NAME_LEN-1, state.charIdx+1);
           break;
         default:
           break;
@@ -181,11 +151,11 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         // Clear persistent and ephemeral state
         state = game::StateT();
         state.status.reset(new game::StatusT());
-        notifyAcked = true;
-        lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
-        selectedShip = 0;
-        charIdx = 0;
-        codeBuffer.clear();
+        event.notifyAcked = true;
+        trade.lastAnnounce = TRADE_ANNOUNCE_OFF;
+        state.selectedShip = 0;
+        state.charIdx = 0;
+        trade.codeBuffer.clear();
       }
       break;
     case nav::Page_settingsSelectUser:
@@ -216,7 +186,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         ESP_LOGI(ENGINE_TAG, "New ship created! Score +%d (total %d)", score, state.status->score);
 
         // Select the new ship in future menus
-        selectedShip = state.ships.size()-1;
+        state.selectedShip = state.ships.size()-1;
 
         // Get rid of built up parts
         state.parts.clear();
@@ -226,13 +196,20 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
           state.status->phase_id = 2;
           state.status->phase_txn++;
         }
-
       }
-    case nav::Page_settingsEntry:
-      if (cmd == nav::Command_down) {
-        sendTestStatus(comms);
-      } else if (cmd == nav::Command_right) {
-        sendTestShip(comms);
+      break;
+    case nav::Page_shipConfirm:
+      {
+        // Send example ship message
+        // TODO actually send ship on mission
+        message::MessageT msg;
+        msg.oneof.Set<message::ShipT>(message::ShipT());
+        auto* s = msg.oneof.Asship();
+        s->action = message::Type_give;
+        s->dest_user = 1;
+        s->ship.reset(new game::ShipT());
+        s->ship->owner = 2;
+        comms->sendMessage(msg, false);
       }
       break;
     default:
@@ -248,7 +225,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
 void Engine::handleMessage(const message::MessageT& msg) {
   switch (msg.oneof.type) {
     case message::UMessage_status:
-      handleStatus(*(msg.oneof.Asstatus()));
+      missionHandleStatus(*(msg.oneof.Asstatus()));
       break;
     case message::UMessage_ship:
       {
@@ -259,13 +236,13 @@ void Engine::handleMessage(const message::MessageT& msg) {
           uint16_t(m->ship->owner),
           uint16_t(m->dest_user));
 
-        notification.oneof.Set<message::ShipT>(message::ShipT());
-        auto s = notification.oneof.Asship();
+        event.notification.oneof.Set<message::ShipT>(message::ShipT());
+        auto s = event.notification.oneof.Asship();
         s->action = message::Type_launch;
         s->dest_user = 0;
         s->ship.reset(new game::ShipT());
         s->ship->name = "aship";
-        notifyAcked = false;
+        event.notifyAcked = false;
         ESP_LOGI(ENGINE_TAG, "Set notification");
       }
       break;
@@ -290,29 +267,4 @@ void Engine::handleMessage(const message::MessageT& msg) {
 
 const meta::DataT* Engine::getData() const {
   return &data;
-}
-
-const message::MessageT* Engine::getNotification() const {
-  if (notifyAcked) {
-    return NULL;
-  }
-  return &notification;
-}
-
-void Engine::ackNotification() {
-  notifyAcked = true;
-}
-
-const message::MessageT* Engine::peekMessage() const {
-  if (messages.size() == 0) {
-    return NULL;
-  }
-  return &(messages[0]);
-}
-
-void Engine::ackMessage() {
-  if (messages.size() == 0) {
-    return;
-  }
-  messages.erase(messages.begin());
 }

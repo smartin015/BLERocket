@@ -65,7 +65,7 @@ void Engine::tradeLoop(CommsBase* comms) {
   // Periodically announce trades
   time_t now = time(NULL);
   if (state.page == nav::Page_tradeEntry) {
-    if (lastTradeAnnounce == TRADE_ANNOUNCE_OFF || lastTradeAnnounce + TRADE_ANNOUNCE_SECS < now) {
+    if (trade.lastAnnounce == TRADE_ANNOUNCE_OFF || trade.lastAnnounce + TRADE_ANNOUNCE_SECS < now) {
       ESP_LOGI(ENGINE_TAG, "Advertising trade");
       broadcastMadePart(comms, getUserPart());
 
@@ -82,34 +82,34 @@ void Engine::tradeLoop(CommsBase* comms) {
       // p.type = game::ShipPartType_sensors;
       // broadcastMadePart(comms, p);
 
-      lastTradeAnnounce = now;
+      trade.lastAnnounce = now;
     }
-  } else if (lastTradeAnnounce != 0) { // on-exit cleanup tasks
-    lastTradeAnnounce = TRADE_ANNOUNCE_OFF;
-    while (!codeBuffer.empty()) {
-      codeBuffer.pop_front();
+  } else if (trade.lastAnnounce != 0) { // on-exit cleanup tasks
+    trade.lastAnnounce = TRADE_ANNOUNCE_OFF;
+    while (!trade.codeBuffer.empty()) {
+      trade.codeBuffer.pop_front();
     }
   }
 }
 void Engine::tradeInput(const nav::Command& cmd, CommsBase* comms) {
   // Keep a rolling buffer of the last 3 buttons pressed
-  codeBuffer.push_back(cmd);
-  if (codeBuffer.size() > USER_CODE_LEN) {
-    codeBuffer.pop_front();
+  trade.codeBuffer.push_back(cmd);
+  if (trade.codeBuffer.size() > USER_CODE_LEN) {
+    trade.codeBuffer.pop_front();
   }
 
   time_t now = time(NULL);
-  for (auto it = localParts.begin(); it != localParts.end();) {
+  for (auto it = trade.localParts.begin(); it != trade.localParts.end();) {
     // Clear out old local parts
     if (now > it->first + LOCAL_PART_TIMEOUT_SECS) {
-      it = localParts.erase(it);
+      it = trade.localParts.erase(it);
       ESP_LOGI(ENGINE_TAG, "Removed expired local part %s (user %d)", game::EnumNameShipPartType(it->second.type), it->second.creator);
     } else {
       const auto seq = getUserButtonSequence(it->second.creator);
-      if (codeBuffer.size() == seq.size() && std::equal(codeBuffer.begin(), codeBuffer.end(), seq.begin())) {
+      if (trade.codeBuffer.size() == seq.size() && std::equal(trade.codeBuffer.begin(), trade.codeBuffer.end(), seq.begin())) {
         ESP_LOGI(ENGINE_TAG, "Trade sequence matches part %s from user %d", game::EnumNameShipPartType(it->second.type), it->second.creator);
         state.parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(it->second)));
-        codeBuffer.clear();
+        trade.codeBuffer.clear();
       }
       it++;
     }
@@ -120,13 +120,13 @@ void Engine::tradeMakePart(const game::ShipPartT& part) {
   // A different user is broadcasting a part for offer.
   // Add it to the list of local parts, replacing any prior parts
   // offered by the user.
-  for (int i = 0; i < localParts.size(); i++) {
-    if (localParts[i].second.creator == part.creator) {
-      localParts[i] = std::make_pair(time(NULL),game::ShipPartT(part));
+  for (int i = 0; i < trade.localParts.size(); i++) {
+    if (trade.localParts[i].second.creator == part.creator) {
+      trade.localParts[i] = std::make_pair(time(NULL),game::ShipPartT(part));
       ESP_LOGI(ENGINE_TAG, "Replaced existing part, seq %s", userButtonSequenceStr(getUserButtonSequence(part.creator)).c_str());
       return;
     }
   }
-  localParts.push_back(std::make_pair(time(NULL),game::ShipPartT(part)));
+  trade.localParts.push_back(std::make_pair(time(NULL),game::ShipPartT(part)));
   ESP_LOGI(ENGINE_TAG, "Appended part, seq %s", userButtonSequenceStr(getUserButtonSequence(part.creator)).c_str());
 }

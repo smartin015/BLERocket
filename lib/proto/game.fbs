@@ -44,6 +44,8 @@ table State {
   page:nav.Page;
   parts:[ShipPart];
   ships:[Ship];
+  selectedShip:ubyte;
+  charIdx:ubyte;
   status:Status;
 }
 
