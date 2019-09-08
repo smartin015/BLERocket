@@ -8,5 +8,6 @@
 
 int getShipLaunchScore(const game::ShipT& ship);
 std::string generateShipName(const game::ShipT& ship);
+game::ShipPartT generatePart(uint8_t user, uint16_t score);
 
 #endif // _SHIP_H

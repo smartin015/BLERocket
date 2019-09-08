@@ -6,13 +6,18 @@
 // Player selecting a mission destination
 void UI::drawShipDestSelect(const Engine* engine) {
   const game::StateT* state = engine->getState();
+  const auto* m = engine->getMission();
   char buf[32];
-  const int shipIdx = engine->getSelectedShipIdx();
-  snprintf(buf, sizeof(buf), "%s target", state->ships[shipIdx]->name.c_str());
+  snprintf(buf, sizeof(buf), "%s %s", state->ships[state->selectedShip]->name.c_str(), message::EnumNameType(m->type));
   drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
 
   // TODO maybe order by RSSI?
   const std::vector<std::pair<time_t, game::StatusT>>* ss = engine->getNearbyClientStatuses();
+  if (ss->size() == 0) {
+    drawText("No targets nearby.\nFind some friends!", SZ_S, BODY_X, BODY_Y);
+    return;
+  }
+
   std::vector<std::string> items;
   int idx = 0;
   for (int i = 0; i < ss->size() && i < MAX_DESTINATIONS; i++) {
@@ -21,5 +26,7 @@ void UI::drawShipDestSelect(const Engine* engine) {
     //   idx = i;
     // }
   }
+
+
   drawSelector(items, idx, BODY_X, BODY_Y);
 }

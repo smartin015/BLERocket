@@ -7,7 +7,8 @@ void UI::drawTradeEntry(const Engine* engine) {
   drawText("Trade", TITLE_SZ, TITLE_X, TITLE_Y);
 
   // Draw our part
-  game::ShipPartT userPart = engine->getUserPart();
+  const game::StateT* state = engine->getState();
+  game::ShipPartT userPart = generatePart(state->status->user, state->status->score);
   drawText(game::EnumNameShipPartType(userPart.type), SZ_S, BODY_X, BODY_Y);
   char buf[16];
   snprintf(buf, sizeof(buf), "%d", userPart.quality);

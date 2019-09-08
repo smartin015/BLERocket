@@ -67,7 +67,7 @@ void Engine::tradeLoop(CommsBase* comms) {
   if (state.page == nav::Page_tradeEntry) {
     if (trade.lastAnnounce == TRADE_ANNOUNCE_OFF || trade.lastAnnounce + TRADE_ANNOUNCE_SECS < now) {
       ESP_LOGI(ENGINE_TAG, "Advertising trade");
-      broadcastMadePart(comms, getUserPart());
+      broadcastMadePart(comms, generatePart(state.status->user, state.status->score));
 
       // Cheat, broadcasting other important parts
       // game::ShipPartT p;

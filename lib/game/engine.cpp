@@ -50,6 +50,13 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
     }
   }
 
+  // Suppress non-back action on shipDestSelect page if no destinations
+  if (state.page == nav::Page_shipDestSelect && cmd != nav::Command_left) {
+    if (mission.localStatus.size() == 0) {
+      return true;
+    }
+  }
+
   // Don't allow viewing details on invalid selection state (e.g. no ships, bad index)
   if (nextPage(state.page, cmd) == nav::Page_shipDetails) {
     if (state.ships.size() == 0 || state.selectedShip < 0 || state.selectedShip >= state.ships.size()) {
@@ -66,36 +73,9 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
   return false;
 }
 
-
-game::ShipPartT Engine::getUserPart() const {
-  game::ShipPartT part;
-  part.creator = state.status->user;
-
-  // We increase the user's part quality
-  // based on their closeness to the Phase 1 max score
-  float quality = (float(PART_MAX_QUALITY) / float(MAX_SCORE)) * (state.status->score);
-  part.quality = std::max(PART_MIN_QUALITY, std::min(PART_MAX_QUALITY, (uint8_t) std::round(quality)));
-
-  // We use a modulo of the user's ID to determine
-  // what part they're able to make.
-  // This ensures roughly equal distribution
-  // of parts.
-  part.type = (game::ShipPartType) (part.creator % (game::ShipPartType_MAX - game::ShipPartType_MIN) + 1);
-
-  return part;
-}
-
 void Engine::loop(CommsBase* comms) {
   tradeLoop(comms);
   missionLoop(comms);
-}
-
-int Engine::getSelectedShipIdx() const {
-  return state.selectedShip;
-}
-
-int Engine::getCharIdx() const {
-  return state.charIdx;
 }
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {

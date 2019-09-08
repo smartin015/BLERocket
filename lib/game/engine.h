@@ -79,10 +79,7 @@ public:
   const meta::DataT* getData() const;
   const message::MessageT* getNotification() const;
   const message::MessageT* peekMessage() const;
-  game::ShipPartT getUserPart() const;
-  int getSelectedShipIdx() const;
-  int getCharIdx() const;
-  message::Type getMission() const;
+  const mission_state_t* getMission() const;
   const std::vector<std::pair<time_t, game::StatusT>>* getNearbyClientStatuses() const;
 
 private:

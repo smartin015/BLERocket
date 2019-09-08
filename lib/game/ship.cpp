@@ -1,5 +1,23 @@
 #include "ship.h"
 
+game::ShipPartT generatePart(uint8_t user, uint16_t score) {
+  game::ShipPartT part;
+  part.creator = user;
+
+  // We increase the user's part quality
+  // based on their closeness to the Phase 1 max score
+  float quality = (float(PART_MAX_QUALITY) / float(MAX_SCORE)) * score;
+  part.quality = std::max(PART_MIN_QUALITY, std::min(PART_MAX_QUALITY, (uint8_t) std::round(quality)));
+
+  // We use a modulo of the user's ID to determine
+  // what part they're able to make.
+  // This ensures roughly equal distribution
+  // of parts.
+  part.type = (game::ShipPartType) (part.creator % (game::ShipPartType_MAX - game::ShipPartType_MIN) + 1);
+
+  return part;
+}
+
 int getShipLaunchScore(const game::ShipT& ship) {
   // Sum all ship part scores, with a multiplier
   int acc = 0;

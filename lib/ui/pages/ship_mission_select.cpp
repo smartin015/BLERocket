@@ -12,16 +12,15 @@ const message::Type MISSIONS[NUM_MISSIONS] = {
 void UI::drawShipMissionSelect(const Engine* engine) {
   const game::StateT* state = engine->getState();
   char buf[32];
-  const int shipIdx = engine->getSelectedShipIdx();
-  snprintf(buf, sizeof(buf), "%s mission", state->ships[shipIdx]->name.c_str());
+  snprintf(buf, sizeof(buf), "%s mission", state->ships[state->selectedShip]->name.c_str());
   drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
 
-  const message::Type m = engine->getMission();
+  const auto* m = engine->getMission();
   std::vector<std::string> items;
   int idx = 0;
   for (int i = 0; i < NUM_MISSIONS; i++) {
     items.emplace_back(message::EnumNameType(MISSIONS[i]));
-    if (m == MISSIONS[i]) {
+    if (m->type == MISSIONS[i]) {
       idx = i;
     }
   }

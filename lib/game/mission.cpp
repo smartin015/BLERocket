@@ -1,7 +1,7 @@
 #include "engine.h"
 
-message::Type Engine::getMission() const {
-  return mission.type;
+const mission_state_t* Engine::getMission() const {
+  return &mission;
 }
 
 void Engine::missionLoop(CommsBase* comms) {
@@ -38,6 +38,11 @@ void Engine::missionHandleStatus(const game::StatusT& status) {
      uint16_t(status.user),
      uint16_t(status.phase_id),
      uint16_t(status.phase_txn));
+
+  // Ignore self-status
+  if (status.user == state.status->user) {
+    return;
+  }
 
   // Add to the list of statuses, replacing any prior statuses
   // from the same user.
