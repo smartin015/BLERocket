@@ -11,9 +11,37 @@ const message::Type MISSIONS[NUM_MISSIONS] = {
 // Player selecting a mission for a particular ship
 void UI::drawMissionTypeSelect(const Engine* engine) {
   const game::StateT* state = engine->getState();
+
+  int x_offset = SIDEBAR_WIDTH;
+  int y_offset = 0;
+
+  DrawSidebarText("", true);
+
+  setFont(&FONT_TINY);
+
+  DrawStringAt(
+      "< destination",
+      0, y_offset,
+      NULL, &y_offset);
+  x_offset += SIDEBAR_MARGIN;
   char buf[32];
-  snprintf(buf, sizeof(buf), "%s mission", state->ships[state->selectedShip]->name.c_str());
-  drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
+  snprintf(buf, sizeof(buf), "%s's mission", state->ships[state->selectedShip]->name.c_str());
+  setFont(&FONT_POPPINS_8);
+  DrawStringAt(
+      buf,
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset += LINESPACING;
+  setFont(&FONT_TINY);
+  DrawStringAt(
+      "select a destination",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  3*LINESPACING;
+
+  x_offset += 5;
+
+  setFont(&FONT_ROBOTO_6);
 
   const auto* m = engine->getMission();
   std::vector<std::string> items;
@@ -24,5 +52,5 @@ void UI::drawMissionTypeSelect(const Engine* engine) {
       idx = i;
     }
   }
-  drawSelector(items, idx, BODY_X, BODY_Y);
+  drawSelector(items, idx, x_offset, y_offset);
 }
