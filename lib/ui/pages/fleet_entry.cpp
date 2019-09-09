@@ -3,7 +3,7 @@
 
 // Page for this player's fleet of ships
 void UI::drawFleetEntry(const Engine* engine) {
-  int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;
+  int x_offset = SIDEBAR_WIDTH;
   int y_offset = 0;
 
   DrawSidebarText(notification, true);
@@ -26,7 +26,6 @@ void UI::drawFleetEntry(const Engine* engine) {
       NULL, &y_offset);
   y_offset +=  3*LINESPACING;
 
-  x_offset += 5;
 
   setFont(&FONT_ROBOTO_6);
   if (state->ships.size() == 0) {

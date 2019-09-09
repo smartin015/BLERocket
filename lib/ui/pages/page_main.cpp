@@ -50,11 +50,15 @@ void UI::drawMain(const Engine* engine) {
   y_offset +=  2 * LINESPACING;
 
   setFont(&FONT_ROBOTO_6);
-  // TODO FIXME - if visitors are available, show this. otherwise, hide it.
-  DrawStringAt(
-      "< Visitors",
-      x_offset, y_offset,
-      NULL, &y_offset);
+
+  if (!engine->getEvent()->acked) {
+    DrawStringAt(
+        "< Radar",
+        x_offset, y_offset,
+        NULL, &y_offset);
+  } else {
+    y_offset +=  LINESPACING;
+  }
   y_offset +=  LINESPACING;
 
   int controls_line_1 = y_offset;

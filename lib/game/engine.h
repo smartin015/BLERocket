@@ -37,6 +37,7 @@
 
 // Get a sequence of button presses used to identify a particular user
 #define USER_CODE_LEN 3
+
 std::vector<nav::Command> getUserButtonSequence(uint8_t user_id);
 std::string userButtonSequenceStr(const std::vector<nav::Command>& seq);
 
@@ -89,6 +90,9 @@ public:
 
   // utility functions for UI
   const bool readyToLaunch() const;
+
+  // force nametag
+  void forceNametag();
 
 private:
   game::StateT state; // Persisted game state

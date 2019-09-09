@@ -25,6 +25,8 @@ CommsDummy *comms;
 #endif
 StateSPIFFS *state;
 
+static uint64_t lastInputMillis = 0;
+
 void setup() {
   //Serial.begin(CONFIG_CONSOLE_UART_BAUDRATE);
   ESP_LOGI(MAIN_TAG, "Initializing...");
@@ -64,7 +66,15 @@ void loop() {
     ESP_LOGI(MAIN_TAG, "CMD %s", nav::EnumNameCommand(cmd));
     engine->handleInput(cmd, comms);
     cmd = ui->nextCommand();
+    lastInputMillis = millis();
   }
+
+  if (lastInputMillis != 0 && lastInputMillis + IDLE_TIMEOUT_MILLIS < millis()) {
+    state->save(engine);
+    engine->forceNametag();
+    lastInputMillis = 0;
+  }
+
   ui->render(engine);
 
   // Appease the watchdog timer

@@ -11,6 +11,8 @@ void Engine::clearVolatileState() {
   trade.codeBuffer.clear();
   mission.lastStatus = 0;
   mission.type = message::Type_race;
+
+  forceNametag();
 }
 
 Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
@@ -105,12 +107,19 @@ void Engine::loop(CommsBase* comms) {
   missionLoop(comms);
 }
 
+void Engine::forceNametag() {
+  state.page = nav::Page_nametag;
+}
+
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   // Nav is handled *before* potentially state-modifying actions
   if (suppressNav(cmd)) {
     return;
   }
   auto next = nextPage(state.page, cmd);
+
+  // reseed the rng
+  std::srand(time(NULL));
 
   if (next == nav::Page_shipVisitEntry) {
     // Reset scenario and ack the event
