@@ -3,4 +3,6 @@ data
 dirtyhacks/
 *.sw*
 
+assets/metadata.json
+
 fontconvert/
