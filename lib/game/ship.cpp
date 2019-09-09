@@ -1,4 +1,5 @@
 #include "ship.h"
+#include <cmath>
 
 game::ShipPartT generatePart(uint8_t user, uint16_t score) {
   game::ShipPartT part;
