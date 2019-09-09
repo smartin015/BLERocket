@@ -83,6 +83,11 @@ public:
   const meta::DataT* getData() const;
   const event_state_t* getEvent() const;
   const mission_state_t* getMission() const;
+  const trade_state_t* getTradeState() const;
+
+  // utility functions for UI
+  const bool readyToLaunch() const;
+
 private:
   game::StateT state; // Persisted game state
   meta::DataT data; // Immutable (environment) state

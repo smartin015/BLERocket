@@ -95,6 +95,11 @@ void Engine::tradeLoop(CommsBase* comms) {
     }
   }
 }
+
+const trade_state_t* Engine::getTradeState() const {
+  return &trade;
+}
+
 void Engine::tradeInput(const nav::Command& cmd, CommsBase* comms) {
   // Keep a rolling buffer of the last 3 buttons pressed
   trade.codeBuffer.push_back(cmd);

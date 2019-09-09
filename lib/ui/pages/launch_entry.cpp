@@ -5,7 +5,7 @@
 void UI::drawLaunchEntry(const Engine* engine) {
   drawText("Launch", TITLE_SZ, TITLE_X, TITLE_Y);
   const auto& parts = engine->getState()->parts;
-  if (parts.size() < game::ShipPartType_MAX) {
+  if (!engine->readyToLaunch()) {
     drawText("Missing parts", SZ_S, BODY_X, BODY_Y);
     return;
   }

@@ -40,17 +40,25 @@ void UI::drawTradeEntry(const Engine* engine) {
       x_offset, y_offset,
       NULL, &y_offset);
   DrawStringAt(
-      "their code using ^ and v",
+      "their code using ^, v, >, and *",
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;
-  auto seq = userButtonSequenceStr(getUserButtonSequence(engine->getState()->status->user));
+  std::string seq = userButtonSequenceStr(getUserButtonSequence(engine->getState()->status->user));
   snprintf(buf, sizeof(buf), "Your code is: %s", seq.c_str());
   DrawStringAt(
-      "Your code is: ",
+      buf,
       x_offset, y_offset,
       NULL, &y_offset);
 
+  auto cb = engine->getTradeState()->codeBuffer;
+  std::vector<nav::Command> entered = std::vector<nav::Command>(cb.begin(), cb.end());
+  std::string seq_entered = userButtonSequenceStr(entered);
+  snprintf(buf, sizeof(buf), "Currently listening for: %s", seq_entered.c_str());
+  DrawStringAt(
+      buf,
+      x_offset, y_offset,
+      NULL, &y_offset);
   y_offset +=  2 * LINESPACING;
 
   std::string thruster_s = "You need a thruster";
