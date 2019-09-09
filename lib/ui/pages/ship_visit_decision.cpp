@@ -5,15 +5,34 @@
 void UI::drawShipVisitDecision(const Engine* engine) {
   const auto* e = engine->getEvent();
   const auto* ms = e->message.oneof.Asship();
-  char buf[32];
-  snprintf(buf, strlen(buf), "%s Decision", message::EnumNameType(ms->action));
-  drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
-
-  // TODO list possible actions
   const auto* data = engine->getData();
+  char buf[48];
+
+  int x_offset = SIDEBAR_WIDTH;
+  int y_offset = 0;
+
+  DrawSidebarText(notification, true);
+
+  setFont(&FONT_TINY);
+
+  DrawStringAt(
+      "< back",
+      0, y_offset,
+      NULL, &y_offset);
+  x_offset += SIDEBAR_MARGIN;
+
+  setFont(&FONT_POPPINS_8);
+
+  DrawStringAt(
+      "What will you do?",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  3*LINESPACING;
+  x_offset += 5;
+
   std::vector<std::string> items;
   for (int i = 0; i < SELECTOR_NUM_ITEMS && i < e->scenario->choices.size(); i++) {
     items.push_back(e->scenario->choices[i]->action);
   }
-  drawSelector(items, e->selectedChoice, BODY_X, BODY_Y);
+  drawSelector(items, e->selectedChoice, x_offset, y_offset);
 }

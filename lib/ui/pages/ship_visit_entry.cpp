@@ -6,7 +6,7 @@ void UI::drawShipVisitEntry(const Engine* engine) {
   const auto* e = engine->getEvent();
   const auto* ms = e->message.oneof.Asship();
   const auto* data = engine->getData();
-  char buf[32];
+  char buf[48];
   /*
   snprintf(buf, sizeof(buf), "%s %s", ms->ship->name.c_str(), message::EnumNameType(ms->action));
   drawText(buf, TITLE_SZ, TITLE_X, TITLE_Y);
@@ -24,10 +24,9 @@ void UI::drawShipVisitEntry(const Engine* engine) {
   setFont(&FONT_TINY);
 
   DrawStringAt(
-      "< home",
+      "< ignore",
       0, y_offset,
       NULL, &y_offset);
-  y_offset = 0;
   x_offset += SIDEBAR_MARGIN;
 
   setFont(&FONT_POPPINS_8);
@@ -51,5 +50,31 @@ void UI::drawShipVisitEntry(const Engine* engine) {
       "has entered your sector!",
       x_offset, y_offset,
       NULL, &y_offset);
+  y_offset += 3*LINESPACING;
 
+  setFont(&FONT_TINY);
+  // TODO - not this
+  int i = 0;
+  int j = 0;
+  while (i < e->scenario->desc.size()) {
+    char c = e->scenario->desc[i];
+    if (c == '\n' || j >= sizeof(buf)) {
+      buf[j] = '\0';
+      drawText(buf, 0, x_offset, y_offset);
+      y_offset += 8;
+      j = 0;
+      i++;
+      continue;
+    }
+    buf[j++] = e->scenario->desc[i++];
+  }
+  buf[j] = '\0';
+  drawText(buf, 0, x_offset, y_offset);
+
+  setFont(&FONT_ROBOTO_6);
+
+  DrawStringAt(
+      "Next >",
+      200, 100,
+      NULL, NULL);
 }
