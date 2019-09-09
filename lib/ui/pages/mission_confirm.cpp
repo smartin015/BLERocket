@@ -4,6 +4,7 @@
 // Player about to confirm mission
 void UI::drawMissionConfirm(const Engine* engine) {
   const game::StateT* state = engine->getState();
+  const auto* data = engine->getData();
 
   int x_offset = SIDEBAR_WIDTH;
   int y_offset = 0;
@@ -47,7 +48,7 @@ void UI::drawMissionConfirm(const Engine* engine) {
 
   snprintf(buf, sizeof(buf),
       "in %s@'s system?", 
-      engine->getData()->users[state->selectedUser]->username.c_str());
+      data->users[engine->getMission()->localStatus[state->selectedUser].second.user]->username.c_str());
   DrawStringAt(
       buf,
       x_offset, y_offset,

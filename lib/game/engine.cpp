@@ -223,7 +223,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         for (const auto& p : state.parts) {
           ship->parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(*p)));
         }
-        ship->owner = 2; // TODO
+        ship->owner = state.status->user; // TODONE
         ship->name = generateShipName(*ship);
         int score = getShipLaunchScore(*ship);
         state.status->score += score;
@@ -305,6 +305,7 @@ void Engine::handleMessage(const message::MessageT& msg) {
         s->dest_user = m->dest_user;
         s->ship.reset(new game::ShipT());
         s->ship->name = m->ship->name;
+        s->ship->owner = m->ship->owner;
         event.acked = false;
         event.lastMessage = time(NULL);
         ESP_LOGI(ENGINE_TAG, "Set notification");

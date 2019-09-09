@@ -71,20 +71,20 @@ void Engine::tradeLoop(CommsBase* comms) {
       tradePartBroadcast(comms, generatePart(state.status->user, state.status->score));
 
       // Cheat, broadcasting other important parts
-      // game::ShipPartT p;
-      // p.quality = 2;
-      // p.creator = 3;
-      // p.type = game::ShipPartType_hull;
-      // tradePartBroadcast(comms, p);
-      // p.creator = 1;
-      // p.type = game::ShipPartType_thruster;
-      // tradePartBroadcast(comms, p);
-      // p.creator = 7;
-      // p.type = game::ShipPartType_cargo;
-      // tradePartBroadcast(comms, p);
-      // p.creator = 9;
-      // p.type = game::ShipPartType_sensors;
-      // tradePartBroadcast(comms, p);
+       game::ShipPartT p;
+       p.quality = 2;
+       p.creator = 3;
+       p.type = game::ShipPartType_hull;
+       tradePartBroadcast(comms, p);
+       p.creator = 1;
+       p.type = game::ShipPartType_thruster;
+       tradePartBroadcast(comms, p);
+       p.creator = 7;
+       p.type = game::ShipPartType_cargo;
+       tradePartBroadcast(comms, p);
+       p.creator = 9;
+       p.type = game::ShipPartType_sensors;
+       tradePartBroadcast(comms, p);
 
       trade.lastAnnounce = now;
     }

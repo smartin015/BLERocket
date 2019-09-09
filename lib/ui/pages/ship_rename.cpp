@@ -36,8 +36,6 @@ void UI::drawShipRename(const Engine* engine) {
   drawText(underline, 0, x_offset, y_offset);
   y_offset -= 16;
 
-  std::cout << "\t\t" << state->charIdx << "\t'" << underline << "'\n";
-
   drawText(ship->name.c_str(), 0, x_offset, y_offset);
   
   setFont(&FONT_TINY);
