@@ -18,8 +18,6 @@ void UI::drawFleetEntry(const Engine* engine) {
   x_offset += SIDEBAR_MARGIN;
   const game::StateT* state = engine->getState();
 
-  game::ShipPartT userPart = generatePart(state->status->user, state->status->score);
-
   setFont(&FONT_POPPINS_8);
   char buf[64];
   DrawStringAt(

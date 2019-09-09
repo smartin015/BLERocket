@@ -156,10 +156,8 @@ void UI::drawSelector(const std::vector<std::string>& items, const int& selected
   setFont(&FONT_ROBOTO_6);
   for (int i = 0; i < items.size(); i++) {
     snprintf(buf, sizeof(buf), "%s  %s", (i == selected ? "->" : "  "), items[i].c_str());
-    DrawStringAt(
-        buf,
-        x_offset, y_offset,
-        NULL, &y_offset);
+    drawText(buf, 0, x_offset, y_offset);
+    y_offset += 12; // hack
   }
 }
 

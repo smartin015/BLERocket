@@ -27,7 +27,7 @@ void UI::drawShipRename(const Engine* engine) {
   for (int i = 0; i < sizeof(underline); i++) {
     underline[i] = ' ';
   }
-  underline[sizeof(underline)] = '\0';
+  underline[sizeof(underline) - 1] = '\0';
 
   underline[state->charIdx] = '^';
   drawText(underline, 0, x_offset, y_offset);
