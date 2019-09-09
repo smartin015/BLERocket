@@ -12,7 +12,7 @@ void UI::drawTradeEntry(const Engine* engine) {
   setFont(&FONT_TINY);
 
   DrawStringAt(
-      "< main",
+      "< home",
       0, y_offset,
       NULL, &y_offset);
   y_offset = 0;
@@ -40,7 +40,7 @@ void UI::drawTradeEntry(const Engine* engine) {
       x_offset, y_offset,
       NULL, &y_offset);
   DrawStringAt(
-      "their code using ^, v, >, and *",
+      "their code using ^, v, >, and X",
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;

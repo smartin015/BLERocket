@@ -3,11 +3,44 @@
 
 // Page for this player's fleet of ships
 void UI::drawFleetEntry(const Engine* engine) {
-  drawText("Fleet", TITLE_SZ, TITLE_X, TITLE_Y);
+  int x_offset = SIDEBAR_WIDTH;
+  int y_offset = 0;
 
+  DrawSidebarText("", true);
+
+  setFont(&FONT_TINY);
+
+  DrawStringAt(
+      "< home",
+      0, y_offset,
+      NULL, &y_offset);
+  y_offset = 0;
+  x_offset += SIDEBAR_MARGIN;
   const game::StateT* state = engine->getState();
+
+  game::ShipPartT userPart = generatePart(state->status->user, state->status->score);
+
+  setFont(&FONT_POPPINS_8);
+  char buf[64];
+  DrawStringAt(
+      "Fleet Management",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  3*LINESPACING;
+
+  x_offset += 5;
+
+  setFont(&FONT_ROBOTO_6);
   if (state->ships.size() == 0) {
-    drawText("You have no ships.", SZ_M, BODY_X, BODY_Y);
+    DrawStringAt(
+        "You have no ships!",
+        x_offset, y_offset,
+        NULL, &y_offset);
+    y_offset +=  LINESPACING;
+    DrawStringAt(
+        "Come back after you launch some",
+        x_offset, y_offset,
+        NULL, &y_offset);
     return;
   }
 
@@ -16,5 +49,5 @@ void UI::drawFleetEntry(const Engine* engine) {
   for (int i = top; i < SELECTOR_NUM_ITEMS && i < state->ships.size(); i++) {
     items.emplace_back(state->ships[i]->name);
   }
-  drawSelector(items, state->selectedShip - top, BODY_X, BODY_Y);
+  drawSelector(items, state->selectedShip - top, x_offset, y_offset);
 }

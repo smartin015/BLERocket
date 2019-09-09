@@ -82,8 +82,7 @@ protected:
   // TODO
   virtual void drawShape(const std::vector<std::pair<int, int>>& points) = 0;
 
-  // TODO
-  virtual void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) = 0;
+  void drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y);
 
   // set the working font
   virtual void setFont(const FONT_T* f) = 0;

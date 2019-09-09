@@ -16,7 +16,7 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
     Page_settingsReset, // Command_up
     Page_main, // Command_left
     Page_noOp, // Command_right
-    Page_noOp // Command_enter
+    Page_nametag // Command_enter
   },
   { // Page_tradeEntry,
     Page_noOp, // Command_down

@@ -142,7 +142,7 @@ void UIEPaper::partialUpdate() {
 
 void UIEPaper::fullUpdate() {
   while(!buzzerLoop()){};
-  display.display(false);
+  display.display(true);
 }
 
 void UIEPaper::setFont(const FONT_T* f) {
@@ -187,10 +187,6 @@ void UIEPaper::drawText(const std::string& text, const int& size, const int& x, 
 }
 
 void UIEPaper::drawShape(const std::vector<std::pair<int, int>>& points) {
-  // TODO
-}
-
-void UIEPaper::drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) {
   // TODO
 }
 

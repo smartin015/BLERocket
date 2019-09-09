@@ -40,9 +40,9 @@ enum Page:byte {
 
   launchSplash = 16,
 
-  noOp = 17,
-
   // Nametag mode!
-  nametag = 18,
+  nametag = 17,
+
+  noOp = 18,
 }
 

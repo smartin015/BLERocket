@@ -147,6 +147,21 @@ void UI::drawText(const std::string& text, const int& size, const int& x, const 
   drawText(text, size, x, y, 0);
 }
 
+void UI::drawSelector(const std::vector<std::string>& items, const int& selected, const int& x, const int& y) {
+  int x_offset = x;
+  int y_offset = y;
+    char buf[64];
+  setFont(&FONT_ROBOTO_6);
+  for (int i = 0; i < items.size(); i++) {
+    snprintf(buf, sizeof(buf), "%s  %s", (i == selected ? "->" : "  "), items[i].c_str());
+    DrawStringAt(
+        buf,
+        x_offset, y_offset,
+        NULL, &y_offset);
+  }
+}
+
+
 const FONT_T* UI::PickBestFontForString(
     std::string s,                // the string to size
     int maxwidth,                 // the largest allowable width
