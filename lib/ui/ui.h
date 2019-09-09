@@ -110,10 +110,10 @@ protected:
       const FONT_T* const fonts[] // fonts to pick from
       );
   virtual void DrawSidebarText(std::string s, bool leftside) = 0;
+  std::string notification;
 
 private:
   nav::Page lastRenderedPage;
-  std::string notification;
   time_t notify_start;
   void handleNotification(const std::string& text);
   void persistNotification();

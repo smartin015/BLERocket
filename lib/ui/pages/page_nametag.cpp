@@ -22,8 +22,7 @@ void UI::drawNametag(const Engine* engine) {
     DrawSidebarText("press any key to play", true);
   } else {
     char buf[16];
-    snprintf(buf, sizeof(buf), "score: %d", score);
-    DrawSidebarText(buf, true);
+    DrawSidebarText(notification, true);
   }
 
   int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;

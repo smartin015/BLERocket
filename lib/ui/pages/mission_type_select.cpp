@@ -15,7 +15,7 @@ void UI::drawMissionTypeSelect(const Engine* engine) {
   int x_offset = SIDEBAR_WIDTH;
   int y_offset = 0;
 
-  DrawSidebarText("", true);
+  DrawSidebarText(notification, true);
 
   setFont(&FONT_TINY);
 

@@ -4,7 +4,7 @@
 // Main landing page (and badge display)
 void UI::drawMain(const Engine* engine) {
   setRotation(ROTATION_GAME);
-  DrawSidebarText("", true);
+  DrawSidebarText(notification, true);
   int id = engine->getState()->status->user;
   const auto* data = engine->getData();
   int score = engine->getState()->status->score;

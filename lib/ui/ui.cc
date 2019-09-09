@@ -28,11 +28,12 @@ void UI::persistNotification() {
 
   time_t now = time(NULL);
   if (now - notify_start > NOTIFY_DURATION_SECONDS) {
+    std::cout << "notification expired" << std::endl;
     notification = "";
     return;
   }
 
-  drawText(notification, SZ_S, NOTIFY_X, NOTIFY_Y);
+  //drawText(notification, SZ_S, NOTIFY_X, NOTIFY_Y);
 }
 
 void aRandomFunction(Engine* engine) {

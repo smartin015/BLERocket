@@ -43,7 +43,7 @@ void UIEPaper::DrawSidebarText(std::string text, bool leftside) {
   } else {
     setRotation(ROTATION_GAME_RIGHTSIDE);
   }
-  setFont(&Org_01);
+  setFont(&FONT_TINY);
   display.fillRect(0, 0, EPAPER_SHORT_DIMENSION, SIDEBAR_WIDTH, GxEPD_BLACK);
   display.setTextColor(GxEPD_WHITE);
   display.setCursor(9, 9);
