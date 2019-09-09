@@ -29,6 +29,7 @@ public:
   void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
   void setRotation(int r);
   void DrawSidebarText(std::string text, bool leftside);
+  void alertThePlayer();
 private:
   void DrawStringAt(
       std::string s,           // string to draw

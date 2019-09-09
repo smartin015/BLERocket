@@ -110,6 +110,10 @@ protected:
       const FONT_T* const fonts[] // fonts to pick from
       );
   virtual void DrawSidebarText(std::string s, bool leftside) = 0;
+
+  // alert the player of an event
+  virtual void alertThePlayer() = 0;
+
   std::string notification;
 
 private:

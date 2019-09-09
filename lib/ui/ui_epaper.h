@@ -31,6 +31,7 @@
 
 // Buzzer output
 #define BUZZ_MILLIS 75
+#define BUZZ_NOTIFY_MILLIS 500
 #define PIN_BUZZER 25
 
 class UIEPaper : public UI {
@@ -49,6 +50,7 @@ public:
   void setRotation(int r);
   void getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h);
   void DrawSidebarText(std::string text, bool leftside);
+  void alertThePlayer();
 
 private:
   GxEPD2_BW<GxEPD2_213_B72, GxEPD2_213_B72::HEIGHT> display;
@@ -66,7 +68,7 @@ private:
   bool buzzerLoop();
   // Debounce button presses
   bool prevStates[nav::Command_MAX-nav::Command_MIN];
-  uint64_t buzzStart;
+  uint64_t buzzEnd;
 };
 
 #endif // UI_EPAPER_H

@@ -121,6 +121,8 @@ void UINative::DrawStringAt(
   }
 }
 
+void UINative::alertThePlayer() {};
+
 void UINative::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
   sf::Text t;
   t.setFont(fonts[font->idx]);

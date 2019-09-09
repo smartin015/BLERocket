@@ -76,7 +76,7 @@ UIEPaper::UIEPaper() : display(GxEPD2_213_B72(PIN_CS, PIN_DC, PIN_RST, PIN_BUSY)
   pinMode(PIN_BUZZER, OUTPUT);
   digitalWrite(PIN_BUZZER, LOW);
 
-  buzzStart = 0;
+  buzzEnd = 0;
 }
 
 Command UIEPaper::nextCommand() {
@@ -125,7 +125,7 @@ Command UIEPaper::nextCommand() {
   memcpy(prevStates, states, NUM_COMMANDS);
 
   if (result != nav::Command_unknown) {
-    buzzStart = millis();
+    buzzEnd = millis() + BUZZ_MILLIS;
     digitalWrite(PIN_BUZZER, HIGH);
   }
 
@@ -166,13 +166,13 @@ void UIEPaper::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h
 
 // return true when the buzzer is done buzzing
 bool UIEPaper::buzzerLoop() {
-  if (buzzStart == 0) {
+  if (buzzEnd == 0) {
     return true;
   }
 
   const auto now = millis();
-  if (now > buzzStart + BUZZ_MILLIS) {
-    buzzStart = 0;
+  if (now > buzzEnd) {
+    buzzEnd = 0;
     digitalWrite(PIN_BUZZER, LOW);
     return true;
   }
@@ -183,6 +183,7 @@ bool UIEPaper::buzzerLoop() {
 void UIEPaper::loop() {
   buzzerLoop();
 };
+
 bool UIEPaper::isOpen() { return true; };
 
 void UIEPaper::drawText(const std::string& text, const int& size, const int& x, const int& y, int rotation) {
@@ -190,6 +191,12 @@ void UIEPaper::drawText(const std::string& text, const int& size, const int& x, 
   display.setCursor(x, y); // set the postition to start printing text
   display.print(text.c_str()); // print some text
 }
+
+void UIEPaper::alertThePlayer() {
+  buzzEnd = millis() + BUZZ_NOTIFY_MILLIS;
+  digitalWrite(PIN_BUZZER, HIGH);
+}
+
 
 void UIEPaper::drawShape(const std::vector<std::pair<int, int>>& points) {
   // TODO

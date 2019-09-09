@@ -17,6 +17,7 @@ void UI::drawControls(const int& cx, const int& cy, const std::string& top, cons
 }
 
 void UI::handleNotification(const std::string& text) {
+  alertThePlayer();
   notification = text;
   time(&notify_start);
 }
