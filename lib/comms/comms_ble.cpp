@@ -5,6 +5,8 @@
 #include <functional>
 using namespace std::placeholders;
 
+static std::vector<adv_packet_t> stored_packets;
+
 // BLEAddress match1("24:0a:c4:9a:a5:de");
 // BLEAddress match2("24:0a:c4:9a:a6:ce");
 void CommsBLE::onResult(BLEAdvertisedDevice d) {
@@ -32,12 +34,12 @@ void CommsBLE::onResult(BLEAdvertisedDevice d) {
       && msg_type <= message::UMessage_MAX) {
       ESP_LOGI(BLE_TAG, "packet id %x type %02x len %d", ad_type, msg_type, len);
       Serial.print("Recv ");
+      stored_packets.push_back(adv_packet_t());
       for (int i = 0; i < std::min((int)len, MAX_PACKET_SIZE); i++) {
+        stored_packets[stored_packets.size()-1][i] = payload[2+i];
         Serial.printf("%02x|", payload[i]);
       }
-      adv_packet_t p;
-      memcpy(p.data(), payload+2, std::min((int)len, MAX_PACKET_SIZE));
-      stored_packets.push(p);
+      Serial.println();
     } else {
       payload += len;
     }
@@ -81,23 +83,14 @@ void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
   for (int i = 0; i < MAX_PACKET_SIZE; i++) {
     d[i+3] = p.data()[i];
   }
-  {
-    ESP_LOGI(BLE_TAG, "DMsg (%d) ", (int) d.length());
-    for (int i = 0; i < d.length(); i++) {
-      Serial.printf("%02x|", d[i]);
-    }
-    Serial.println("");
-  }
   size_t size_pre = oAdvertisementData.getPayload().length();
-  {
-    std::string payload = oAdvertisementData.getPayload();
-    ESP_LOGI(BLE_TAG, "Premsg (%d) ", (int) payload.length());
-    for (int i = 0; i < payload.length(); i++) {
-      Serial.printf("%02x|", payload[i]);
-    }
-    Serial.println("");
-  }
   oAdvertisementData.addData(d);
+  size_t size_post = oAdvertisementData.getPayload().length();
+  if (size_pre == size_post) {
+    ESP_LOGE(BLE_TAG, "Could not add message data to BLE advertisement! Too large?");
+    return;
+  }
+
   {
     std::string payload = oAdvertisementData.getPayload();
     ESP_LOGI(BLE_TAG, "Msg (%d)", (int) payload.length());
@@ -105,10 +98,6 @@ void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
       Serial.printf("%02x|", payload[i]);
     }
     Serial.println("");
-  }
-  size_t size_post = oAdvertisementData.getPayload().length();
-  if (size_pre == size_post) {
-    ESP_LOGE(BLE_TAG, "Could not add message data to BLE advertisement! Too large?");
   }
 
   pAdvertising->setAdvertisementData(oAdvertisementData);
@@ -118,7 +107,7 @@ void CommsBLE::sendBytes(const adv_packet_t& p, const bool& retryUntilAck) {
   pAdvertising->setScanResponseData(oScanResponseData);
 
   // Make the same messages visible locally (parity with MQ behavior)
-  stored_packets.push(p);
+  stored_packets.push_back(p);
 
   advertise_start = millis();
   ESP_LOGI(BLE_TAG, "Starting advertisement");
@@ -141,11 +130,11 @@ void CommsBLE::loop() {
 }
 
 int CommsBLE::receiveToBuffer() {
-  if (stored_packets.empty()) {
+  if (stored_packets.size() == 0) {
     return 0;
   }
-  memcpy(buffer.data(), stored_packets.front().data(), MAX_PACKET_SIZE);
-  stored_packets.pop();
+  memcpy(buffer.data(), &(stored_packets[0]), MAX_PACKET_SIZE);
+  stored_packets.erase(stored_packets.begin());
   return MAX_PACKET_SIZE;
 }
 

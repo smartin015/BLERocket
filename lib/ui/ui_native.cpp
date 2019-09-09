@@ -89,6 +89,7 @@ void UINative::getTextBounds(std::string s, int* xmin, int* ymin, int* w, int* h
 void UINative::DrawSidebarText(std::string text, bool leftside) {
   sf::RectangleShape r(sf::Vector2f(SIDEBAR_WIDTH, EPAPER_SHORT_DIMENSION));
   r.setFillColor(sf::Color::Black);
+  r.setPosition(0, 7);
   window->draw(r);
 
   sf::Text t;

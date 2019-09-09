@@ -35,3 +35,15 @@ Lots of griping about unneccessary locale & wchar bundling: https://esp32.com/vi
 #define ESP_TASKD_EVENT_PRIO   20
 
 ```
+
+## Release checklist / QA
+
+- Can trade part from one badge to another
+- Name, username, and site are visible on badge screen
+- Can launch a ship with all parts, name is auto-generated
+- Can select any user coming to the summit
+- Can reset device state
+- Can send ship on a mission to some local devices
+- Hardware
+  - All devices have batteries
+  - All devices have lanyards

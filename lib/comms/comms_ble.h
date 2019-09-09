@@ -5,7 +5,6 @@
 #include <BLEDevice.h>
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
-#include <queue>
 
 #include "comms_base.h"
 
@@ -32,7 +31,6 @@ private:
   BLEAdvertisementData oAdvertisementData;
   BLEAdvertisementData oScanResponseData;
   BLEScan* pBLEScan;
-  std::queue<adv_packet_t> stored_packets;
 };
 
 #endif // COMMS_BLE_H
