@@ -103,7 +103,6 @@ private:
   void missionUpdateScoreAndRep();
   mission_state_t mission;
   event_state_t event;
-
 };
 
 #endif // ENGINE_H

@@ -118,7 +118,7 @@ void UI::drawTradeEntry(const Engine* engine) {
     }
   }
 
-  if (parts.size() == 3) {
+  if (engine->readyToLaunch()) {
     DrawStringWithin(
         "Ready to launch!",
         x_offset, y_offset,

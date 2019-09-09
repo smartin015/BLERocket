@@ -1,13 +1,19 @@
 #include "ui.h"
 #include <iostream>
 
+#define SPLASH_X 80
+#define SPLASH_Y 40
+
 // Player just launched a new rocket
 void UI::drawLaunchSplash(const Engine* engine) {
-  drawText("Launched!", TITLE_SZ, TITLE_X, TITLE_Y);
-  drawText("    /\\", SZ_M, BODY_X, BODY_Y + (SZ_S));
-  drawText("   (  )", SZ_M, BODY_X, BODY_Y + (1*SZ_S));
-  drawText("   (  )", SZ_M, BODY_X, BODY_Y + (2*SZ_S));
-  drawText("  /|/\\|\\", SZ_M, BODY_X, BODY_Y + (3*SZ_S));
-  drawText(" /_||||_\\", SZ_M, BODY_X, BODY_Y + (4*SZ_S));
-  drawText("    WW", SZ_M, BODY_X, BODY_Y + (5*SZ_S));
+  setFont(&FONT_POPPINS_8);
+  DrawStringAt("Rocket launched!", SIDEBAR_WIDTH + SIDEBAR_MARGIN, 0, NULL, NULL);
+  setFont(&FONT_ROBOTO_6);
+  drawText("    /\\", SZ_M, SPLASH_X, SPLASH_Y + (0*11));
+  drawText("   (  )", SZ_M, SPLASH_X, SPLASH_Y + (1*11));
+  drawText("   (  )", SZ_M, SPLASH_X, SPLASH_Y + (2*11));
+  drawText("  /|/\\|\\", SZ_M, SPLASH_X, SPLASH_Y + (3*11));
+  drawText(" /_||||_\\", SZ_M, SPLASH_X, SPLASH_Y + (4*11));
+  drawText("    WW", SZ_M, SPLASH_X, SPLASH_Y + (5*11));
+  drawText("Press any key to name your rocket", 0, 0, EPAPER_SHORT_DIMENSION - 11);
 }

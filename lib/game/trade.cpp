@@ -117,7 +117,20 @@ void Engine::tradeInput(const nav::Command& cmd, CommsBase* comms) {
       const auto seq = getUserButtonSequence(it->second.creator);
       if (trade.codeBuffer.size() == seq.size() && std::equal(trade.codeBuffer.begin(), trade.codeBuffer.end(), seq.begin())) {
         ESP_LOGI(ENGINE_TAG, "Trade sequence matches part %s from user %d", game::EnumNameShipPartType(it->second.type), it->second.creator);
-        state.parts.emplace_back(std::unique_ptr<game::ShipPartT>(new game::ShipPartT(it->second)));
+        auto newpart = new game::ShipPartT(it->second);
+        bool alreadyhad = false;
+        // If we get a part that we already have, ignore the new one.
+        // this is a hack: std::remove and std::erase don't work for some
+        // reason.
+        for (int i = 0; i < state.parts.size(); i++) {
+          if (state.parts[i]->type == newpart->type) {
+            //state.parts[i] = newpart;
+            alreadyhad = true;
+          }
+        }
+        if (!alreadyhad) {
+          state.parts.emplace_back(std::unique_ptr<game::ShipPartT>(newpart));
+        }
         trade.codeBuffer.clear();
       }
       it++;

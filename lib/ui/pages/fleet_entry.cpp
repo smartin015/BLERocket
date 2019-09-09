@@ -3,7 +3,7 @@
 
 // Page for this player's fleet of ships
 void UI::drawFleetEntry(const Engine* engine) {
-  int x_offset = SIDEBAR_WIDTH;
+  int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;
   int y_offset = 0;
 
   DrawSidebarText(notification, true);
