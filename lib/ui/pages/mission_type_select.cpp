@@ -34,7 +34,7 @@ void UI::drawMissionTypeSelect(const Engine* engine) {
   y_offset += LINESPACING;
   setFont(&FONT_TINY);
   DrawStringAt(
-      "select a destination",
+      "select a mission type",
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  3*LINESPACING;

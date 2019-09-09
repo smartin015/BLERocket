@@ -26,9 +26,10 @@ void UI::drawMissionDestSelect(const Engine* engine) {
       buf,
       x_offset, y_offset,
       NULL, &y_offset);
+  y_offset += LINESPACING;
   setFont(&FONT_TINY);
   DrawStringAt(
-      "select a mission type",
+      "select a destination",
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  3*LINESPACING;
@@ -55,7 +56,7 @@ void UI::drawMissionDestSelect(const Engine* engine) {
   std::vector<std::string> items;
   const meta::DataT* data = engine->getData();
   for (int i = 0; i < m->localStatus.size() && i < MAX_DESTINATIONS; i++) {
-    items.emplace_back(data->users[m->localStatus[i].second.user]->username);
+    items.emplace_back(data->users[m->localStatus[i].second.user]->username + "@'s system");
   }
 
   drawSelector(items, state->selectedUser, x_offset, y_offset);
