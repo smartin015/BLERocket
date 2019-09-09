@@ -59,7 +59,7 @@ nav::Page Engine::getPage() const {
 
 const bool Engine::readyToLaunch() const {
   const auto& parts = getState()->parts;
-  return (parts.size() >= game::ShipPartType_MAX);
+  return (parts.size() == 4);
 }
 
 bool Engine::suppressNav(const nav::Command& cmd) const {

@@ -49,5 +49,19 @@ void UI::drawShipVisitOutcome(const Engine* engine) {
   }
   buf[j] = '\0';
   drawText(buf, 0, x_offset, y_offset);
+
+  y_offset += 3*LINESPACING;
+
+  setFont(&FONT_ROBOTO_6);
+  snprintf(buf, sizeof(buf), "Score:      %+d", e->scoreDelta);
+  DrawStringAt(
+      buf,
+      x_offset, y_offset,
+      NULL, &y_offset);
+  snprintf(buf, sizeof(buf), "Reputation: %+d", e->repDelta);
+  DrawStringAt(
+      buf,
+      x_offset, y_offset,
+      NULL, &y_offset);
   drawText("Press any key to continue", 0, 50, EPAPER_SHORT_DIMENSION - 11);
 }

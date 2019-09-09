@@ -124,7 +124,7 @@ void Engine::tradeInput(const nav::Command& cmd, CommsBase* comms) {
         // reason.
         for (int i = 0; i < state.parts.size(); i++) {
           if (state.parts[i]->type == newpart->type) {
-            //state.parts[i] = newpart;
+            state.parts[i] = std::unique_ptr<game::ShipPartT>(new game::ShipPartT(it->second));
             alreadyhad = true;
           }
         }

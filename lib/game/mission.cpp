@@ -59,19 +59,17 @@ void Engine::missionHandleStatus(const game::StatusT& status) {
 
 void Engine::missionUpdateScoreAndRep() {
   const auto* choice = event.scenario->choices[event.selectedChoice].get();
-  int newScore;
-  int newRep;
   if (event.d20 >= choice->risk) {
     // Riskier choices have bigger rewards.
     // Higher reputation gives greater payout.
-    newRep = state.status->reputation + 10;
-    newScore = state.status->score + choice->risk * newRep;
+    event.repDelta = 10;
+    event.scoreDelta = choice->risk * (state.status->reputation + event.repDelta);
   } else {
     // Higher reputation means more penalty for failure
-    newRep = std::max(uint64_t(0), state.status->score - 10);
-    newScore = std::max(uint64_t(0), state.status->score - choice->risk * newRep);
+    event.repDelta = -10;
+    event.scoreDelta = - choice->risk * (state.status->reputation + event.repDelta);
   }
-  ESP_LOGI(ENGINE_TAG, "Updating score: %d -> %d, rep: %d -> %d", state.status->score, newScore, state.status->reputation, newRep);
-  state.status->score = newScore;
-  state.status->reputation = newRep;
+  
+  state.status->score += event.scoreDelta;
+  state.status->reputation += event.repDelta;
 }

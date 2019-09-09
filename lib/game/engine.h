@@ -61,6 +61,8 @@ typedef struct event_state_t {
   const meta::ScenarioT* scenario;
   int selectedChoice;
   uint8_t d20;
+  int scoreDelta;
+  int repDelta;
 } event_state_t;
 
 class Engine {
