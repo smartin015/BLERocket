@@ -14,7 +14,7 @@ void UI::drawShipDetails(const Engine* engine) {
   setFont(&FONT_TINY);
 
   DrawStringAt(
-      "< home",
+      "< fleet",
       0, y_offset,
       NULL, &y_offset);
   y_offset = 0;
@@ -38,7 +38,7 @@ void UI::drawShipDetails(const Engine* engine) {
   for (int i = 0; i < parts.size(); i++) {
     const auto& p = parts[i];
 
-    setFont(&FONT_TINY);
+    setFont(&FONT_ROBOTO_6);
 
     switch (p->type) {
       case game::ShipPartType_thruster:
@@ -86,4 +86,18 @@ void UI::drawShipDetails(const Engine* engine) {
         x_offset + 5, y_offset,
         NULL, &y_offset);
   }
+
+  setFont(&FONT_ROBOTO_6);
+
+  y_offset = 20;
+  x_offset = 150;
+  DrawStringAt(
+      "> Mission",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset += LINESPACING;
+  DrawStringAt(
+      "v Rename",
+      x_offset, y_offset,
+      NULL, &y_offset);
 }

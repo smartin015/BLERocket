@@ -136,8 +136,13 @@ void UIEPaper::clear() {
   display.fillScreen(GxEPD_WHITE);
 }
 
+static int update_cycles = 0;
+
 void UIEPaper::partialUpdate() {
-  display.display(true);
+  // FIXME - this is an awful hack that makes the buzzer more reasonable
+  if (update_cycles++ % 20 == 0) {
+    display.display(true);
+  }
 }
 
 void UIEPaper::fullUpdate() {
