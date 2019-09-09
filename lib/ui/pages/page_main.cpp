@@ -67,7 +67,7 @@ void UI::drawMain(const Engine* engine) {
   x_offset += 120;
   y_offset = controls_line_1;
   DrawStringAt(
-      "> Trade",
+      "> Parts",
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset = controls_line_2;
@@ -76,9 +76,6 @@ void UI::drawMain(const Engine* engine) {
       x_offset, y_offset,
       NULL, &y_offset);
   y_offset +=  LINESPACING;
-
-
-
 
   // TODO active events
   // TODO visiting rockets

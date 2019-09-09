@@ -30,7 +30,7 @@
 #define PIN_BUSY -1 // no busy pin, and fooling the hardware is device-dependent
 
 // Buzzer output
-#define BUZZ_MILLIS 100
+#define BUZZ_MILLIS 75
 #define PIN_BUZZER 25
 
 class UIEPaper : public UI {
