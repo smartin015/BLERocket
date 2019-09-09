@@ -32,14 +32,13 @@ void UI::drawMain(const Engine* engine) {
       NULL, &y_offset);
   y_offset +=  2 * LINESPACING;
 
-  setFont(&FONT_ROBOTO_6);
-  char buf[32];
+  char buf[64];
   snprintf(buf, sizeof(buf), "score:      %d", score);
   DrawStringAt(
       buf,
       x_offset, y_offset,
       NULL, &y_offset);
-  y_offset +=  LINESPACING;
+  y_offset +=  LINESPACING/2;
 
   // TODO - gate showing rep on phase 2?
   snprintf(buf, sizeof(buf), "reputation: %d", rep);
@@ -48,9 +47,16 @@ void UI::drawMain(const Engine* engine) {
       x_offset, y_offset,
       NULL, &y_offset);
 
-  y_offset +=  3 * LINESPACING;
+  y_offset +=  2 * LINESPACING;
 
   setFont(&FONT_ROBOTO_6);
+  // TODO FIXME - if visitors are available, show this. otherwise, hide it.
+  DrawStringAt(
+      "< Visitors",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  LINESPACING;
+
   int controls_line_1 = y_offset;
   DrawStringAt(
       "^ Launch!",
