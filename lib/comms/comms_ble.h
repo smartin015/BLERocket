@@ -9,7 +9,7 @@
 #include "comms_base.h"
 
 #define BLE_TAG "comms_ble"
-#define ADVERTISE_DURATION_MILLIS 300
+#define ADVERTISE_DURATION_MILLIS 500
 #define SCAN_INTERVAL_MILLIS 5000
 #define BEACON_NAME "ROCKETSNAT"
 #define SCAN_TIME_SECONDS 3 // Seconds

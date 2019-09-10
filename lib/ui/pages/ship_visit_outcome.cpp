@@ -22,7 +22,7 @@ void UI::drawShipVisitOutcome(const Engine* engine) {
       "Captain's Log",
       x_offset, y_offset,
       NULL, &y_offset);
-  y_offset +=  LINESPACING;
+  y_offset +=  3*LINESPACING;
   x_offset += 5;
 
   std::string narrative;

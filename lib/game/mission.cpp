@@ -28,7 +28,7 @@ void Engine::missionLoop(CommsBase* comms) {
       }
     }
 
-    state.selectedUser = std::min(state.selectedUser, mission.localStatus.size() - 1);
+    state.selectedUser = std::min((size_t)state.selectedUser, mission.localStatus.size() - 1);
 
     for (auto it = mission.activeShips.begin(); it != mission.activeShips.end();) {
       if (now > it->first + MISSION_DURATION_SECS) {
@@ -49,10 +49,9 @@ void Engine::missionHandleStatus(const game::StatusT& status) {
      uint16_t(status.phase_id),
      uint16_t(status.phase_txn));
 
-  // Cheat by allowing self-status
-  // if (status.user == state.status->user) {
-  //   return;
-  // }
+  if (status.user == state.status->user) {
+    return;
+  }
 
   // Add to the list of statuses, replacing any prior statuses
   // from the same user.

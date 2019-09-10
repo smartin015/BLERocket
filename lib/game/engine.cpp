@@ -349,6 +349,10 @@ void Engine::handleMessage(const message::MessageT& msg) {
           uint16_t(m->ship->owner),
           uint16_t(m->dest_user));
 
+        if (msg.source_user == state.status->user) {
+          return; // drop it on the floor
+        }
+
         if (!event.acked) {
           ESP_LOGI(ENGINE_TAG, "Dropping message, prior notification already in place");
         }

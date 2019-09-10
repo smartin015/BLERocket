@@ -32,7 +32,7 @@ void UI::drawSettingsSelectUser(const Engine* engine) {
       "will erase progress!",
       x_offset, y_offset,
       NULL, &y_offset);
-  y_offset +=  2*LINESPACING;
+  y_offset +=  3*LINESPACING;
 
   x_offset += 5;
 
