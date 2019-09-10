@@ -16,9 +16,6 @@
 
 #define MAIN_TAG "main_d32"
 
-// how long to wait before timing out to nametag
-#define IDLE_TIMEOUT_MILLIS 60000 /* one minute */
-
 UIEPaper *ui;
 Engine *engine;
 #ifdef COMMS_BLE
@@ -27,8 +24,6 @@ CommsBLE *comms;
 CommsDummy *comms;
 #endif
 StateSPIFFS *state;
-
-static uint64_t lastInputMillis = 0;
 
 void setup() {
   //Serial.begin(CONFIG_CONSOLE_UART_BAUDRATE);
@@ -69,13 +64,10 @@ void loop() {
     ESP_LOGI(MAIN_TAG, "CMD %s", nav::EnumNameCommand(cmd));
     engine->handleInput(cmd, comms);
     cmd = ui->nextCommand();
-    lastInputMillis = millis();
   }
 
-  if (lastInputMillis != 0 && lastInputMillis + IDLE_TIMEOUT_MILLIS < millis()) {
+  if (engine->shouldSave()) {
     state->save(engine);
-    engine->forceNametag();
-    lastInputMillis = 0;
   }
 
   ui->render(engine);

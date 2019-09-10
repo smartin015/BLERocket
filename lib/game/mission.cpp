@@ -70,11 +70,9 @@ void Engine::missionUpdateScore() {
   const auto* choice = event.scenario->choices[event.selectedChoice].get();
   if (event.d20 >= choice->risk) {
     // Riskier choices have bigger rewards.
-    // Higher reputation gives greater payout.
     event.scoreDelta = choice->risk * 10;
   } else {
-    // Higher reputation means more penalty for failure
-    event.scoreDelta = - choice->risk * 10;
+    event.scoreDelta = 0;
   }
   
   state.status->score += event.scoreDelta;

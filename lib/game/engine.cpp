@@ -43,9 +43,19 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
     state.page = nav::Page_nametag;
   }
 
+  lastInputSecs = 0;
+  saveMeFlag = false;
+
   // Set to phase 2
   ESP_LOGI(ENGINE_TAG, "Setting to phase 2");
   state.status->phase_id = 2;
+}
+
+// clear and return the save flag
+bool Engine::shouldSave() {
+  bool f = saveMeFlag;
+  saveMeFlag = 0;
+  return f;
 }
 
 const game::StateT* Engine::getState() const {
@@ -111,6 +121,12 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
 void Engine::loop(CommsBase* comms) {
   tradeLoop(comms);
   missionLoop(comms);
+
+  if (lastInputSecs != 0 && lastInputSecs + IDLE_TIMEOUT_SECS < time(NULL)) {
+    saveMeFlag = true;
+    forceNametag();
+    lastInputSecs = 0;
+  }
 }
 
 void Engine::forceNametag() {
@@ -118,6 +134,7 @@ void Engine::forceNametag() {
 }
 
 void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
+  lastInputSecs = time(NULL);
   // Nav is handled *before* potentially state-modifying actions
   if (suppressNav(cmd)) {
     return;
@@ -295,6 +312,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
           state.status->phase_txn++;
         }
         */
+        saveMeFlag = true;
       }
       break;
     case nav::Page_missionConfirm:
@@ -321,6 +339,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         }
         comms->sendMessage(msg, false);
       }
+      saveMeFlag = true;
       break;
     default:
       break;

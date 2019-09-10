@@ -13,16 +13,10 @@
 #include <string>
 #include <iostream>
 
-// how long to wait before timing out to nametag
-#define IDLE_TIMEOUT_SECS 10
-
-
 UINative* ui;
 Engine* engine;
 CommsMQ* comms;
 StateFS* state;
-
-static uint64_t lastInputSecs = 0;
 
 void setup() {
   ui = new UINative();
@@ -49,13 +43,10 @@ bool loop() {
   while (cmd != nav::Command_unknown) {
    engine->handleInput(cmd, comms);
    cmd = ui->nextCommand();
-   lastInputSecs = time(NULL);
   }
 
-  if (lastInputSecs != 0 && lastInputSecs + IDLE_TIMEOUT_SECS < time(NULL)) {
+  if (engine->shouldSave()) {
     state->save(engine);
-    engine->forceNametag();
-    lastInputSecs = 0;
   }
 
   ui->render(engine);

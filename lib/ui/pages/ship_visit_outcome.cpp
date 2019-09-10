@@ -53,7 +53,7 @@ void UI::drawShipVisitOutcome(const Engine* engine) {
   y_offset += 3*LINESPACING;
 
   setFont(&FONT_ROBOTO_6);
-  snprintf(buf, sizeof(buf), "Score:      %+d", e->scoreDelta);
+  snprintf(buf, sizeof(buf), "Score: +%d", e->scoreDelta);
   DrawStringAt(
       buf,
       x_offset, y_offset,

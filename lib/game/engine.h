@@ -39,6 +39,13 @@
 // Get a sequence of button presses used to identify a particular user
 #define USER_CODE_LEN 3
 
+// how long to wait before timing out to nametag
+#ifdef UI_NATIVE
+#define IDLE_TIMEOUT_SECS 10
+#else
+#define IDLE_TIMEOUT_SECS 60
+#endif
+
 std::vector<nav::Command> getUserButtonSequence(uint8_t user_id);
 std::string userButtonSequenceStr(const std::vector<nav::Command>& seq);
 
@@ -94,6 +101,8 @@ public:
   // force nametag
   void forceNametag();
 
+  bool shouldSave();
+
 private:
   game::StateT state; // Persisted game state
   meta::DataT data; // Immutable (environment) state
@@ -109,6 +118,8 @@ private:
   void missionUpdateScore();
   mission_state_t mission;
   event_state_t event;
+  bool saveMeFlag; // request the main loop to save the state
+  uint64_t lastInputSecs = 0;
 };
 
 #endif // ENGINE_H
