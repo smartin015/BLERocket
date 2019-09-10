@@ -185,6 +185,13 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
           break;
       }
       break;
+    case nav::Page_shipDeleteConfirm:
+      if (cmd == nav::Command_enter) {
+        ESP_LOGI(ENGINE_TAG, "Deleting ship %s", state.ships[state.selectedShip]->name.c_str());
+        state.ships.erase(state.ships.begin() + state.selectedShip);
+        state.selectedShip = std::max(0, state.selectedShip - 1);
+      }
+      break;
     case nav::Page_shipRename:
       switch (cmd) {
         case nav::Command_up:

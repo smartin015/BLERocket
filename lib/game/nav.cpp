@@ -54,8 +54,8 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
     Page_main // Command_enter
   },
   { // Page_shipDetails
-    Page_shipRename, // Command_down
-    Page_noOp, // Command_up
+    Page_shipDeleteConfirm, // Command_down
+    Page_shipRename, // Command_up
     Page_fleetEntry, // Command_left
     Page_missionDestSelect, // Command_right
     Page_missionDestSelect // Command_enter
@@ -129,6 +129,13 @@ static const int NAV_STATE_TRANSITION[Page_MAX][Command_MAX] = {
     Page_main, // Command_left
     Page_main, // Command_right
     Page_main // Command_enter
+  },
+  { // Page_shipDeleteConfirm
+    Page_noOp, // Command_down
+    Page_noOp, // Command_up
+    Page_shipDetails, // Command_left
+    Page_noOp, // Command_right
+    Page_fleetEntry // Command_enter
   }
 };
 

@@ -85,6 +85,9 @@ void UI::render(Engine* engine) {
     case nav::Page_settingsReset:
       drawSettingsReset(engine);
       break;
+    case nav::Page_shipDeleteConfirm:
+      drawShipDeleteConfirm(engine);
+      break;
     case nav::Page_shipDetails:
       drawShipDetails(engine);
       break;

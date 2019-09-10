@@ -99,6 +99,12 @@ void UI::drawShipDetails(const Engine* engine) {
     }
   }
 
+  DrawStringAt(
+      "^ Rename",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset += LINESPACING;
+
   if (time_remaining > 0) {
     snprintf(buf, sizeof(buf), "on mission - %d:%02d", time_remaining/60, time_remaining%60);
     DrawStringAt(
@@ -114,7 +120,7 @@ void UI::drawShipDetails(const Engine* engine) {
 
   y_offset += LINESPACING;
   DrawStringAt(
-      "v Rename",
+      "v Delete",
       x_offset, y_offset,
       NULL, &y_offset);
 }

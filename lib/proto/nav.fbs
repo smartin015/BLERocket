@@ -43,6 +43,8 @@ enum Page:byte {
   // Nametag mode!
   nametag = 17,
 
-  noOp = 18,
+  shipDeleteConfirm = 18,
+
+  noOp = 19,
 }
 

@@ -133,6 +133,7 @@ private:
   void drawLaunchEntry(const Engine* engine);
   void drawSettingsSelectUser(const Engine* engine);
   void drawSettingsReset(const Engine* engine);
+  void drawShipDeleteConfirm(const Engine* engine);
   void drawShipDetails(const Engine* engine);
   void drawMissionTypeSelect(const Engine* engine);
   void drawMissionDestSelect(const Engine* engine);

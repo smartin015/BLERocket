@@ -69,12 +69,13 @@ enum Page {
   Page_shipVisitOutcome = 15,
   Page_launchSplash = 16,
   Page_nametag = 17,
-  Page_noOp = 18,
+  Page_shipDeleteConfirm = 18,
+  Page_noOp = 19,
   Page_MIN = Page_main,
   Page_MAX = Page_noOp
 };
 
-inline const Page (&EnumValuesPage())[19] {
+inline const Page (&EnumValuesPage())[20] {
   static const Page values[] = {
     Page_main,
     Page_settingsEntry,
@@ -94,6 +95,7 @@ inline const Page (&EnumValuesPage())[19] {
     Page_shipVisitOutcome,
     Page_launchSplash,
     Page_nametag,
+    Page_shipDeleteConfirm,
     Page_noOp
   };
   return values;
@@ -119,6 +121,7 @@ inline const char * const *EnumNamesPage() {
     "shipVisitOutcome",
     "launchSplash",
     "nametag",
+    "shipDeleteConfirm",
     "noOp",
     nullptr
   };
