@@ -30,7 +30,10 @@ void UI::drawShipVisitEntry(const Engine* engine) {
   y_offset +=  LINESPACING;
   x_offset += 5;
 
-  snprintf(buf, sizeof(buf), "A ship hailing from %s@", data->users[ms->ship->owner]->username.c_str());
+  snprintf(buf, sizeof(buf), 
+      "%s hailing from %s@", 
+      ms->ship->name.c_str(),
+      data->users[ms->ship->owner]->username.c_str());
   setFont(&FONT_ROBOTO_6);
 
   DrawStringAt(
