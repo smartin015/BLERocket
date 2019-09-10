@@ -197,7 +197,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         case nav::Command_up:
           {
             char c = state.ships[state.selectedShip]->name[state.charIdx];
-            c = ((c - 'A' + 1 + ('z' - 'A')) % ('z' - 'A')) + 'A';
+            c = ((c - 'A' + 1 + ('z' - 'A' + 1)) % ('z' - 'A'+1)) + 'A';
             c = std::min('z', std::max('A',c));
             state.ships[state.selectedShip]->name[state.charIdx] = c;
           }
@@ -205,7 +205,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         case nav::Command_down:
           {
             char c = state.ships[state.selectedShip]->name[state.charIdx];
-            c = ((c - 'A' - 1 + ('z' - 'A')) % ('z' - 'A')) + 'A';
+            c = ((c - 'A' - 1 + ('z' - 'A' + 1)) % ('z' - 'A'+1)) + 'A';
             c = std::min('z', std::max('A',c));
             state.ships[state.selectedShip]->name[state.charIdx] = c;
           }
