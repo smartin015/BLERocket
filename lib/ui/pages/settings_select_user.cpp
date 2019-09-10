@@ -21,7 +21,14 @@ void UI::drawSettingsSelectUser(const Engine* engine) {
       "Select User",
       x_offset, y_offset,
       NULL, &y_offset);
-  y_offset +=  6*LINESPACING;
+  y_offset +=  LINESPACING;
+
+  setFont(&FONT_ROBOTO_6);
+  DrawStringAt(
+      "Warning! Changing user will erase progress!",
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  3*LINESPACING;
 
   x_offset += 5;
 

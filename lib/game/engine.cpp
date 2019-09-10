@@ -215,17 +215,35 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
     case nav::Page_settingsSelectUser:
       switch (cmd) {
         case nav::Command_up:
-          if (state.status->user <= 1) {
-            state.status->user = data.users.size()-1;
-          } else {
-           state.status->user = state.status->user-1;
+          {
+            if (state.status->user <= 1) {
+              state.status->user = data.users.size()-1;
+            } else {
+             state.status->user = state.status->user-1;
+            }
+            // Clear persistent and volatile state
+            int userid = state.status->user;
+            state = game::StateT();
+            state.status.reset(new game::StatusT());
+            clearVolatileState();
+            state.status->user = userid;
+            state.page = nav::Page_settingsSelectUser;
           }
           break;
         case nav::Command_down:
-          if (state.status->user >= data.users.size()-1) {
-            state.status->user = 1;
-          } else {
-            state.status->user = state.status->user+1;
+          {
+            if (state.status->user >= data.users.size()-1) {
+              state.status->user = 1;
+            } else {
+              state.status->user = state.status->user+1;
+            }
+            // Clear persistent and volatile state
+            int userid = state.status->user;
+            state = game::StateT();
+            state.status.reset(new game::StatusT());
+            clearVolatileState();
+            state.status->user = userid;
+            state.page = nav::Page_settingsSelectUser;
           }
           break;
         default:
