@@ -58,10 +58,5 @@ void UI::drawShipVisitOutcome(const Engine* engine) {
       buf,
       x_offset, y_offset,
       NULL, &y_offset);
-  snprintf(buf, sizeof(buf), "Reputation: %+d", e->repDelta);
-  DrawStringAt(
-      buf,
-      x_offset, y_offset,
-      NULL, &y_offset);
   drawText("Press any key to continue", 0, 50, EPAPER_SHORT_DIMENSION - 11);
 }

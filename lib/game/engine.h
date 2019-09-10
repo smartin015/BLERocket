@@ -31,7 +31,6 @@
 // We should ensure users can't surpass a certain score for the first
 // half of the game.
 #define MAX_SCORE std::numeric_limits<uint16_t>::max()
-#define MAX_REPUTATION std::numeric_limits<uint16_t>::max()
 #define PHASE2_SCORE_THRESHOLD 10000
 #define PART_MAX_QUALITY std::numeric_limits<uint8_t>::max()
 #define PART_MIN_QUALITY ((uint8_t) 1)
@@ -64,7 +63,6 @@ typedef struct event_state_t {
   int selectedChoice;
   uint8_t d20;
   int scoreDelta;
-  int repDelta;
 } event_state_t;
 
 class Engine {
@@ -107,7 +105,7 @@ private:
   trade_state_t trade;
   void missionLoop(CommsBase* comms);
   void missionHandleStatus(const game::StatusT& status);
-  void missionUpdateScoreAndRep();
+  void missionUpdateScore();
   mission_state_t mission;
   event_state_t event;
 };

@@ -13,7 +13,6 @@ void UI::drawNametag(const Engine* engine) {
   std::string site = data->users[id]->site;
 
   int score = engine->getState()->status->score;
-  int rep = engine->getState()->status->reputation;
 
   
   setRotation(ROTATION_NAMETAG);

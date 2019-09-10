@@ -171,7 +171,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
           break;
         case nav::Command_enter:
         case nav::Command_right:
-          missionUpdateScoreAndRep();
+          missionUpdateScore();
         default:
           break;
       }

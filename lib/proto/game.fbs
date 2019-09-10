@@ -36,7 +36,6 @@ table Status {
   phase_id:ubyte;
   phase_txn:ubyte;
   score:ulong;
-  reputation:ulong;
 }
 
 table State {

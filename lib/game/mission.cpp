@@ -31,10 +31,9 @@ void Engine::missionLoop(CommsBase* comms) {
 }
 
 void Engine::missionHandleStatus(const game::StatusT& status) {
-  ESP_LOGI(STATUS_TAG, "Status: FirmwareVersion %d Score %d Rep %d User %d Phase %d (tx %d)",
+  ESP_LOGI(STATUS_TAG, "Status: FirmwareVersion %d Score %d User %d Phase %d (tx %d)",
      uint16_t(status.firmwareVersion),
      status.score,
-     status.reputation,
      uint16_t(status.user),
      uint16_t(status.phase_id),
      uint16_t(status.phase_txn));
@@ -57,19 +56,16 @@ void Engine::missionHandleStatus(const game::StatusT& status) {
   ESP_LOGI(ENGINE_TAG, "Appended status");
 }
 
-void Engine::missionUpdateScoreAndRep() {
+void Engine::missionUpdateScore() {
   const auto* choice = event.scenario->choices[event.selectedChoice].get();
   if (event.d20 >= choice->risk) {
     // Riskier choices have bigger rewards.
     // Higher reputation gives greater payout.
-    event.repDelta = 10;
-    event.scoreDelta = choice->risk * (state.status->reputation + event.repDelta);
+    event.scoreDelta = choice->risk * 10;
   } else {
     // Higher reputation means more penalty for failure
-    event.repDelta = -10;
-    event.scoreDelta = - choice->risk * (state.status->reputation + event.repDelta);
+    event.scoreDelta = - choice->risk * 10;
   }
   
   state.status->score += event.scoreDelta;
-  state.status->reputation += event.repDelta;
 }

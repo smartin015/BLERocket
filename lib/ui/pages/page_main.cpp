@@ -8,7 +8,6 @@ void UI::drawMain(const Engine* engine) {
   int id = engine->getState()->status->user;
   const auto* data = engine->getData();
   int score = engine->getState()->status->score;
-  int rep = engine->getState()->status->reputation;
 
   int x_offset = SIDEBAR_WIDTH + SIDEBAR_MARGIN;;
   int y_offset = 0;
@@ -40,14 +39,7 @@ void UI::drawMain(const Engine* engine) {
       NULL, &y_offset);
   y_offset +=  LINESPACING/2;
 
-  // TODO - gate showing rep on phase 2?
-  snprintf(buf, sizeof(buf), "reputation: %d", rep);
-  DrawStringAt(
-      buf,
-      x_offset, y_offset,
-      NULL, &y_offset);
-
-  y_offset +=  2 * LINESPACING;
+  y_offset +=  3 * LINESPACING;
 
   setFont(&FONT_ROBOTO_6);
 

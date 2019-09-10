@@ -308,14 +308,12 @@ struct StatusT : public flatbuffers::NativeTable {
   uint8_t phase_id;
   uint8_t phase_txn;
   uint64_t score;
-  uint64_t reputation;
   StatusT()
       : firmwareVersion(0),
         user(0),
         phase_id(0),
         phase_txn(0),
-        score(0),
-        reputation(0) {
+        score(0) {
   }
 };
 
@@ -326,8 +324,7 @@ struct Status FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_USER = 6,
     VT_PHASE_ID = 8,
     VT_PHASE_TXN = 10,
-    VT_SCORE = 12,
-    VT_REPUTATION = 14
+    VT_SCORE = 12
   };
   uint8_t firmwareVersion() const {
     return GetField<uint8_t>(VT_FIRMWAREVERSION, 0);
@@ -344,9 +341,6 @@ struct Status FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   uint64_t score() const {
     return GetField<uint64_t>(VT_SCORE, 0);
   }
-  uint64_t reputation() const {
-    return GetField<uint64_t>(VT_REPUTATION, 0);
-  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_FIRMWAREVERSION) &&
@@ -354,7 +348,6 @@ struct Status FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_PHASE_ID) &&
            VerifyField<uint8_t>(verifier, VT_PHASE_TXN) &&
            VerifyField<uint64_t>(verifier, VT_SCORE) &&
-           VerifyField<uint64_t>(verifier, VT_REPUTATION) &&
            verifier.EndTable();
   }
   StatusT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -380,9 +373,6 @@ struct StatusBuilder {
   void add_score(uint64_t score) {
     fbb_.AddElement<uint64_t>(Status::VT_SCORE, score, 0);
   }
-  void add_reputation(uint64_t reputation) {
-    fbb_.AddElement<uint64_t>(Status::VT_REPUTATION, reputation, 0);
-  }
   explicit StatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -401,10 +391,8 @@ inline flatbuffers::Offset<Status> CreateStatus(
     uint8_t user = 0,
     uint8_t phase_id = 0,
     uint8_t phase_txn = 0,
-    uint64_t score = 0,
-    uint64_t reputation = 0) {
+    uint64_t score = 0) {
   StatusBuilder builder_(_fbb);
-  builder_.add_reputation(reputation);
   builder_.add_score(score);
   builder_.add_phase_txn(phase_txn);
   builder_.add_phase_id(phase_id);
@@ -672,7 +660,6 @@ inline void Status::UnPackTo(StatusT *_o, const flatbuffers::resolver_function_t
   { auto _e = phase_id(); _o->phase_id = _e; };
   { auto _e = phase_txn(); _o->phase_txn = _e; };
   { auto _e = score(); _o->score = _e; };
-  { auto _e = reputation(); _o->reputation = _e; };
 }
 
 inline flatbuffers::Offset<Status> Status::Pack(flatbuffers::FlatBufferBuilder &_fbb, const StatusT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -688,15 +675,13 @@ inline flatbuffers::Offset<Status> CreateStatus(flatbuffers::FlatBufferBuilder &
   auto _phase_id = _o->phase_id;
   auto _phase_txn = _o->phase_txn;
   auto _score = _o->score;
-  auto _reputation = _o->reputation;
   return game::CreateStatus(
       _fbb,
       _firmwareVersion,
       _user,
       _phase_id,
       _phase_txn,
-      _score,
-      _reputation);
+      _score);
 }
 
 inline StateT *State::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
