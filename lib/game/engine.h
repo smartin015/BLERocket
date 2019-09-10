@@ -103,6 +103,8 @@ public:
 
   bool shouldSave();
 
+  const int getTempUserSelector() const;
+
 private:
   game::StateT state; // Persisted game state
   meta::DataT data; // Immutable (environment) state
@@ -120,6 +122,7 @@ private:
   event_state_t event;
   bool saveMeFlag; // request the main loop to save the state
   uint64_t lastInputSecs = 0;
+  int tempUserSelector = 0;
 };
 
 #endif // ENGINE_H

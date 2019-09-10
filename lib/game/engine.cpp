@@ -237,6 +237,11 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
           break;
       }
       break;
+    case nav::Page_settingsEntry:
+      if (cmd == nav::Command_down) {
+        tempUserSelector = state.status->user;
+      }
+      break;
     case nav::Page_settingsReset:
       if (cmd == nav::Command_enter) {
         // Clear persistent and volatile state
@@ -249,34 +254,31 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
       switch (cmd) {
         case nav::Command_up:
           {
-            if (state.status->user <= 1) {
-              state.status->user = data.users.size()-1;
+            if (tempUserSelector <= 1) {
+              tempUserSelector = data.users.size()-1;
             } else {
-             state.status->user = state.status->user-1;
+             tempUserSelector = tempUserSelector-1;
             }
-            // Clear persistent and volatile state
-            int userid = state.status->user;
-            state = game::StateT();
-            state.status.reset(new game::StatusT());
-            clearVolatileState();
-            state.status->user = userid;
-            state.page = nav::Page_settingsSelectUser;
           }
           break;
         case nav::Command_down:
           {
-            if (state.status->user >= data.users.size()-1) {
-              state.status->user = 1;
+            if (tempUserSelector >= data.users.size()-1) {
+              tempUserSelector = 1;
             } else {
-              state.status->user = state.status->user+1;
+              tempUserSelector = tempUserSelector+1;
             }
+          }
+          break;
+        case nav::Command_enter:
+          if (tempUserSelector != state.status->user) {
+            state.status->user = tempUserSelector;
             // Clear persistent and volatile state
             int userid = state.status->user;
             state = game::StateT();
             state.status.reset(new game::StatusT());
             clearVolatileState();
             state.status->user = userid;
-            state.page = nav::Page_settingsSelectUser;
           }
           break;
         default:
@@ -407,6 +409,10 @@ void Engine::handleMessage(const message::MessageT& msg) {
     default:
       std::cerr << "Unhandled message type " << message::EnumNameUMessage(msg.oneof.type) << std::endl;
   }
+}
+
+const int Engine::getTempUserSelector() const {
+  return tempUserSelector;
 }
 
 const meta::DataT* Engine::getData() const {

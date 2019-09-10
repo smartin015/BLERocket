@@ -37,7 +37,7 @@ void UI::drawSettingsSelectUser(const Engine* engine) {
   x_offset += 5;
 
   setFont(&FONT_ROBOTO_6);
-  int id = engine->getState()->status->user;
+  int id = engine->getTempUserSelector();
   const auto* data = engine->getData();
   const int top = std::max(1, id-2); // Skip 0 which is "null" user
   std::vector<std::string> items;
