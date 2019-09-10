@@ -268,6 +268,9 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         // Add the ship to the mission roster
         mission.activeShips.push_back(std::make_pair(time(NULL), state.ships[state.selectedShip]->name));
 
+        state.status->score += getShipLaunchScore(*state.ships[state.selectedShip].get()) / 4;
+        ESP_LOGI(ENGINE_TAG, "Sent ship %s on a mission. New score is %d", state.ships[state.selectedShip]->name.c_str(), state.status->score);
+
         // Notify destination of ship on mission
         message::MessageT msg;
         msg.source_user = state.status->user;
