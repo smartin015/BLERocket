@@ -106,7 +106,7 @@ void UI::drawShipDetails(const Engine* engine) {
   y_offset += LINESPACING;
 
   if (time_remaining > 0) {
-    snprintf(buf, sizeof(buf), "on mission - %d:%02d", time_remaining/60, time_remaining%60);
+    snprintf(buf, sizeof(buf), "%d:%02d", time_remaining/60, time_remaining%60);
     DrawStringAt(
         buf,
         x_offset, y_offset,

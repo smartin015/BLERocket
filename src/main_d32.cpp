@@ -16,6 +16,9 @@
 
 #define MAIN_TAG "main_d32"
 
+// how long to wait before timing out to nametag
+#define IDLE_TIMEOUT_MILLIS 60000 /* one minute */
+
 UIEPaper *ui;
 Engine *engine;
 #ifdef COMMS_BLE

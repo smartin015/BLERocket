@@ -19,27 +19,28 @@ void UI::drawShipVisitEntry(const Engine* engine) {
       "< ignore",
       0, y_offset,
       NULL, &y_offset);
-  x_offset += SIDEBAR_MARGIN;
 
   setFont(&FONT_POPPINS_8);
 
-  DrawStringAt(
-      "Ship detected!",
-      x_offset, y_offset,
-      NULL, &y_offset);
-  y_offset +=  LINESPACING;
-  x_offset += 5;
-
   snprintf(buf, sizeof(buf), 
-      "%s hailing from %s@", 
-      ms->ship->name.c_str(),
-      data->users[ms->ship->owner]->username.c_str());
-  setFont(&FONT_ROBOTO_6);
-
+      "%s Approaching!", 
+      ms->ship->name.c_str());
   DrawStringAt(
       buf,
       x_offset, y_offset,
       NULL, &y_offset);
+  y_offset += LINESPACING;
+  x_offset += 5;
+
+  setFont(&FONT_ROBOTO_6);
+  snprintf(buf, sizeof(buf), 
+      "%s@'s ship", 
+      data->users[ms->ship->owner]->username.c_str());
+  DrawStringAt(
+      buf,
+      x_offset, y_offset,
+      NULL, &y_offset);
+  y_offset +=  LINESPACING;
 
   DrawStringAt(
       "has entered your sector!",

@@ -27,6 +27,17 @@ void Engine::missionLoop(CommsBase* comms) {
         it++;
       }
     }
+
+    state.selectedUser = std::min(state.selectedUser, mission.localStatus.size() - 1);
+
+    for (auto it = mission.activeShips.begin(); it != mission.activeShips.end();) {
+      if (now > it->first + MISSION_DURATION_SECS) {
+        it = mission.activeShips.erase(it);
+        ESP_LOGI(ENGINE_TAG, "Ship returning from mission");
+      } else {
+        it++;
+      }
+    }
   }
 }
 

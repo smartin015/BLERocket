@@ -32,6 +32,9 @@ void UI::drawMain(const Engine* engine) {
   y_offset +=  2 * LINESPACING;
 
   char buf[64];
+
+  setFont(&FONT_ROBOTO_6);
+
   snprintf(buf, sizeof(buf), "score:      %d", score);
   DrawStringAt(
       buf,
@@ -41,7 +44,6 @@ void UI::drawMain(const Engine* engine) {
 
   y_offset +=  3 * LINESPACING;
 
-  setFont(&FONT_ROBOTO_6);
 
   if (!engine->getEvent()->acked) {
     DrawStringAt(
