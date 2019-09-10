@@ -20,6 +20,7 @@
 #endif
 
 #define ENGINE_TAG "engine"
+#define STATUS_TAG "******"
 #define STATUS_INTERVAL_SECS 60
 #define TRADE_ANNOUNCE_SECS 10
 #define STATUS_ANNOUNCE_SECS 20

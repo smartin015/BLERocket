@@ -31,7 +31,7 @@ void Engine::missionLoop(CommsBase* comms) {
 }
 
 void Engine::missionHandleStatus(const game::StatusT& status) {
-  ESP_LOGI(ENGINE_TAG, "Status: FirmwareVersion %d Score %d Rep %d User %d Phase %d (tx %d)",
+  ESP_LOGI(STATUS_TAG, "Status: FirmwareVersion %d Score %d Rep %d User %d Phase %d (tx %d)",
      uint16_t(status.firmwareVersion),
      status.score,
      status.reputation,
