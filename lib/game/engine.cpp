@@ -179,10 +179,20 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
     case nav::Page_shipRename:
       switch (cmd) {
         case nav::Command_up:
-          state.ships[state.selectedShip]->name[state.charIdx]++;
+          {
+            char c = state.ships[state.selectedShip]->name[state.charIdx];
+            c = ((c - 'A' + 1 + ('z' - 'A')) % ('z' - 'A')) + 'A';
+            c = std::min('z', std::max('A',c));
+            state.ships[state.selectedShip]->name[state.charIdx] = c;
+          }
           break;
         case nav::Command_down:
-          state.ships[state.selectedShip]->name[state.charIdx]--;
+          {
+            char c = state.ships[state.selectedShip]->name[state.charIdx];
+            c = ((c - 'A' - 1 + ('z' - 'A')) % ('z' - 'A')) + 'A';
+            c = std::min('z', std::max('A',c));
+            state.ships[state.selectedShip]->name[state.charIdx] = c;
+          }
           break;
         case nav::Command_left:
           state.charIdx = std::max(0, state.charIdx-1);
@@ -236,6 +246,7 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         state.ships.emplace_back(std::move(ship));
 
         ESP_LOGI(ENGINE_TAG, "New ship created! Score +%d (total %d)", score, state.status->score);
+        ESP_LOGI(ENGINE_TAG, "There are %d total ships", state.ships.size());
 
         // Select the new ship in future menus
         state.selectedShip = state.ships.size()-1;

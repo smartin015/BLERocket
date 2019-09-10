@@ -43,7 +43,7 @@ void UI::drawFleetEntry(const Engine* engine) {
 
   const int top = std::max(0, state->selectedShip-2);
   std::vector<std::string> items;
-  for (int i = top; i < SELECTOR_NUM_ITEMS && i < state->ships.size(); i++) {
+  for (int i = top; i < SELECTOR_NUM_ITEMS + top && i < state->ships.size(); i++) {
     items.emplace_back(state->ships[i]->name);
   }
   drawSelector(items, state->selectedShip - top, x_offset, y_offset);
