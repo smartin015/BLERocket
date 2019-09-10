@@ -43,12 +43,9 @@ Engine::Engine(const game::State* gameState, const meta::Data* metadata) {
     state.page = nav::Page_nametag;
   }
 
-  // Cheat to phase 2
-  if (state.status->score < PHASE2_SCORE_THRESHOLD) {
-    ESP_LOGI(ENGINE_TAG, "Cheating to phase 2");
-    state.status->score = PHASE2_SCORE_THRESHOLD;
-    state.status->phase_id = 2;
-  }
+  // Set to phase 2
+  ESP_LOGI(ENGINE_TAG, "Setting to phase 2");
+  state.status->phase_id = 2;
 }
 
 const game::StateT* Engine::getState() const {
@@ -246,11 +243,13 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
         // Get rid of built up parts
         state.parts.clear();
 
+        /*
         // If we're above a certain point threshold, enable phase 2
         if (state.status->phase_id < 2 && state.status->score >= PHASE2_SCORE_THRESHOLD) {
           state.status->phase_id = 2;
           state.status->phase_txn++;
         }
+        */
       }
       break;
     case nav::Page_missionConfirm:
