@@ -31,8 +31,8 @@ void UI::drawShipVisitDecision(const Engine* engine) {
   x_offset += 5;
 
   std::vector<std::string> items;
-  for (int i = 0; i < SELECTOR_NUM_ITEMS && i < e->scenario->choices.size(); i++) {
-    items.push_back(e->scenario->choices[i]->action);
+  for (int i = 0; i < e->choices.size(); i++) {
+    items.push_back(e->scenario->choices[e->choices[i]]->action);
   }
   drawSelector(items, e->selectedChoice, x_offset, y_offset);
 }

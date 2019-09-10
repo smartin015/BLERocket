@@ -147,8 +147,30 @@ void Engine::handleInput(const nav::Command& cmd, CommsBase* comms) {
   if (next == nav::Page_shipVisitEntry) {
     // Reset scenario and ack the event
     ackEvent();
-    event.scenario = data.scenarios[std::rand() % (data.scenarios.size())].get();
+    switch(event.message.oneof.Asship()->action) {
+      case message::Type_trade:
+        event.scenario = data.scenarios[0].get();
+        break;
+      case message::Type_race:
+        event.scenario = data.scenarios[1].get();
+        break;
+      case message::Type_explore:
+        event.scenario = data.scenarios[2].get();
+        break;
+      default:
+        break;
+    }
     event.selectedChoice = 0;
+    while (event.choices.size() < 3) {
+      int rng = (std::rand() % event.scenario->choices.size());
+      bool in = false;
+      for (int i = 0; i < event.choices.size(); i++) {
+        in |= event.choices[i] == rng;
+      }
+      if (!in) {
+        event.choices.push_back(rng);
+      }
+    }
     event.d20 = 1 + (std::rand() % 20);
   }
 
@@ -370,9 +392,10 @@ void Engine::handleMessage(const message::MessageT& msg) {
           uint16_t(m->ship->owner),
           uint16_t(m->dest_user));
 
-        if (msg.source_user == state.status->user) {
-          return; // drop it on the floor
-        }
+        // FIXME
+        //if (msg.source_user == state.status->user) {
+        //  return; // drop it on the floor
+        //}
 
         if (!event.acked) {
           ESP_LOGI(ENGINE_TAG, "Dropping message, prior notification already in place");

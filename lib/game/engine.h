@@ -71,6 +71,7 @@ typedef struct event_state_t {
   int selectedChoice;
   uint8_t d20;
   int scoreDelta;
+  std::vector<int> choices;
 } event_state_t;
 
 class Engine {

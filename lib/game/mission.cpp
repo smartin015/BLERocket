@@ -49,9 +49,10 @@ void Engine::missionHandleStatus(const game::StatusT& status) {
      uint16_t(status.phase_id),
      uint16_t(status.phase_txn));
 
-  if (status.user == state.status->user) {
-    return;
-  }
+  //FIXME
+  //if (status.user == state.status->user) {
+  //  return;
+  //}
 
   // Add to the list of statuses, replacing any prior statuses
   // from the same user.
