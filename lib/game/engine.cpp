@@ -90,6 +90,15 @@ bool Engine::suppressNav(const nav::Command& cmd) const {
     }
   }
 
+  // Don't allow sending ship on a mission if it's already on a mission
+  if (nextPage(state.page, cmd) == nav::Page_missionDestSelect) {
+    for (int i = 0; i < mission.activeShips.size(); i++) {
+      if (mission.activeShips[i].second == state.ships[state.selectedShip]->name) {
+        return true;
+      }
+    }
+  }
+
   // Suppress phase-2 actions if in phase 1
   if (state.status->phase_id != 2) {
     if (nextPage(state.page, cmd) == nav::Page_missionTypeSelect) {

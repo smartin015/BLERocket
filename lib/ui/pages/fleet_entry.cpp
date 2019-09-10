@@ -41,6 +41,8 @@ void UI::drawFleetEntry(const Engine* engine) {
     return;
   }
 
+  auto* m = engine->getMission();
+
   const int top = std::max(0, state->selectedShip-2);
   std::vector<std::string> items;
   for (int i = top; i < SELECTOR_NUM_ITEMS + top && i < state->ships.size(); i++) {

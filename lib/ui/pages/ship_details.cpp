@@ -91,10 +91,27 @@ void UI::drawShipDetails(const Engine* engine) {
 
   y_offset = 20;
   x_offset = 150;
-  DrawStringAt(
-      "> Mission",
-      x_offset, y_offset,
-      NULL, &y_offset);
+  auto* m = engine->getMission();
+  int time_remaining = 0;
+  for (int i = 0; i < m->activeShips.size(); i++) {
+    if (m->activeShips[i].second == state->ships[state->selectedShip]->name) {
+      time_remaining = MISSION_DURATION_SECS - (time(NULL) - m->activeShips[i].first);
+    }
+  }
+
+  if (time_remaining > 0) {
+    snprintf(buf, sizeof(buf), "on mission - %d:%02d", time_remaining/60, time_remaining%60);
+    DrawStringAt(
+        buf,
+        x_offset, y_offset,
+        NULL, &y_offset);
+  } else {
+    DrawStringAt(
+        "> Mission",
+        x_offset, y_offset,
+        NULL, &y_offset);
+  }
+
   y_offset += LINESPACING;
   DrawStringAt(
       "v Rename",

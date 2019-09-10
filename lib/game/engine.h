@@ -27,6 +27,7 @@
 #define TRADE_ANNOUNCE_OFF std::numeric_limits<time_t>::max()
 #define LOCAL_PART_TIMEOUT_SECS 60
 #define LOCAL_STATUS_TIMEOUT_SECS 60
+#define MISSION_DURATION_SECS 300
 
 // We should ensure users can't surpass a certain score for the first
 // half of the game.
